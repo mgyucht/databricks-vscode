@@ -20,6 +20,7 @@ data "databricks_group" "users" {
 resource "databricks_user" "admin" {
   for_each  = local.admin_users
   user_name = each.key
+  force     = true
 }
 
 resource "databricks_group_member" "admin" {
