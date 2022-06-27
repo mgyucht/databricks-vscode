@@ -32,6 +32,7 @@ type ResourceCoverage struct {
 	AccFile      bool
 	ResFile      bool
 	ResTest      bool
+	Deprecated   bool
 	Fields       []FieldCoverage
 }
 
@@ -159,6 +160,7 @@ func main() {
 			longestResourceName = len(k)
 		}
 		r := newResourceCoverage(providerFiles, databricksDocs, k, v.Schema, false)
+		r.Deprecated = v.DeprecationMessage != ""
 		cr.Resources = append(cr.Resources, r)
 	}
 	for k, v := range p.DataSourcesMap {
@@ -166,6 +168,7 @@ func main() {
 			longestResourceName = len(k)
 		}
 		r := newResourceCoverage(providerFiles, databricksDocs, k, v.Schema, true)
+		r.Deprecated = v.DeprecationMessage != ""
 		cr.Resources = append(cr.Resources, r)
 	}
 	sort.Slice(cr.Resources, func(i, j int) bool {
@@ -201,6 +204,9 @@ func main() {
 	fieldSummaryFormat := "| %" + fmt.Sprint(longestResourceName) + "s | %" +
 		fmt.Sprint(longestFieldName) + "s | %s | %s | %s |\n"
 	for _, r := range cr.Resources {
+		if r.Deprecated {
+			continue
+		}
 		for _, field := range r.Fields {
 			if field.EverythingCovered() {
 				continue
