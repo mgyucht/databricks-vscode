@@ -3,4 +3,4 @@
 	url = https://github.com/databricks/terraform-provider-databricks
 [submodule "ext/docs"]
 	path = ext/docs
-	url = https://github.com/databricks/docs
+	url = git@github.com:databricks/docs.git
