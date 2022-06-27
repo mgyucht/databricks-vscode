@@ -1,0 +1,3 @@
+[submodule "ext/terraform-provider-databricks"]
+	path = ext/terraform-provider-databricks
+	url = https://github.com/databricks/terraform-provider-databricks

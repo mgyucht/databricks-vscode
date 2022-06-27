@@ -1,0 +1,28 @@
+name: terraform-nightly
+
+on:
+  schedule:
+    - cron: '0 9 * * *'
+
+jobs:
+  nightly:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Unshallow
+        run: git fetch --prune --unshallow
+      
+      - name: Fetch external repos
+        run: git submodule update --init
+
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.16.x
+
+      - run: cd go && go mod vendor
+
+      # make some nice reporting
+      - run: cd go && go run coverage-report/main.go >> $GITHUB_STEP_SUMMARY
