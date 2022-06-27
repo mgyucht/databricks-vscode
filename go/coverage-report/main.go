@@ -15,20 +15,24 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
+const providerSubmodule = "../ext/terraform-provider-databricks"
+const docsSubmodule = "../ext/docs"
+
 type CoverageReport struct {
 	Resources []ResourceCoverage
 }
 
 type ResourceCoverage struct {
-	Name    string
-	Data    bool
-	Docs    bool
-	Readme  bool
-	AccTest bool
-	AccFile bool
-	ResFile bool
-	ResTest bool
-	Fields  []FieldCoverage
+	Name         string
+	Data         bool
+	Docs         bool
+	OfficialDocs bool
+	Readme       bool
+	AccTest      bool
+	AccFile      bool
+	ResFile      bool
+	ResTest      bool
+	Fields       []FieldCoverage
 }
 
 func (rc ResourceCoverage) Prefixless() string {
@@ -37,9 +41,9 @@ func (rc ResourceCoverage) Prefixless() string {
 
 func (rc ResourceCoverage) DocLocation() string {
 	if rc.Data {
-		return path.Join("../docs/data-sources", rc.Prefixless()+".md")
+		return path.Join(providerSubmodule, "docs/data-sources", rc.Prefixless()+".md")
 	}
-	return path.Join("../docs/resources", rc.Prefixless()+".md")
+	return path.Join(providerSubmodule, "docs/resources", rc.Prefixless()+".md")
 }
 
 func (rc ResourceCoverage) ResourceFilename() string {
@@ -114,7 +118,7 @@ func (fc FieldCoverage) EverythingCovered() bool {
 	return fc.Docs && fc.AccTest && fc.UnitTest
 }
 
-func newResourceCoverage(files FileSet, name string, s map[string]*schema.Schema, data bool) ResourceCoverage {
+func newResourceCoverage(files, databricksDocs FileSet, name string, s map[string]*schema.Schema, data bool) ResourceCoverage {
 	r := ResourceCoverage{
 		Name:    name,
 		Data:    data,
@@ -122,6 +126,7 @@ func newResourceCoverage(files FileSet, name string, s map[string]*schema.Schema
 		AccTest: files.Exists(`acceptance/.*_test.go`, fmt.Sprintf(`"%s"`, name)),
 	}
 	r.Docs = fileExists(r.DocLocation())
+	r.OfficialDocs = databricksDocs.Exists(`.*.md`, r.Name)
 	// acceptance test file with a correct name
 	r.AccFile = files.Exists(r.AccFilename(), r.Name)
 	// resource file with a correct name
@@ -136,7 +141,11 @@ func newResourceCoverage(files FileSet, name string, s map[string]*schema.Schema
 }
 
 func main() {
-	files, err := recursiveChildren("../ext/terraform-provider-databricks")
+	databricksDocs, err := recursiveChildren(docsSubmodule)
+	if err != nil {
+		panic(err)
+	}
+	providerFiles, err := recursiveChildren(providerSubmodule)
 	if err != nil {
 		panic(err)
 	}
@@ -149,24 +158,24 @@ func main() {
 		if len(k) > longestResourceName {
 			longestResourceName = len(k)
 		}
-		r := newResourceCoverage(files, k, v.Schema, false)
+		r := newResourceCoverage(providerFiles, databricksDocs, k, v.Schema, false)
 		cr.Resources = append(cr.Resources, r)
 	}
 	for k, v := range p.DataSourcesMap {
 		if len(k) > longestResourceName {
 			longestResourceName = len(k)
 		}
-		r := newResourceCoverage(files, k, v.Schema, true)
+		r := newResourceCoverage(providerFiles, databricksDocs, k, v.Schema, true)
 		cr.Resources = append(cr.Resources, r)
 	}
 	sort.Slice(cr.Resources, func(i, j int) bool {
 		return cr.Resources[i].Name < cr.Resources[j].Name
 	})
-	
+
 	report := os.Stdout
-	report.WriteString("| Resource | Readme | Docs | Acceptance Test | Acceptance File | Resource File | Unit test |\n")
-	report.WriteString("| --- | --- | --- | --- | --- | --- | --- |\n")
-	resSummaryFormat := "| %" + fmt.Sprint(longestResourceName) + "s | %s | %s | %s | %s | %s | %s |\n"
+	report.WriteString("| Resource | Readme | Docs | Official Docs | Acceptance Test | Acceptance File | Resource File | Unit test |\n")
+	report.WriteString("| --- | --- | --- | --- | --- | --- | --- | --- |\n")
+	resSummaryFormat := "| %" + fmt.Sprint(longestResourceName) + "s | %s | %s | %s | %s | %s | %s | %s |\n"
 	for _, r := range cr.Resources {
 		for _, field := range r.Fields {
 			if len(field.Name) > longestFieldName {
@@ -180,6 +189,7 @@ func main() {
 		report.WriteString(fmt.Sprintf(resSummaryFormat, name,
 			checkbox(r.Readme),
 			r.DocCoverage(),
+			checkbox(r.OfficialDocs),
 			r.AccCoverage(),
 			checkbox(r.AccFile),
 			checkbox(r.ResFile),
