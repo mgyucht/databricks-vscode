@@ -1,3 +1,4 @@
 vendor
 target
 .vscode/*.log
+ext/*

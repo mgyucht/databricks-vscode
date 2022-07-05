@@ -10,6 +10,7 @@ on:
 jobs:
   nightly:
     runs-on: ubuntu-latest
+    environment: azure-prod
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -18,14 +19,23 @@ jobs:
         run: git fetch --prune --unshallow
       
       - run: cd ext && git clone https://github.com/databricks/terraform-provider-databricks
-      - run: cd ext && git clone https://${{ secrets.DECO_GITHUB_PAT }}:x-oauth-basic@github.com/databricks/docs
 
       - name: Set up Go
         uses: actions/setup-go@v1
         with:
           go-version: 1.16.x
 
-      - run: cd go && go mod vendor
+      - name: Set go env
+        run: |
+          echo "GOPATH=$(go env GOPATH)" >> $GITHUB_ENV
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+          go get gotest.tools/gotestsum
+          go install honnef.co/go/tools/cmd/staticcheck@v0.2.2
 
-      # make some nice reporting
-      - run: cd go && go run coverage-report/main.go >> $GITHUB_STEP_SUMMARY
+      - run: cd ext/terraform-provider-databricks && make vendor
+      - run: /bin/bash ext/terraform-provider-databricks/scripts/it.sh >> $GITHUB_STEP_SUMMARY
+        env:
+          CLOUD_ENV: azure
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
