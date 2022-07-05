@@ -1,4 +1,4 @@
-name: terraform-nightly
+name: reporting-nightly
 
 on:
   workflow_dispatch:
