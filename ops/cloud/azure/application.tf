@@ -2,6 +2,7 @@ data "azuread_users" "deco_admins" {
   # Refer to the "Users" dashboard on the Azure portal to find these principal names.
   user_principal_names = [
     "pieter.noordhuis_databricks.com#EXT#@dbtestcustomer.onmicrosoft.com",
+    "serge.smertin_databricks.com#EXT#@dbtestcustomer.onmicrosoft.com",
   ]
 }
 

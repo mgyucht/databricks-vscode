@@ -23,3 +23,7 @@ resource "azurerm_databricks_workspace" "this" {
     Owner = "eng-dev-ecosystem-team@databricks.com"
   }
 }
+
+output "workspace_url" {
+  value = azurerm_databricks_workspace.this.workspace_url
+}

@@ -9,3 +9,7 @@ module "workspace_prod" {
   location_short = "eastus2"
   environment    = "prod"
 }
+
+output "prod_workspace_url" {
+  value = module.workspace_prod.workspace_url
+}
