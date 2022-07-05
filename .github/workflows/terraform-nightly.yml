@@ -33,7 +33,7 @@ jobs:
           go install honnef.co/go/tools/cmd/staticcheck@v0.2.2
 
       - run: cd ext/terraform-provider-databricks && make vendor
-      - run: /bin/bash ext/terraform-provider-databricks/scripts/it.sh >> $GITHUB_STEP_SUMMARY
+      - run: cd ext/terraform-provider-databricks && bash scripts/it.sh >> $GITHUB_STEP_SUMMARY
         env:
           CLOUD_ENV: azure
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
