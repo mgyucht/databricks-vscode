@@ -8,20 +8,16 @@ on:
     - cron: '0 9 * * *'
 
 jobs:
-  nightly:
+  integration-tests:
     runs-on: ubuntu-latest
     environment: azure-prod
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Unshallow
-        run: git fetch --prune --unshallow
-      
       - run: cd ext && git clone https://github.com/databricks/terraform-provider-databricks
 
-      - name: Set up Go
-        uses: actions/setup-go@v1
+      - uses: actions/setup-go@v1
         with:
           go-version: 1.16.x
 
@@ -30,7 +26,6 @@ jobs:
           echo "GOPATH=$(go env GOPATH)" >> $GITHUB_ENV
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
           go get gotest.tools/gotestsum
-          go install honnef.co/go/tools/cmd/staticcheck@v0.2.2
 
       - run: cd ext/terraform-provider-databricks && make vendor
       
@@ -40,8 +35,9 @@ jobs:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
-      - name: Test Summary
-        uses: test-summary/action@v1
-        with:
-          paths: ext/terraform-provider-databricks/junit.xml
+      - name: Test Report
+        uses: dorny/test-reporter@v1
         if: always()
+        with:
+          path: ext/terraform-provider-databricks/junit.xml
+          reporter: java-junit
