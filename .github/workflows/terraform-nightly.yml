@@ -57,8 +57,6 @@ jobs:
           path: ext/terraform-provider-databricks/junit.xml
           reporter: java-junit
         if: always()
-
-jobs:
   completeness:
     runs-on: ubuntu-latest
     steps:
