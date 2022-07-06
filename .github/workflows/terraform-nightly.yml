@@ -21,7 +21,7 @@ jobs:
       - name: Unshallow
         run: git fetch --prune --unshallow
 
-      - run: cd ext && git clone https://github.com/databricks/terraform-provider-databricks
+      - run: cd ext && git clone https://github.com/databricks/terraform-provider-databricks && git checkout parallel
 
       - uses: actions/setup-go@v1
         with:
