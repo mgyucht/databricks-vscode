@@ -11,7 +11,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/databrickslabs/terraform-provider-databricks/provider"
+	"github.com/databricks/terraform-provider-databricks/provider"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
