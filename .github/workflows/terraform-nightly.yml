@@ -57,6 +57,12 @@ jobs:
           path: ext/terraform-provider-databricks/junit.xml
           reporter: java-junit
         if: always()
+  changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: pip3 install ghapi
+      - run: python3 scripts/release-notes.py >> $GITHUB_STEP_SUMMARY
   completeness:
     runs-on: ubuntu-latest
     steps:
@@ -68,9 +74,4 @@ jobs:
           go-version: 1.16.x
       - run: cd go && go mod vendor
       - run: cd go && go run coverage-report/main.go >> $GITHUB_STEP_SUMMARY
-  changelog:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - run: pip3 install ghapi
-      - run: python3 scripts/release-notes.py >> $GITHUB_STEP_SUMMARY
+  
