@@ -10,7 +10,10 @@ on:
 jobs:
   integration-tests:
     runs-on: ubuntu-latest
-    environment: azure-prod
+    strategy:
+      matrix:
+        env: [azure-prod,gcp-prod]
+    environment: ${{matrix.env}}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -51,6 +54,6 @@ jobs:
         uses: dorny/test-reporter@v1
         if: always()
         with:
-          name: Test Report
+          name: Test Report for ${{matrix.env}}
           path: ext/terraform-provider-databricks/junit.xml
           reporter: java-junit
