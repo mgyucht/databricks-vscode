@@ -199,27 +199,28 @@ func main() {
 			r.UnitCoverage(),
 		))
 	}
-	report.WriteString("\n\n| Resource | Field | Docs | Acceptance Test | Unit Test |\n")
-	report.WriteString("| --- | --- | --- | --- | --- |\n")
-	fieldSummaryFormat := "| %" + fmt.Sprint(longestResourceName) + "s | %" +
-		fmt.Sprint(longestFieldName) + "s | %s | %s | %s |\n"
-	for _, r := range cr.Resources {
-		if r.Deprecated {
-			continue
-		}
-		for _, field := range r.Fields {
-			if field.EverythingCovered() {
-				continue
-			}
-			report.WriteString(fmt.Sprintf(fieldSummaryFormat,
-				r.Name,
-				field.Name,
-				checkbox(field.Docs),
-				checkbox(field.AccTest),
-				checkbox(field.UnitTest),
-			))
-		}
-	}
+	// TODO: move to a separate file and publish as an artifact
+	// report.WriteString("\n\n| Resource | Field | Docs | Acceptance Test | Unit Test |\n")
+	// report.WriteString("| --- | --- | --- | --- | --- |\n")
+	// fieldSummaryFormat := "| %" + fmt.Sprint(longestResourceName) + "s | %" +
+	// 	fmt.Sprint(longestFieldName) + "s | %s | %s | %s |\n"
+	// for _, r := range cr.Resources {
+	// 	if r.Deprecated {
+	// 		continue
+	// 	}
+	// 	for _, field := range r.Fields {
+	// 		if field.EverythingCovered() {
+	// 			continue
+	// 		}
+	// 		report.WriteString(fmt.Sprintf(fieldSummaryFormat,
+	// 			r.Name,
+	// 			field.Name,
+	// 			checkbox(field.Docs),
+	// 			checkbox(field.AccTest),
+	// 			checkbox(field.UnitTest),
+	// 		))
+	// 	}
+	// }
 }
 
 func fields(r ResourceCoverage, s map[string]*schema.Schema, files FileSet) (fields []FieldCoverage) {

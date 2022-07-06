@@ -15,6 +15,16 @@ compare_json = json.load(compare_response)
 
 import re
 messages = sorted([c['commit']['message'].split("\n")[0] for c in compare_json['commits']])
+
+lines = []
 for m in messages:
     m = re.sub(r"#(\d+)", '[#\\1](https://github.com/'+OWNER+'/'+REPO+'/pull/\\1)', m)
-    print(f'* {m}.')
+    lines.append(f'* {m}.')
+
+print('# Preview')
+print("\n".join(lines))
+
+print("\n# Markdown")
+print('```md')
+print("\n".join(lines))
+print('```')
