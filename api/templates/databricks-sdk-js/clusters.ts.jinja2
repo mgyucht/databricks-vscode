@@ -1,0 +1,82 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
+import {ApiClient} from "../api-client";
+
+import * as delegate from "./delegate";
+
+{% set scope = get_scope(['cluster'])%}
+
+//
+// Enums.
+//
+
+{% for name, enum in enums.items() %}
+{% if enum.full_path()[0] == 'cluster' %}
+export type {{ enum.name() }} =
+{% for value in enum.values() %}
+    | "{{ value }}"{{ ";" if loop.last else "" }}
+{% endfor %}
+
+{% endif %}
+{% endfor %}
+
+{% macro fields(method) %}
+{% for field in method.fields() %}
+{{ field.name() }}{{ "" if field.is_required() else "?" }}: {{ field.js_type(scope) }};
+{% endfor %}
+{% endmacro %}
+
+
+//
+// Subtypes used in request/response types.
+//
+
+{% set request_response_messages = scope.request_response_messages() %}
+{% for message in scope.messages() %}
+{% if message not in request_response_messages %}
+export interface {{ message.name() }} {
+    {{ fields(message) | indent(4) }}
+};
+
+{% endif %}
+{% endfor %}
+
+{% macro gen_service(service) %}
+//
+// Request/response types.
+//
+
+
+{% for method in service.methods() %}
+export interface {{ method.request_message().name() }}Request {
+    {{ fields(method.request_message()) | indent(4) }}
+};
+
+export interface {{ method.request_message().name() }}Response {
+    {{ fields(method.response_message()) | indent(4) }}
+};
+
+{% endfor %}
+
+export class {{ service.name() }} {
+    readonly client: ApiClient;
+
+    constructor(client: ApiClient) {
+        this.client = client;
+    }
+
+{% for method in services['cluster.ClusterService'].methods() %}
+    async {{ service.sanitize_method_name(method.name()) }}(request: {{ method.request_message().name() }}Request): Promise<{{ method.request_message().name() }}Response> {
+        return (await this.client.request(
+            "/api/2.0{{ method.rpc_options()['path'] }}",
+            "{{ method.rpc_options()['method'] }}",
+            request
+        )) as {{ method.request_message().name() }}Response;
+    }
+
+{% endfor %}
+};
+
+{% endmacro %}
+
+{{ gen_service(services['cluster.ClusterService']) }}

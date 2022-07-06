@@ -1,0 +1,46 @@
+{% import '_helpers.py.jinja2' as helpers %}
+
+{% macro put_args(method) -%}
+{%- for arg in method.request_message().databricks_cli_ordered_args(method, tail=['headers', 'src_path']) %}
+{{ arg }}{{ ", " if not loop.last else "" }}
+{%- endfor %}
+{%- endmacro %}
+
+class {{ service.name() }}(object):
+    def __init__(self, client):
+        self.client = client
+
+    {% for method in service.methods() %}
+    {% if method.name_snake().startswith("put") %}
+    def {{ method.name_snake() }}({{ put_args(method) }}):
+        _data = {}
+        _files = None
+        {% for field in method.request_message().databricks_cli_ordered_fields(method) %}
+        if {{ field.name() }} is not None:
+            _data['{{ field.name() }}'] = {{ field.name() }}
+            {% if field.is_message_type() %}
+            if not isinstance({{ field.name() }}, dict):
+                raise TypeError('Expected databricks.{{ field.field_type_basename() }}() or dict for field {{ field.name() }}')
+            {% endif %}
+        {% endfor %}
+        if src_path is not None:
+            headers = {'Content-Type': None}
+            filename = os.path.basename(src_path)
+            _files = {'file': (filename, open(src_path, 'rb'), 'multipart/form-data')}
+        return self.client.perform_query('{{ method.rpc_options()['method'] }}', {{ helpers.path(method) }}, data=_data, headers=headers, files=_files)
+
+    {% else %}
+    def {{ method.name_snake() }}({{ helpers.args(method) }}):
+        _data = {}
+        {% for field in method.request_message().required_fields() + method.request_message().optional_fields() %}
+        if {{ field.name() }} is not None:
+            _data['{{ field.name() }}'] = {{ field.name() }}
+            {% if field.is_message_type() %}
+            if not isinstance({{ field.name() }}, dict):
+                raise TypeError('Expected databricks.{{ field.field_type_basename() }}() or dict for field {{ field.name() }}')
+            {% endif %}
+        {% endfor %}
+        return self.client.perform_query('{{ method.rpc_options()['method'] }}', {{ helpers.path(method) }}, data=_data, headers=headers)
+
+    {% endif %}
+    {% endfor %}
