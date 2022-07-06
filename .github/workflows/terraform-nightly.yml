@@ -37,11 +37,20 @@ jobs:
           CLOUD_ENV: azure
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      
+      # main summary page of a job run
+      - name: Test Summary
+        uses: test-summary/action@v1
+        with:
+          paths: ext/terraform-provider-databricks/junit.xml
+        if: always()
 
+      # dedicated page, needs a separate click to view, 
+      # like https://github.com/databricks/eng-dev-ecosystem/runs/7214261090
       - name: Test Report
         uses: dorny/test-reporter@v1
         if: always()
         with:
-          name: Integration tests
+          name: Test Report
           path: ext/terraform-provider-databricks/junit.xml
           reporter: java-junit
