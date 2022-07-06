@@ -39,5 +39,6 @@ jobs:
         uses: dorny/test-reporter@v1
         if: always()
         with:
+          name: Integration tests
           path: ext/terraform-provider-databricks/junit.xml
           reporter: java-junit
