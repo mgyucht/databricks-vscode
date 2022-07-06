@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        env: [azure-prod,gcp-prod]
-    environment: ${{matrix.env}}
+        env: [azure,gcp]
+    environment: ${{ matrix.env }}-prod
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -37,7 +37,7 @@ jobs:
       
       - run: cd ext/terraform-provider-databricks && bash scripts/it.sh
         env:
-          CLOUD_ENV: azure
+          CLOUD_ENV: ${{ matrix.env }}
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
       
@@ -52,8 +52,8 @@ jobs:
       # like https://github.com/databricks/eng-dev-ecosystem/runs/7214261090
       - name: Test Report
         uses: dorny/test-reporter@v1
-        if: always()
         with:
           name: Test Report for ${{matrix.env}}
           path: ext/terraform-provider-databricks/junit.xml
           reporter: java-junit
+        if: always()
