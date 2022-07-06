@@ -40,5 +40,8 @@ jobs:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
-      - run: cd ext/terraform-provider-databricks && cat test-report.log >> $GITHUB_STEP_SUMMARY
-
+      - name: Test Summary
+        uses: test-summary/action@v1
+        with:
+          paths: ext/terraform-provider-databricks/junit.xml
+        if: always()
