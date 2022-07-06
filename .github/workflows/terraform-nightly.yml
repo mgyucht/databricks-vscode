@@ -8,7 +8,7 @@ on:
     - cron: '0 9 * * *'
 
 jobs:
-  integration-tests:
+  integration-tests-prod:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -57,3 +57,26 @@ jobs:
           path: ext/terraform-provider-databricks/junit.xml
           reporter: java-junit
         if: always()
+
+jobs:
+  completeness:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Unshallow
+        run: git fetch --prune --unshallow
+      
+      - run: cd ext && git clone https://github.com/databricks/terraform-provider-databricks
+      - run: cd ext && git clone https://${{ secrets.DECO_GITHUB_PAT }}:x-oauth-basic@github.com/databricks/docs
+
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.16.x
+
+      - run: cd go && go mod vendor
+
+      # make some nice reporting
+      - run: cd go && go run coverage-report/main.go >> $GITHUB_STEP_SUMMARY
