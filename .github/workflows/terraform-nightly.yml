@@ -24,6 +24,9 @@ jobs:
 
       - run: cd ext && git clone https://github.com/databricks/terraform-provider-databricks
 
+      - name: Expand actions environment secrets to variables
+        run: python3 scripts/tfit-env.py ${{ inputs.environment }} '${{ toJson(secrets) }}' >> $GITHUB_ENV
+      
       - uses: actions/setup-go@v1
         with:
           go-version: 1.18.x
@@ -32,15 +35,11 @@ jobs:
         run: |
           echo "GOPATH=$(go env GOPATH)" >> $GITHUB_ENV
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
-          go get gotest.tools/gotestsum
+          go install gotest.tools/gotestsum@latest
 
-      - run: cd ext/terraform-provider-databricks && make vendor
-      
-      - run: cd ext/terraform-provider-databricks && bash scripts/it.sh
-        env:
-          CLOUD_ENV: ${{ matrix.env }}
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      - name: Run provider integration tests
+        run: make vendor && bash scripts/it.sh
+        working-directory: ext/terraform-provider-databricks
       
       # main summary page of a job run
       - name: Test Summary
@@ -73,6 +72,6 @@ jobs:
       - uses: actions/setup-go@v1
         with:
           go-version: 1.18.x
-      - run: cd go && go mod vendor
-      - run: cd go && go run coverage-report/main.go >> $GITHUB_STEP_SUMMARY
+      - run: go mod vendor && go run coverage-report/main.go >> $GITHUB_STEP_SUMMARY
+        working-directory: go
   

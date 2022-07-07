@@ -69,6 +69,6 @@ jobs:
       - run: cd ext && git clone https://${{ secrets.DECO_GITHUB_PAT }}:x-oauth-basic@github.com/databricks/docs
       - uses: actions/setup-go@v1
         with:
-          go-version: 1.16.x
-      - run: cd go && go mod vendor
-      - run: cd go && go run coverage-report/main.go >> $GITHUB_STEP_SUMMARY
+          go-version: 1.18.x
+      - run: go mod vendor && go run coverage-report/main.go >> $GITHUB_STEP_SUMMARY
+        working-directory: go
