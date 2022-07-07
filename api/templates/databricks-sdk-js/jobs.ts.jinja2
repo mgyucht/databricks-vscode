@@ -1,0 +1,15 @@
+{% import '_helpers.ts.jinja2' as helpers %}
+
+/* eslint-disable @typescript-eslint/naming-convention */
+
+import {ApiClient} from "../api-client";
+
+import * as cluster from "./cluster";
+import * as libraries from "./libraries";
+
+
+{% set scope = get_scope(['jobs']) %}
+
+{{ helpers.types_for_scope(scope) }}
+
+{{ helpers.gen_service(services['jobs.JobsService'], scope, version='2.1') }}

@@ -1,0 +1,13 @@
+{% import '_helpers.ts.jinja2' as helpers %}
+
+/* eslint-disable @typescript-eslint/naming-convention */
+
+import {ApiClient} from "../api-client";
+
+import * as delegate from "./delegate";
+
+{% set scope = get_scope(['cluster']) %}
+
+{{ helpers.types_for_scope(scope) }}
+
+{{ helpers.gen_service(services['cluster.ClusterService'], scope) }}

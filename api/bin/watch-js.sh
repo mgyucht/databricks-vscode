@@ -19,10 +19,10 @@ while true; do
       echo "Generating code..."
       python3 ./generate.py generate \
         --doc-file $DOC_PUBLIC_JSON \
-        --template templates/databricks-sdk-js/clusters.ts.jinja2 \
-        > ${DATABRICKS_VSCODE_REPOSITORY}/packages/databricks-sdk-js/src/apis/cluster.ts
+        --template templates/databricks-sdk-js \
+        --output ${DATABRICKS_VSCODE_REPOSITORY}/packages/databricks-sdk-js/src/apis
       cd ${DATABRICKS_VSCODE_REPOSITORY}
-      node_modules/.bin/prettier -w packages/databricks-sdk-js/src/apis/cluster.ts
+      node_modules/.bin/prettier -w packages/databricks-sdk-js/src/apis/*.ts
   ) || true
   if ! watchman-wait . ; then
     break

@@ -1,6 +1,7 @@
 from typing import Iterator
 from itertools import chain
 from functools import cache
+import glob
 import os
 import re
 import sys
@@ -17,6 +18,21 @@ SEPARATOR = '.'
 def camel_to_snake(name):
     name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
+
+
+def transform_full_path(path):
+    """
+    Warning, hack!
+    Turn internal path `managedLibraries.ZZZ` into publicly documented path `libraries.ZZZ`.
+    This transformation should be done in universe at an earlier processing step.
+    """
+    if path[0] == 'managedLibraries':
+        path[0] = 'libraries'
+    return path
+
+
+def transform_field_type(name):
+    return SEPARATOR.join(transform_full_path(name.split('.')))
 
 
 @cache
@@ -55,7 +71,7 @@ class Field:
         return not self.obj['repeated'] and self.entity_type().lower() == 'message'
 
     def field_type(self) -> str:
-        return self.obj['field_type']
+        return transform_field_type(self.obj['field_type'])
 
     def field_type_basename(self) -> str:
         return self.field_type().split('.')[-1]
@@ -78,6 +94,8 @@ class Field:
                 return 'number'
             elif typ == 'BOOL':
                 return 'boolean'
+            elif typ == 'BYTES':
+                return 'string'
 
             path = typ.split('.')
             if scope.in_scope(typ):
@@ -113,13 +131,13 @@ class Method:
         return camel_to_snake(self.sanitized_name())
 
     def full_path(self) -> list[str]:
-        return self.obj['full_path']
+        return transform_full_path(self.obj['full_path'])
 
     def description(self) -> str:
         return self.obj['description']
 
     def request_full_path(self) -> str:
-        return SEPARATOR.join(self.obj['request_full_path'])
+        return SEPARATOR.join(transform_full_path(self.obj['request_full_path']))
 
     def request_message(self) -> 'Message':
         return self.service.file.doc_file.messages()[self.request_full_path()]
@@ -139,7 +157,7 @@ class Method:
         return [f for f in self.request_message().fields() if f.name() in url_field_names]
 
     def response_full_path(self) -> str:
-        return SEPARATOR.join(self.obj['response_full_path'])
+        return SEPARATOR.join(transform_full_path(self.obj['response_full_path']))
 
     def response_message(self) -> 'Message':
         return self.service.file.doc_file.messages()[self.response_full_path()]
@@ -164,7 +182,7 @@ class BaseType:
         return self.obj['name']
 
     def full_path(self) -> list[str]:
-        return self.obj['full_path']
+        return transform_full_path(self.obj['full_path'])
 
     def full_path_str(self) -> str:
         return SEPARATOR.join(self.full_path())
@@ -389,33 +407,47 @@ def main():  # pragma: no cover
     pass
 
 
-@click.command()
+@click.command(name="generate")
 @click.option("--doc-file", "doc_file_path", required=True, envvar='DOC_FILE_JSON')
 @click.option("--template", required=True)
-def generate(doc_file_path, template):
+@click.option("--output")
+def generate_command(doc_file_path, template, output):
     doc_file = DocFile(doc_file_path)
 
     def get_scope(path: list[str]):
         return Scope(doc_file, path)
 
-    template = jinja_env(paths=[os.path.dirname(template)]).get_template(template)
-    print(
-        template.render(
-            services=doc_file.services(),
-            enums=doc_file.enums(),
-            messages=doc_file.messages(),
-            get_scope=get_scope,
-        )
-    )
+    def render_file(template):
+        template = jinja_env(paths=[os.path.dirname(template)]).get_template(template)
+        return template.render(
+                services=doc_file.services(),
+                enums=doc_file.enums(),
+                messages=doc_file.messages(),
+                get_scope=get_scope,
+            )
+
+    if os.path.isfile(template):
+        print(render_file(template))
+    elif os.path.isdir(template):
+        if output is None:
+            click.echo("Please specify --output if --template points to directory.")
+            sys.exit(1)
+        for file in glob.glob(f"{template}/*.jinja2"):
+            basefile = os.path.basename(file)
+            if not re.match('^[a-z]', basefile):
+                continue
+            name, _ = os.path.splitext(basefile)
+            with open(os.path.join(output, name), 'w', encoding='utf-8') as f:
+                f.write(render_file(file))
 
 
-@click.command()
+@click.command(name="get")
 @click.option("--doc-file", "doc_file_path", required=True, envvar='DOC_FILE_JSON')
 @click.option("--comment", "comment_path")
 @click.option("--enum", "enum_path")
 @click.option("--message", "message_path")
 @click.option("--service", "service_path")
-def get(doc_file_path, comment_path=None, enum_path=None, message_path=None, service_path=None):
+def get_command(doc_file_path, comment_path=None, enum_path=None, message_path=None, service_path=None):
     doc_file = DocFile(doc_file_path)
     if comment_path is not None:
         return
@@ -431,16 +463,33 @@ def get(doc_file_path, comment_path=None, enum_path=None, message_path=None, ser
     return
 
 
-@click.command()
+@click.command(name="list")
 @click.option("--doc-file", "doc_file_path", required=True, envvar='DOC_FILE_JSON')
-def list_services(doc_file_path):
+@click.option("--scope", "scope", type=str)
+@click.option("--comments", is_flag=True, show_default=False)
+@click.option("--enums", is_flag=True, show_default=False)
+@click.option("--messages", is_flag=True, show_default=False)
+@click.option("--services", is_flag=True, show_default=False)
+def list_command(doc_file_path, scope, comments, enums, messages, services):
     doc_file = DocFile(doc_file_path)
-    for name, _ in doc_file.services().items():
-        print(name)
+
+    # Scope listing to proto path specified by `scope`.
+    scoped = Scope(doc_file, scope.split('.') if scope else [])
+    if comments:
+        pass
+    if enums:
+        for enum in scoped.enums():
+            print(enum.full_path_str())
+    if messages:
+        for message in scoped.messages():
+            print(message.full_path_str())
+    if services:
+        for service in scoped.services():
+            print(service.full_path_str())
 
 
 if __name__ == '__main__':
-    main.add_command(generate)
-    main.add_command(get)
-    main.add_command(list_services)
+    main.add_command(generate_command)
+    main.add_command(get_command)
+    main.add_command(list_command)
     main()
