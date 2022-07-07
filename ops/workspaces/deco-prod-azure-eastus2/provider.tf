@@ -6,8 +6,17 @@ terraform {
   }
 }
 
+data "terraform_remote_state" "azure" {
+  backend = "s3"
+
+  config = {
+    region  = "us-west-2"
+    bucket  = "deco-terraform-state"
+    key     = "terraform/eng-dev-ecosystem/ops/cloud/azure/terraform.tfstate"
+    profile = "aws-dev_databricks-power-user"
+  }
+}
+
 provider "databricks" {
-  # Use ~/.databrickscfg for auth on Azure for symmetry with the staging workspace.
-  # See [../deco-staging-azure-eastus2/provider.tf].
-  profile = "deco-prod-azure-eastus2"
+  host = data.terraform_remote_state.azure.outputs.prod_workspace_url
 }
