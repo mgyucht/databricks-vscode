@@ -25,7 +25,7 @@ jobs:
       - run: cd ext && git clone https://github.com/databricks/terraform-provider-databricks
 
       - name: Expand actions environment secrets to variables
-        run: python3 scripts/tfit-env.py ${{ inputs.environment }} '${{ toJson(secrets) }}' >> $GITHUB_ENV
+        run: python3 scripts/tfit-env.py ${{ matrix.env }}-prod '${{ toJson(secrets) }}' >> $GITHUB_ENV
       
       - uses: actions/setup-go@v1
         with:
