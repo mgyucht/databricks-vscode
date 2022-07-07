@@ -39,8 +39,7 @@ jobs:
         run: |
           echo "GOPATH=$(go env GOPATH)" >> $GITHUB_ENV
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
-          go get gotest.tools/gotestsum
-        working-directory: ext/terraform-provider-databricks
+          go install gotest.tools/gotestsum@latest
 
       - run: make vendor && bash scripts/it.sh
         working-directory: ext/terraform-provider-databricks
