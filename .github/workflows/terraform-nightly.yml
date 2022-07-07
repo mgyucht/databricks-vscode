@@ -5,7 +5,7 @@ on:
     # manual workflow testing
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
   schedule:
-    - cron: '0 9 * * *'
+    - cron: '0 6 * * *'
 
 jobs:
   integration-tests-prod:
