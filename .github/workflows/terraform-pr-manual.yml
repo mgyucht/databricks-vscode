@@ -25,10 +25,7 @@ jobs:
 
       - run: pip3 install ghapi
       - run: python3 scripts/checkout-pr.py ${{ inputs.pull_request_number }}
-
-      - run: echo ${{ inputs.environment }} | sed 's/-.*//' >> $GITHUB_ENV
-      # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable
-      - run: python3 -c "import json; for k,v in ${{ toJson(secrets) }}: print(f'{k}={v}')" >> $GITHUB_ENV
+      - run: python3 scripts/tfit-env.py ${{ inputs.environment }} ${{ toJson(secrets) }} >> $GITHUB_ENV
       - run: echo $DATABRICKS_HOST
 
   #     - uses: actions/setup-go@v1
