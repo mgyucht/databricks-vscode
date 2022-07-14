@@ -2,3 +2,4 @@ vendor
 target
 .vscode/*.log
 ext/*
+.DS_Store

@@ -16,11 +16,20 @@ az login -t e3fe3f22-4b98-4c04-82cc-d8817d1b17da # prod
 
 # Manual steps
 
-Create Github PAT at https://github.com/settings/tokens/new and store it in `DECO_GITHUB_PAT` secret
-
 For every workspace:
 
 * create secrets environment in github actions
 * Create PAT, add as `DATABRICKS_TOKEN` secret
 * Copy workspace URL, add as `DATABRICKS_HOST` secret
-* Register DECO_GITHUB_PAT in User Settings / Git Integration
+
+# directories
+
+
+
+## modules
+
+holds reusable "terraform modules", that could be included either in other modules or terraform working directories
+
+### admin list
+
+holds static list of admins of developer ecosystem team. affects azure and all created workspace invites. please document every usage of it in this readme.

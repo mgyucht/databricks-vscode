@@ -1,3 +1,3 @@
 module "users" {
-  source = "../modules/users"
+  source = "../../modules/databricks-decoadmins"
 }
