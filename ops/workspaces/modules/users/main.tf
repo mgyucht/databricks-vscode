@@ -6,6 +6,7 @@ locals {
     "paul.leventis@databricks.com",
     "pieter.noordhuis@databricks.com",
     "serge.smertin@databricks.com",
+    "shreyas.goenka@databricks.com",
   ])
 }
 
