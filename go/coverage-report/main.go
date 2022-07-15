@@ -1,13 +1,10 @@
 package main
 
 import (
+	"deco/fileset"
 	"fmt"
-	"io"
-	"io/fs"
-	"log"
 	"os"
 	"path"
-	"regexp"
 	"sort"
 	"strings"
 
@@ -119,7 +116,7 @@ func (fc FieldCoverage) EverythingCovered() bool {
 	return fc.Docs && fc.AccTest && fc.UnitTest
 }
 
-func newResourceCoverage(files, databricksDocs FileSet, name string, s map[string]*schema.Schema, data bool) ResourceCoverage {
+func newResourceCoverage(files, databricksDocs fileset.FileSet, name string, s map[string]*schema.Schema, data bool) ResourceCoverage {
 	r := ResourceCoverage{
 		Name:    name,
 		Data:    data,
@@ -142,11 +139,11 @@ func newResourceCoverage(files, databricksDocs FileSet, name string, s map[strin
 }
 
 func main() {
-	databricksDocs, err := recursiveChildren(docsSubmodule)
+	databricksDocs, err := fileset.RecursiveChildren(docsSubmodule)
 	if err != nil {
 		panic(err)
 	}
-	providerFiles, err := recursiveChildren(providerSubmodule)
+	providerFiles, err := fileset.RecursiveChildren(providerSubmodule)
 	if err != nil {
 		panic(err)
 	}
@@ -223,7 +220,7 @@ func main() {
 	// }
 }
 
-func fields(r ResourceCoverage, s map[string]*schema.Schema, files FileSet) (fields []FieldCoverage) {
+func fields(r ResourceCoverage, s map[string]*schema.Schema, files fileset.FileSet) (fields []FieldCoverage) {
 	type pathWrapper struct {
 		r    *schema.Resource
 		path []string
@@ -233,7 +230,7 @@ func fields(r ResourceCoverage, s map[string]*schema.Schema, files FileSet) (fie
 			r: &schema.Resource{Schema: s},
 		},
 	}
-	doc := File{Absolute: r.DocLocation()}
+	doc := fileset.File{Absolute: r.DocLocation()}
 
 	noisyDuplicates := map[string]bool{
 		"new_cluster": true,
@@ -287,90 +284,4 @@ func checkbox(b bool) string {
 func fileExists(name string) bool {
 	_, err := os.Stat(name)
 	return err == nil
-}
-
-type FileSet []File
-
-func (fi FileSet) Exists(pathRegex, needleRegex string) bool {
-	path := regexp.MustCompile(pathRegex)
-	needle := regexp.MustCompile(needleRegex)
-	for _, v := range fi {
-		if !path.MatchString(v.Absolute) {
-			continue
-		}
-		if v.Match(needle) {
-			return true
-		}
-	}
-	return false
-}
-
-type File struct {
-	fs.DirEntry
-	Absolute string
-}
-
-func (fi File) MustMatch(needle string) bool {
-	return fi.Match(regexp.MustCompile(needle))
-}
-
-func (fi File) Match(needle *regexp.Regexp) bool {
-	raw, err := fi.Raw()
-	if err != nil {
-		log.Printf("[ERROR] read %s: %s", fi.Absolute, err)
-		return false
-	}
-	return needle.Match(raw)
-}
-
-func (fi File) Raw() ([]byte, error) {
-	f, err := os.Open(fi.Absolute)
-	if err != nil {
-		return nil, err
-	}
-	return io.ReadAll(f)
-}
-
-func recursiveChildren(dir string) (found FileSet, err error) {
-	queue, err := readDir(dir)
-	if err != nil {
-		return nil, err
-	}
-	for len(queue) > 0 {
-		current := queue[0]
-		queue = queue[1:]
-		if !current.IsDir() {
-			found = append(found, current)
-			continue
-		}
-		if current.Name() == "vendor" {
-			continue
-		}
-		if current.Name() == "scripts" {
-			continue
-		}
-		children, err := readDir(current.Absolute)
-		if err != nil {
-			return nil, err
-		}
-		queue = append(queue, children...)
-	}
-	return found, nil
-}
-
-func readDir(dir string) (queue []File, err error) {
-	f, err := os.Open(dir)
-	if err != nil {
-		return
-	}
-	defer f.Close()
-	dirs, err := f.ReadDir(-1)
-	if err != nil {
-		return
-	}
-	for _, v := range dirs {
-		absolute := path.Join(dir, v.Name())
-		queue = append(queue, File{v, absolute})
-	}
-	return
 }
