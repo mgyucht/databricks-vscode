@@ -113,3 +113,7 @@ output "test_env" {
     "TEST_KEY_VAULT_SECRET_VALUE" : azurerm_key_vault_secret.this.value
   }
 }
+
+module "dummy" {
+  source = "../dummy"
+}
