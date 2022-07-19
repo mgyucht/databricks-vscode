@@ -21,6 +21,5 @@ module "secrets" {
   secrets = {
     "DATABRICKS_HOST" : databricks_mws_workspaces.deco_production.workspace_url,
     "DATABRICKS_TOKEN" : databricks_mws_workspaces.deco_production.token[0].token_value,
-    "DATABRICKS_GOOGLE_SERVICE_ACCOUNT": google_service_account.admin.email,
   }
 }
