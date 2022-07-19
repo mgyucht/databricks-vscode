@@ -11,7 +11,12 @@ terraform {
   }
 }
 
+module "defaults" {
+  source = "../../modules/defaults"
+}
+
 provider "aws" {
-  profile = "aws-dev_databricks-security-team"
+  // comment out before making SSE ticket
+  profile = "aws-dev_databricks-power-user"
   region = "us-west-2"
 }

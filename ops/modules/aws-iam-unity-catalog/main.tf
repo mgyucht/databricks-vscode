@@ -1,3 +1,15 @@
+variable "env_name" {
+  type = string
+}
+
+variable "crossaccount_role_identifier" {
+  type = string
+}
+
+variable "databricks_account_id" {
+  type = string
+}
+
 # Allows Unity Catalog in this account to assume this role.
 data "aws_iam_policy_document" "uc_assume_role_policy" {
   statement {
@@ -41,7 +53,8 @@ resource "aws_iam_role" "uc" {
   }
 }
 
-# Allows Unity Catalog access to its own root bucket.
+// TODO: refactor for using with storage locations & storage credentials
+// Allows Unity Catalog access to its own root bucket.
 data "aws_iam_policy_document" "uc_root_buckets" {
   statement {
     sid    = "s3AccessPolicy"
@@ -72,6 +85,6 @@ resource "aws_iam_role_policy" "uc_root_buckets" {
   policy = data.aws_iam_policy_document.uc_root_buckets.json
 }
 
-output "name" {
-  value = aws_iam_role.uc.name
+output "arn" {
+  value = aws_iam_role.uc.arn
 }

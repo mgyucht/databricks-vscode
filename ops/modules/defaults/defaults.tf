@@ -58,3 +58,23 @@ output "google_production_account" {
 output "google_staging_account" {
   value = "9fcbb245-7c44-4522-9870-e38324104cf8"
 }
+
+output "aws_prod_account_id" {
+  description = "Databricks AWS Production"
+  value = 414351767826
+}
+
+output "aws_staging_account_id" {
+  description = "Databricks AWS Staging"
+  value = 548125073166
+}
+
+output "aws_prod_databricks_account_id" {
+  description = "https://accounts.cloud.databricks.com/"
+  value = "4d9d3bc8-66c3-4e5a-8a0a-551f564257f0"
+}
+
+output "aws_staging_databricks_account_id" {
+  description = "https://accounts.staging.cloud.databricks.com/"
+  value = "ed0ca3c5-fae5-4619-bb38-eebe04a4af4b"
+}

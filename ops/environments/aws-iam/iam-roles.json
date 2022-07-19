@@ -1,0 +1,1 @@
+{"prod":{"cross-account":"arn:aws:iam::707343435239:role/deco_workspace_prod","unity-catalog":"arn:aws:iam::707343435239:role/deco_uc_prod"},"staging":{"cross-account":"arn:aws:iam::707343435239:role/deco_workspace_staging","unity-catalog":"arn:aws:iam::707343435239:role/deco_uc_staging"}}
