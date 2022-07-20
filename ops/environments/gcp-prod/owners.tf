@@ -1,4 +1,4 @@
-locals {
+locals { // TODO: change to defaults...
   owners = [
     "user:fabian.jakobs@databricks.com",
     "user:kartik.gupta@databricks.com",
