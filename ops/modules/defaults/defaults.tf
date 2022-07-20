@@ -78,3 +78,7 @@ output "aws_staging_databricks_account_id" {
   description = "https://accounts.staging.cloud.databricks.com/"
   value = "ed0ca3c5-fae5-4619-bb38-eebe04a4af4b"
 }
+
+output "aws_region" {
+  value = "us-west-2"
+}

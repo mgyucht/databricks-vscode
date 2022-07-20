@@ -30,7 +30,7 @@ data "azuread_users" "admins" {
 
 resource "azurerm_key_vault" "this" {
   // historically, this is a hack, because azure key vault names are 32 char maxlen
-  name = var.environment == "meta" ? "deco-github-meta-kv" : "deco-github-${var.environment}"
+  name = "deco-gh-${var.environment}"
 
   resource_group_name = data.azurerm_resource_group.this.name
   location            = data.azurerm_resource_group.this.location
