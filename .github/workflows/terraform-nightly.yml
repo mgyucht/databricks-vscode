@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        env: [azure-prod,gcp-prod,aws-acct-prod]
+        env: [azure-prod,gcp-prod,aws-acct-prod,aws-prod]
     environment: ${{ matrix.env }}
     steps:
       - name: Checkout
