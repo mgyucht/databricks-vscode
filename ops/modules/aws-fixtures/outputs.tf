@@ -42,6 +42,8 @@ output "test_env" {
     "TEST_METASTORE_BUCKET": module.metastore_bucket.bucket,
     "TEST_OTHER_BUCKET": module.other_bucket.bucket,
 
+    "TEST_VPC_ID": module.vpc.vpc_id,
+    "TEST_SECURITY_GROUP": module.vpc.default_security_group_id,
     "TEST_SUBNET_PRIVATE": module.vpc.private_subnets[0],
     "TEST_SUBNET_PRIVATE2": module.vpc.private_subnets[1],
 
