@@ -44,7 +44,8 @@ module "secrets" {
   source      = "../../modules/github-secrets"
   environment = "aws-acct-prod"
   secrets = merge(module.fixtures.test_env, {
-    "CLOUD_ENV": "aws",
+    "CLOUD_ENV": "mws",
+    "TEST_FILTER": "TestMws",
     "DATABRICKS_HOST": "https://accounts.cloud.databricks.com/",
     "DATABRICKS_ACCOUNT_ID": module.defaults.aws_prod_databricks_account_id,
     "TEST_CROSSACCOUNT_ARN": local.prod_crossaccount_arn,
