@@ -23,5 +23,5 @@ for k,v in json.loads(secrets).items():
         # ops/environments/gcp-prod/gcp-accounts-prod.tf sets it in base64,
         # otherwise github actions may fail with JSON serialisation issues.
         # See https://github.com/databricks/eng-dev-ecosystem/runs/7435656698
-        v = base64.b64decode(v)
+        v = base64.b64decode(v).decode('utf-8').replace("\n", "")
     print(f'{k.upper()}={v}')
