@@ -1,5 +1,5 @@
 vendor
 target
-.vscode/*.log
+*.log
 ext/*
 .DS_Store

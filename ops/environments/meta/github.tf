@@ -5,6 +5,8 @@ data "azurerm_key_vault_secret" "deco_github_token" {
 }
 
 provider "github" {
+  // TODO: evaluate GitHub App vs GitHub Bot user
+  // See https://github.com/databricks/eng-dev-ecosystem/issues/17
   token = data.azurerm_key_vault_secret.deco_github_token.value
   owner = "databricks"
 }
@@ -34,7 +36,7 @@ data "azurerm_key_vault" "all" {
 resource "github_repository_environment" "this" {
   for_each    = data.azurerm_key_vault.all
   repository  = "eng-dev-ecosystem"
-  environment = replace(replace(each.value.name, "deco-github-", ""), "-kv", "")
+  environment = replace(replace(replace(each.value.name, "deco-github-", ""), "deco-gh-", ""), "-kv", "")
 }
 
 // get names of secrets per every vault, index by vault name
@@ -50,7 +52,7 @@ locals {
       for ev in v.names : {
         "vault" : vn,
         "secret_name" : ev
-      } if ev != data.azurerm_key_vault_secret.deco_github_token.name
+      } # if ev != data.azurerm_key_vault_secret.deco_github_token.name
   ]]) : "${kv["vault"]}:${kv["secret_name"]}" => kv }
 }
 
