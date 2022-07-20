@@ -1,0 +1,6 @@
+cloud,env,workspace_url,account_id,account_console
+aws,prod,https://dbc-aa06aca9-22ff.cloud.databricks.com,4d9d3bc8-66c3-4e5a-8a0a-551f564257f0,https://accounts.cloud.databricks.com/
+azure,prod,https://adb-309687753508875.15.azuredatabricks.net,5a8ac58d-9557-497a-8832-90bd35e641bf,https://accounts.azuredatabricks.net/
+azure,staging,https://adb-6216162949030702.2.staging.azuredatabricks.net,02945107-4221-4317-9276-5e0e9ed7f194,https://accounts.staging.azuredatabricks.net/
+gcp,prod,https://734653476174839.9.gcp.databricks.com,e11e38c5-a449-47b9-b37f-0fa36c821612,https://accounts.gcp.databricks.com/
+gcp,staging,https://1679816285419850.0.staging.gcp.databricks.com,9fcbb245-7c44-4522-9870-e38324104cf8,https://accounts.staging.gcp.databricks.com/
