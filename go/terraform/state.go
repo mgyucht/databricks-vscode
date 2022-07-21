@@ -33,6 +33,9 @@ func Resources(s *tfjson.State, resType string, cb func(*Resource) error) error 
 }
 
 func FindFirstResource[T any](s *tfjson.State, resType string, cb func(*Resource) *T) (result *T, err error) {
+	if s.Values == nil {
+		return nil, fmt.Errorf("no resources")
+	}
 	var done = errors.New("done")
 	err = Resources(s, resType, func(r *Resource) error {
 		result = cb(r)

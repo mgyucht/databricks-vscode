@@ -17,6 +17,9 @@ var RootCmd = &cobra.Command{
 		if Verbose {
 			logLevel = append(logLevel, "[DEBUG]")
 		}
+		if Silent {
+			NoLogs()
+		}
 		log.SetOutput(&logLevel)
 	},
 }
@@ -26,8 +29,15 @@ type levelWriter []string
 
 var logLevel = levelWriter{"[INFO]", "[ERROR]", "[WARN]"}
 
+func NoLogs() {
+	logLevel = levelWriter{}
+}
+
 // Verbose means additional debug information, like API logs
 var Verbose bool
+
+// Silent means no logs
+var Silent bool
 
 func (lw *levelWriter) Write(p []byte) (n int, err error) {
 	a := string(p)
@@ -51,4 +61,5 @@ func Execute() {
 func init() {
 	// flags available for every child command
 	RootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "print debug logs")
+	RootCmd.PersistentFlags().BoolVarP(&Silent, "silent", "s", false, "do not print logs")
 }

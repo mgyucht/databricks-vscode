@@ -42,8 +42,7 @@ func Available() []string {
 	return envs
 }
 
-// TODO: HAS ENVIRONMENT SIDE EFFECTS! Will be fixed with Go SDK
-func NewClientFor(ctx context.Context, env string) (*common.DatabricksClient, error) {
+func EnvVars(ctx context.Context, env string) (map[string]string, error) {
 	projectRoot, err := folders.FindDirWithLeaf(".git")
 	if err != nil {
 		return nil, fmt.Errorf("cannot find git root: %w", err)
@@ -92,6 +91,15 @@ func NewClientFor(ctx context.Context, env string) (*common.DatabricksClient, er
 			}
 			vars[strings.ReplaceAll(name, "-", "_")] = *sv.Value
 		}
+	}
+	return vars, nil
+}
+
+// TODO: HAS ENVIRONMENT SIDE EFFECTS! Will be fixed with Go SDK
+func NewClientFor(ctx context.Context, env string) (*common.DatabricksClient, error) {
+	vars, err := EnvVars(ctx, env)
+	if err != nil {
+		return nil, fmt.Errorf("env vars: %w", err)
 	}
 	// TODO: THIS IS UGLY AND HAS TO BE REWRITTEN LATER
 	for k, v := range vars {

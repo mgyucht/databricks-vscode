@@ -1,7 +1,7 @@
 package cleanup
 
 import (
-	"deco/cmd/root"
+	"deco/cmd/env"
 	"deco/testenv"
 	"log"
 	"strings"
@@ -47,5 +47,5 @@ var cleanupCmd = &cobra.Command{
 }
 
 func init() {
-	root.RootCmd.AddCommand(cleanupCmd)
+	env.EnvCmd.AddCommand(cleanupCmd)
 }

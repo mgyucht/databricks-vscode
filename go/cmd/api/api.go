@@ -35,8 +35,6 @@ var apiCmd = &cobra.Command{
 	},
 }
 
-var Env string
-
 func init() {
 	root.RootCmd.AddCommand(apiCmd)
 }
