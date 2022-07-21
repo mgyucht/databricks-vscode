@@ -3,7 +3,7 @@ variable "name" {
 }
 
 variable "tags" {
-  default = {}
+  default = {} // todo: merge with defaults
 }
 
 resource "aws_s3_bucket" "this" {

@@ -39,6 +39,24 @@ output "azure_tenant_id" {
   value = "e3fe3f22-4b98-4c04-82cc-d8817d1b17da"
 }
 
+output "azure_prod_account_id" {
+  description = "Unity Catalog Account ID for Azure Prod"
+  value = "5a8ac58d-9557-497a-8832-90bd35e641bf"
+}
+
+output "azure_prod_account_console" {
+  value = "https://accounts.azuredatabricks.net/"
+}
+
+output "azure_staging_account_id" {
+  description = "Unity Catalog Account ID for Azure Staging"
+  value = "02945107-4221-4317-9276-5e0e9ed7f194"
+}
+
+output "azure_staging_account_console" {
+  value = "https://accounts.staging.azuredatabricks.net/"
+}
+
 output "resource_group" {
   value = "eng-dev-ecosystem-rg"
 }
@@ -62,6 +80,10 @@ output "google_staging_account" {
 output "aws_prod_account_id" {
   description = "Databricks AWS Production"
   value = 414351767826
+}
+
+output "aws_prod_account_console" {
+  value = "https://accounts.cloud.databricks.com/"
 }
 
 output "aws_staging_account_id" {

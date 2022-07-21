@@ -69,10 +69,10 @@ data "azurerm_key_vault_secret" "password" {
 
 provider "databricks" {
   alias = "account"
-  host = "https://accounts.cloud.databricks.com/"
+  host = module.defaults.aws_prod_account_console
+  account_id = module.defaults.aws_prod_databricks_account_id
   username = data.azurerm_key_vault_secret.username.value
   password = data.azurerm_key_vault_secret.password.value
-  account_id = module.defaults.aws_prod_databricks_account_id
 }
 
 module "workspace" {
@@ -96,13 +96,6 @@ module "workspace" {
   managed_services_cmk_alias = module.fixtures.managed_services_cmk_alias
   storage_cmk_arn = module.fixtures.storage_cmk_arn
   storage_cmk_alias = module.fixtures.storage_cmk_alias
-}
-
-module "account" {
-  source = "../../modules/databricks-account"
-  providers = {
-    databricks = databricks.account
-  }
 }
 
 module "secrets" {

@@ -1,0 +1,1 @@
+Group and service principal fixture

@@ -27,28 +27,28 @@ locals {
     aws = {
         prod = {
             account_id = module.defaults.aws_prod_databricks_account_id
-            account_console = "https://accounts.cloud.databricks.com/"
+            account_console = module.defaults.aws_prod_account_console
             features = {
                 unity_catalog = "ENABLED"
             }
         }
         staging = {
             account_id = module.defaults.aws_staging_databricks_account_id
-            account_console = "https://accounts.staging.cloud.databricks.com/"
+            account_console = module.defaults.aws_prod_account_console
             features = {}
         }
     }
     azure = {
         prod = {
-            account_id = "5a8ac58d-9557-497a-8832-90bd35e641bf"
-            account_console = "https://accounts.azuredatabricks.net/"
+            account_id = module.defaults.azure_prod_account_id
+            account_console = module.defaults.azure_prod_account_console
             features = {
                 identity_federation = "ENABLED"
             }
         }
         staging = {
-            account_id = "02945107-4221-4317-9276-5e0e9ed7f194"
-            account_console = "https://accounts.staging.azuredatabricks.net/"
+            account_id = module.defaults.azure_staging_account_id
+            account_console = module.defaults.azure_staging_account_console
             features = {}
         }
     }

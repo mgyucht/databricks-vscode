@@ -5,8 +5,7 @@ data "azurerm_key_vault_secret" "deco_github_token" {
 }
 
 provider "github" {
-  // TODO: evaluate GitHub App vs GitHub Bot user
-  // See https://github.com/databricks/eng-dev-ecosystem/issues/17
+  // https://databricks.atlassian.net/browse/ES-390794
   token = data.azurerm_key_vault_secret.deco_github_token.value
   owner = "databricks"
 }
