@@ -95,12 +95,13 @@ locals {
   }]
   table = [for v in local.environments: join("\n", [
         "## ${v.name}",
-        " * Cloud: ${v.cloud}",
-        " * Environment: ${v.env}",
+        " * Cloud: `${v.cloud}`",
+        " * Environment: `${v.env}`",
+        // TODO: add workspace id to this report
         " * Databricks Host: ${v.workspace_url}",
         " * Account ID: `${v.account_id}`",
-        " * Account Console: ${v.account_console}",
-        " * Environment variables: `${join("`, `", v.variables)}`",
+        " * Account Console: ${v.account_console}login?account_id=${v.account_id}",
+        " * Available environment: `${join("`, `", v.variables)}`",
         " * Previews: ${yamlencode(v["features"])}"
     ])
   ]
