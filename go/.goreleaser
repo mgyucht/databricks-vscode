@@ -1,4 +1,3 @@
-project_name: deco
 hooks:
   - go mod tidy
 builds:
