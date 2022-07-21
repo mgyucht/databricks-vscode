@@ -117,7 +117,7 @@ resource "local_file" "csv" {
 }
 
 resource "local_file" "index" {
-  filename = "${path.module}/README.md"
+  filename = "README.md"
   content = <<-EOT
   # Developer Ecosystem Environments
 

@@ -49,6 +49,13 @@ provider "databricks" {
   password   = data.azurerm_key_vault_secret.password.value
 }
 
+module "account" {
+  source = "../../modules/databricks-account"
+  providers = {
+    databricks = databricks.account
+  }
+}
+
 data "local_file" "iam" {
   filename = "../aws-iam/iam-roles.json"
 }
@@ -90,25 +97,19 @@ resource "databricks_mws_workspaces" "this" {
   storage_configuration_id = databricks_mws_storage_configurations.this.storage_configuration_id
 }
 
-module "metastore_bucket" {
-  source = "../../modules/aws-bucket"
-  // See ops/modules/aws-iam-unity-catalog/main.tf
-  name = "deco-uc-prod-aws-us-west-2"
-  tags = module.defaults.tags
-}
-
 provider "databricks" {
   alias    = "workspace"
+  auth_type = "basic"
   host     = databricks_mws_workspaces.this.workspace_url
   username = data.azurerm_key_vault_secret.username.value
   password = data.azurerm_key_vault_secret.password.value
 }
 
-module "account" {
-  source = "../../modules/databricks-account"
-  providers = {
-    databricks = databricks.account
-  }
+module "metastore_bucket" {
+  source = "../../modules/aws-bucket"
+  // See ops/modules/aws-iam-unity-catalog/main.tf
+  name = "deco-uc-prod-aws-us-west-2"
+  tags = module.defaults.tags
 }
 
 module "metastore" {

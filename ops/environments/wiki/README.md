@@ -12,10 +12,19 @@
 ## aws-prod
  * Cloud: `aws`
  * Environment: `prod`
- * Databricks Host: https://dbc-f8a3fbe4-ac70.cloud.databricks.com
+ * Databricks Host: https://dbc-e7c6834d-2360.cloud.databricks.com
  * Account ID: `4d9d3bc8-66c3-4e5a-8a0a-551f564257f0`
  * Account Console: https://accounts.cloud.databricks.com/login?account_id=4d9d3bc8-66c3-4e5a-8a0a-551f564257f0
- * Available environment: `CLOUD_ENV`, `DATABRICKS_HOST`, `DATABRICKS_TOKEN`, `TEST_MANAGED_KMS_KEY_ALIAS`, `TEST_MANAGED_KMS_KEY_ARN`, `TEST_METASTORE_BUCKET`, `TEST_OTHER_BUCKET`, `TEST_RELAY_VPC_ENDPOINT`, `TEST_ROOT_BUCKET`, `TEST_STORAGE_KMS_KEY_ALIAS`, `TEST_STORAGE_KMS_KEY_ARN`, `TEST_SUBNET_PRIVATE`, `TEST_SUBNET_PRIVATE2`
+ * Available environment: `CLOUD_ENV`, `DATABRICKS_HOST`, `DATABRICKS_TOKEN`, `TEST_MANAGED_KMS_KEY_ALIAS`, `TEST_MANAGED_KMS_KEY_ARN`, `TEST_METASTORE_BUCKET`, `TEST_OTHER_BUCKET`, `TEST_RELAY_VPC_ENDPOINT`, `TEST_ROOT_BUCKET`, `TEST_SECURITY_GROUP`, `TEST_STORAGE_KMS_KEY_ALIAS`, `TEST_STORAGE_KMS_KEY_ARN`, `TEST_SUBNET_PRIVATE`, `TEST_SUBNET_PRIVATE2`, `TEST_VPC_ID`
+ * Previews: "unity_catalog": "ENABLED"
+
+## aws-uc-prod
+ * Cloud: `aws`
+ * Environment: `prod`
+ * Databricks Host: https://dbc-2dc7e9b3-a01f.cloud.databricks.com
+ * Account ID: `4d9d3bc8-66c3-4e5a-8a0a-551f564257f0`
+ * Account Console: https://accounts.cloud.databricks.com/login?account_id=4d9d3bc8-66c3-4e5a-8a0a-551f564257f0
+ * Available environment: `CLOUD_ENV`, `DATABRICKS_HOST`, `DATABRICKS_PASSWORD`, `DATABRICKS_USERNAME`, `TEST_DATA_ENG_GROUP`, `TEST_DATA_SCI_GROUP`
  * Previews: "unity_catalog": "ENABLED"
 
 ## azure-prod

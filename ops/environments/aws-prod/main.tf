@@ -81,7 +81,7 @@ module "workspace" {
     databricks = databricks.account
   }
   
-  prefix = "deco-prod-aws-${module.defaults.aws_region}"
+  prefix = "deco-aws-nouc-prod"
   databricks_account_id = module.defaults.aws_prod_databricks_account_id
   cross_account_role_arn = local.prod_crossaccount_arn
   security_group_ids = module.fixtures.security_group_ids
