@@ -3,3 +3,4 @@ target
 *.log
 ext/*
 .DS_Store
+go/dist

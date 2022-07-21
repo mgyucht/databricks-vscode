@@ -1,3 +1,4 @@
+project_name: deco
 hooks:
   - go mod tidy
 builds:
@@ -38,9 +39,5 @@ snapshot:
 #       - "${signature}"
 #       - "--detach-sign"
 #       - "${artifact}"
-changelog:
-  sort: asc
-  filters:
-    exclude:
-    - '^docs:'
-    - '^test:'
+release:
+  draft: true
