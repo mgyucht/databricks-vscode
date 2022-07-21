@@ -1,6 +1,6 @@
 provider "databricks" {
-  alias = "account"
-  host = module.defaults.azure_prod_account_console
+  alias      = "account"
+  host       = module.defaults.azure_prod_account_console
   account_id = module.defaults.azure_prod_account_id
 }
 

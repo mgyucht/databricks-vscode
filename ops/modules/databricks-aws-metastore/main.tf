@@ -18,9 +18,9 @@ resource "databricks_metastore" "this" {
 // Assign to all workspaces in the account
 // https://github.com/databricks/terraform-provider-databricks/issues/1485
 resource "databricks_metastore_assignment" "this" {
-  for_each = toset(var.workspace_ids)
-  workspace_id = each.key
-  metastore_id = databricks_metastore.this.id
+  for_each             = toset(var.workspace_ids)
+  workspace_id         = each.key
+  metastore_id         = databricks_metastore.this.id
   default_catalog_name = "hive_metastore"
 }
 
@@ -44,7 +44,7 @@ resource "databricks_catalog" "sandbox" {
 }
 
 resource "databricks_grants" "sandbox" {
-  catalog  = databricks_catalog.sandbox.name
+  catalog = databricks_catalog.sandbox.name
   grant {
     principal  = var.data_eng_group
     privileges = ["USAGE", "CREATE"]
@@ -65,7 +65,7 @@ resource "databricks_schema" "things" {
 }
 
 resource "databricks_grants" "things" {
-  schema   = databricks_schema.things.id
+  schema = databricks_schema.things.id
   grant {
     principal  = var.data_sci_group
     privileges = ["USAGE"]

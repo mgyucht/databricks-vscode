@@ -17,7 +17,7 @@ variable "region" {}
 variable "name" {}
 
 locals {
-    // this module is a port and testbed for the following guide
-    // https://registry.terraform.io/providers/databricks/databricks/latest/docs/guides/aws-workspace
+  // this module is a port and testbed for the following guide
+  // https://registry.terraform.io/providers/databricks/databricks/latest/docs/guides/aws-workspace
   prefix = var.name
 }

@@ -18,5 +18,5 @@ module "defaults" {
 provider "aws" {
   // comment out before making SSE ticket
   profile = "aws-dev_databricks-power-user"
-  region = "us-west-2"
+  region  = "us-west-2"
 }

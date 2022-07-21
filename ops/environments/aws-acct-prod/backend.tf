@@ -4,6 +4,6 @@ terraform {
     storage_account_name = "decotfstate"
     container_name       = "tfstate"
     // TODO: rename this state file on backend
-    key                  = "ops/environments/aws-prod/terraform.tfstate"
+    key = "ops/environments/aws-prod/terraform.tfstate"
   }
 }

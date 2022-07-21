@@ -75,7 +75,7 @@ resource "github_actions_environment_secret" "tests" {
 // TODO: most likely it's a temporary measure. We'll fix it later.
 // p.s. I know that storing plaintext secrets is very very bad.
 output "secrets" {
-  value = {for k, v in local.secrets: 
-    k => data.azurerm_key_vault_secret.all[k].value}
+  value = { for k, v in local.secrets :
+  k => data.azurerm_key_vault_secret.all[k].value }
   sensitive = true
 }

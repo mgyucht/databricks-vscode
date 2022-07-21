@@ -22,6 +22,6 @@ locals {
 }
 
 provider "databricks" {
-  host = local.can_of_worms["deco-github-gcp-prod:DATABRICKS-HOST"]
+  host                   = local.can_of_worms["deco-github-gcp-prod:DATABRICKS-HOST"]
   google_service_account = local.can_of_worms["deco-github-gcp-prod:DATABRICKS-GOOGLE-SERVICE-ACCOUNT"]
 }

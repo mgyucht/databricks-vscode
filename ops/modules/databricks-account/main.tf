@@ -5,12 +5,12 @@ variable "prefix" {
 variable "azure_application_ids" {
   description = "Azure needs an application ID of AAD SPN, which is empty for AWS"
   type = object({
-    admins = string
+    admins   = string
     data_eng = string
     data_sci = string
   })
   default = {
-    admins = ""
+    admins   = ""
     data_eng = ""
     data_sci = ""
   }
@@ -18,8 +18,8 @@ variable "azure_application_ids" {
 
 // create admins group
 module "admins" {
-  source = "../databricks-group"
-  name = "${var.prefix}-admins"
+  source               = "../databricks-group"
+  name                 = "${var.prefix}-admins"
   azure_application_id = var.azure_application_ids.admins
 }
 
@@ -54,8 +54,8 @@ output "admins" {
 
 // create "data engineering" fixture group
 module "data_eng" {
-  source = "../databricks-group"
-  name = "${var.prefix}-data-engineering"
+  source               = "../databricks-group"
+  name                 = "${var.prefix}-data-engineering"
   azure_application_id = var.azure_application_ids.data_eng
 }
 
@@ -65,8 +65,8 @@ output "data_eng" {
 
 // create "data science" fixture group
 module "data_sci" {
-  source = "../databricks-group"
-  name = "${var.prefix}-data-science"
+  source               = "../databricks-group"
+  name                 = "${var.prefix}-data-science"
   azure_application_id = var.azure_application_ids.data_sci
 }
 

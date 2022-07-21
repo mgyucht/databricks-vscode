@@ -18,6 +18,6 @@ module "secrets_staging" {
   environment = "gcp-staging"
   secrets = {
     "DATABRICKS_HOST" : databricks_mws_workspaces.deco_staging.workspace_url,
-    "DATABRICKS_GOOGLE_SERVICE_ACCOUNT": google_service_account.admin.email,
+    "DATABRICKS_GOOGLE_SERVICE_ACCOUNT" : google_service_account.admin.email,
   }
 }

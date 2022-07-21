@@ -98,11 +98,11 @@ resource "databricks_mws_workspaces" "this" {
 }
 
 provider "databricks" {
-  alias    = "workspace"
+  alias     = "workspace"
   auth_type = "basic"
-  host     = databricks_mws_workspaces.this.workspace_url
-  username = data.azurerm_key_vault_secret.username.value
-  password = data.azurerm_key_vault_secret.password.value
+  host      = databricks_mws_workspaces.this.workspace_url
+  username  = data.azurerm_key_vault_secret.username.value
+  password  = data.azurerm_key_vault_secret.password.value
 }
 
 module "metastore_bucket" {
@@ -131,11 +131,11 @@ module "secrets" {
   source      = "../../modules/github-secrets"
   environment = "aws-uc-prod"
   secrets = {
-    "CLOUD_ENV": "aws",
-    "DATABRICKS_HOST": databricks_mws_workspaces.this.workspace_url,
-    "DATABRICKS_USERNAME": data.azurerm_key_vault_secret.username.value,
-    "DATABRICKS_PASSWORD": data.azurerm_key_vault_secret.password.value,
-    "TEST_DATA_ENG_GROUP": module.account.data_eng.name,
-    "TEST_DATA_SCI_GROUP": module.account.data_sci.name,
+    "CLOUD_ENV" : "aws",
+    "DATABRICKS_HOST" : databricks_mws_workspaces.this.workspace_url,
+    "DATABRICKS_USERNAME" : data.azurerm_key_vault_secret.username.value,
+    "DATABRICKS_PASSWORD" : data.azurerm_key_vault_secret.password.value,
+    "TEST_DATA_ENG_GROUP" : module.account.data_eng.name,
+    "TEST_DATA_SCI_GROUP" : module.account.data_sci.name,
   }
 }

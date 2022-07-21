@@ -21,27 +21,27 @@ output "tags" {
 
 output "azure_development_sub" {
   description = "Databricks Development worker"
-  value = "36f75872-9ace-4c20-911c-aea8eba2945c"
+  value       = "36f75872-9ace-4c20-911c-aea8eba2945c"
 }
 
 output "azure_staging_sub" {
   description = "Databricks Staging worker"
-  value = "596df088-441c-4a6f-881e-5511128a3f1c"
+  value       = "596df088-441c-4a6f-881e-5511128a3f1c"
 }
 
 output "azure_production_sub" {
   description = "Databricks Production worker"
-  value = "2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2"
+  value       = "2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2"
 }
 
 output "azure_tenant_id" {
   description = "Test Customer Directory"
-  value = "e3fe3f22-4b98-4c04-82cc-d8817d1b17da"
+  value       = "e3fe3f22-4b98-4c04-82cc-d8817d1b17da"
 }
 
 output "azure_prod_account_id" {
   description = "Unity Catalog Account ID for Azure Prod"
-  value = "5a8ac58d-9557-497a-8832-90bd35e641bf"
+  value       = "5a8ac58d-9557-497a-8832-90bd35e641bf"
 }
 
 output "azure_prod_account_console" {
@@ -50,7 +50,7 @@ output "azure_prod_account_console" {
 
 output "azure_staging_account_id" {
   description = "Unity Catalog Account ID for Azure Staging"
-  value = "02945107-4221-4317-9276-5e0e9ed7f194"
+  value       = "02945107-4221-4317-9276-5e0e9ed7f194"
 }
 
 output "azure_staging_account_console" {
@@ -79,7 +79,7 @@ output "google_staging_account" {
 
 output "aws_prod_account_id" {
   description = "Databricks AWS Production"
-  value = 414351767826
+  value       = 414351767826
 }
 
 output "aws_prod_account_console" {
@@ -88,17 +88,17 @@ output "aws_prod_account_console" {
 
 output "aws_staging_account_id" {
   description = "Databricks AWS Staging"
-  value = 548125073166
+  value       = 548125073166
 }
 
 output "aws_prod_databricks_account_id" {
   description = "https://accounts.cloud.databricks.com/"
-  value = "4d9d3bc8-66c3-4e5a-8a0a-551f564257f0"
+  value       = "4d9d3bc8-66c3-4e5a-8a0a-551f564257f0"
 }
 
 output "aws_staging_databricks_account_id" {
   description = "https://accounts.staging.cloud.databricks.com/"
-  value = "ed0ca3c5-fae5-4619-bb38-eebe04a4af4b"
+  value       = "ed0ca3c5-fae5-4619-bb38-eebe04a4af4b"
 }
 
 output "aws_region" {

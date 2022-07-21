@@ -46,10 +46,10 @@ resource "azurerm_key_vault" "this" {
     // as this thing has to be settable on github actions in automation
     for_each = toset(data.azuread_users.admins.object_ids)
     content {
-      object_id          = access_policy.value
-      tenant_id          = module.defaults.azure_tenant_id
-      secret_permissions = ["Set", "Get", "List", "Delete", 
-        "Purge", "Recover", "Restore"]
+      object_id = access_policy.value
+      tenant_id = module.defaults.azure_tenant_id
+      secret_permissions = ["Set", "Get", "List", "Delete",
+      "Purge", "Recover", "Restore"]
     }
   }
 }
@@ -64,7 +64,7 @@ resource "azurerm_key_vault_secret" "this" {
   timeouts {
     create = "1m"
     update = "1m"
-    read = "1m"
+    read   = "1m"
     delete = "2m"
   }
 }

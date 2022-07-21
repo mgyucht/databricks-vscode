@@ -22,6 +22,6 @@ locals {
 }
 
 provider "databricks" {
-  host = local.can_of_worms["deco-github-azure-stg:DATABRICKS-HOST"]
+  host  = local.can_of_worms["deco-github-azure-stg:DATABRICKS-HOST"]
   token = local.can_of_worms["deco-github-azure-stg:DATABRICKS-TOKEN"]
 }

@@ -33,13 +33,13 @@ module "uc_staging_role" {
 resource "local_file" "iam_roles_json" {
   filename = "${path.module}/iam-roles.json"
   content = jsonencode({
-    "prod": {
-      "cross-account": module.workspace_prod_role.arn,
-      "unity-catalog": module.uc_prod_role.arn,
+    "prod" : {
+      "cross-account" : module.workspace_prod_role.arn,
+      "unity-catalog" : module.uc_prod_role.arn,
     },
-    "staging": {
-      "cross-account": module.workspace_staging_role.arn,
-      "unity-catalog": module.uc_staging_role.arn,
+    "staging" : {
+      "cross-account" : module.workspace_staging_role.arn,
+      "unity-catalog" : module.uc_staging_role.arn,
     }
   })
 }

@@ -8,7 +8,7 @@ resource "databricks_group" "this" {
 }
 
 resource "databricks_service_principal" "this" {
-  display_name = "eng-dev-ecosystem-spn-${var.name}"
+  display_name   = "eng-dev-ecosystem-spn-${var.name}"
   application_id = var.azure_application_id
 }
 
@@ -19,9 +19,9 @@ resource "databricks_group_member" "this" {
 
 output "result" {
   value = {
-    group_id = databricks_group.this.id
-    name = databricks_group.this.display_name
-    application_id = databricks_service_principal.this.application_id
+    group_id             = databricks_group.this.id
+    name                 = databricks_group.this.display_name
+    application_id       = databricks_service_principal.this.application_id
     service_principal_id = databricks_service_principal.this.id
   }
 }

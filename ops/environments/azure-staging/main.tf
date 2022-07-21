@@ -1,8 +1,8 @@
 module "workspace" {
-  source      = "../../modules/azure-databricks-workspace"
+  source                  = "../../modules/azure-databricks-workspace"
   azure_databricks_app_id = "4a67d088-db5c-48f1-9ff2-0aace800ae68"
-  location    = "eastus2"
-  environment = "staging"
+  location                = "eastus2"
+  environment             = "staging"
 }
 
 module "fixtures" {

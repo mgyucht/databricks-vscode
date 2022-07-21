@@ -7,7 +7,7 @@ variable "tags" {
 }
 
 resource "aws_s3_bucket" "this" {
-  bucket = var.name
+  bucket        = var.name
   force_destroy = true
   tags = merge(var.tags, {
     Name = var.name
