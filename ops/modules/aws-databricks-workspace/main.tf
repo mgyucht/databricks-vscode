@@ -1,7 +1,4 @@
-variable "databricks_account_username" {}
-variable "databricks_account_password" {}
 variable "databricks_account_id" {}
-variable "databricks_host" {}
 variable "managed_services_cmk_arn" {}
 variable "managed_services_cmk_alias" {}
 variable "storage_cmk_arn" {}
@@ -13,12 +10,6 @@ variable "subnet_ids" {}
 variable "region" {}
 variable "vpc_id" {}
 variable "prefix" {}
-
-provider "databricks" {
-  host     = var.databricks_host
-  username = var.databricks_account_username
-  password = var.databricks_account_password
-}
 
 resource "databricks_mws_credentials" "this" {
   account_id       = var.databricks_account_id
@@ -72,6 +63,10 @@ resource "databricks_mws_workspaces" "this" {
   token {
     comment = "Terraform"
   }
+}
+
+output "workspace_id" {
+  value = databricks_mws_workspaces.this.workspace_id
 }
 
 output "databricks_host" {

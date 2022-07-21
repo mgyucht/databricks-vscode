@@ -67,12 +67,21 @@ data "azurerm_key_vault_secret" "password" {
   key_vault_id = data.azurerm_key_vault.aws_prod_acct.id
 }
 
+provider "databricks" {
+  alias = "account"
+  host = "https://accounts.cloud.databricks.com/"
+  username = data.azurerm_key_vault_secret.username.value
+  password = data.azurerm_key_vault_secret.password.value
+  account_id = module.defaults.aws_prod_databricks_account_id
+}
+
 module "workspace" {
   source = "../../modules/aws-databricks-workspace"
-  databricks_host = "https://accounts.cloud.databricks.com/"
+  providers = {
+    databricks = databricks.account
+  }
+  
   prefix = "deco-prod-aws-${module.defaults.aws_region}"
-  databricks_account_username = data.azurerm_key_vault_secret.username.value
-  databricks_account_password = data.azurerm_key_vault_secret.password.value
   databricks_account_id = module.defaults.aws_prod_databricks_account_id
   cross_account_role_arn = local.prod_crossaccount_arn
   security_group_ids = module.fixtures.security_group_ids
@@ -87,6 +96,13 @@ module "workspace" {
   managed_services_cmk_alias = module.fixtures.managed_services_cmk_alias
   storage_cmk_arn = module.fixtures.storage_cmk_arn
   storage_cmk_alias = module.fixtures.storage_cmk_alias
+}
+
+module "account" {
+  source = "../../modules/databricks-account"
+  providers = {
+    databricks = databricks.account
+  }
 }
 
 module "secrets" {

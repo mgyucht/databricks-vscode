@@ -61,6 +61,12 @@ resource "azurerm_key_vault_secret" "this" {
   key_vault_id = azurerm_key_vault.this.id
   content_type = "GITHUB_ACTIONS_SECRET"
   tags         = {}
+  timeouts {
+    create = "1m"
+    update = "1m"
+    read = "1m"
+    delete = "2m"
+  }
 }
 
 output "vault_id" {

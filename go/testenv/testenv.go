@@ -2,6 +2,7 @@ package testenv
 
 import (
 	"context"
+	"deco/fileset"
 	"deco/folders"
 	"deco/terraform"
 	"fmt"
@@ -13,6 +14,33 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/keyvault/azsecrets"
 	"github.com/databricks/terraform-provider-databricks/common"
 )
+
+func Available() []string {
+	projectRoot, err := folders.FindDirWithLeaf(".git")
+	if err != nil {
+		log.Printf("[ERROR] no git: %s", err)
+		return nil
+	}
+	prefix := fmt.Sprintf("%s/ops/environments", projectRoot)
+	dirs, err := fileset.ReadDir(prefix)
+	if err != nil {
+		log.Printf("[ERROR] no dir %s", err)
+		return nil
+	}
+	envs := []string{}
+	special := map[string]bool{
+		"meta":    true,
+		"wiki":    true,
+		"aws-iam": true,
+	}
+	for _, v := range dirs {
+		if special[v.Name()] {
+			continue
+		}
+		envs = append(envs, v.Name())
+	}
+	return envs
+}
 
 // TODO: HAS ENVIRONMENT SIDE EFFECTS! Will be fixed with Go SDK
 func NewClientFor(ctx context.Context, env string) (*common.DatabricksClient, error) {

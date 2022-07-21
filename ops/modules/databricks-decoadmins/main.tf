@@ -6,10 +6,6 @@ data "databricks_group" "admins" {
   display_name = "admins"
 }
 
-data "databricks_group" "users" {
-  display_name = "users"
-}
-
 resource "databricks_user" "admin" {
   for_each  = toset(module.defaults.admins)
   user_name = each.key

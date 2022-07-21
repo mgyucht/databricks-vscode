@@ -57,7 +57,7 @@ func (fi File) Raw() ([]byte, error) {
 }
 
 func RecursiveChildren(dir string) (found FileSet, err error) {
-	queue, err := readDir(dir)
+	queue, err := ReadDir(dir)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func RecursiveChildren(dir string) (found FileSet, err error) {
 		if current.Name() == "scripts" {
 			continue
 		}
-		children, err := readDir(current.Absolute)
+		children, err := ReadDir(current.Absolute)
 		if err != nil {
 			return nil, err
 		}
@@ -83,7 +83,7 @@ func RecursiveChildren(dir string) (found FileSet, err error) {
 	return found, nil
 }
 
-func readDir(dir string) (queue []File, err error) {
+func ReadDir(dir string) (queue []File, err error) {
 	f, err := os.Open(dir)
 	if err != nil {
 		return
