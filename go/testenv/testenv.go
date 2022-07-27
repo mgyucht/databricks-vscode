@@ -75,6 +75,11 @@ func EnvVars(ctx context.Context, env string) (map[string]string, error) {
 	vault := azsecrets.NewClient(*vaultURI, credential, nil)
 	pager := vault.NewListSecretsPager(nil)
 	vars := map[string]string{}
+	// implicit CLOUD_ENV var
+	split := strings.Split(env, "-")
+	if len(split) > 1 {
+		vars["CLOUD_ENV"] = split[0]
+	}
 	for pager.More() {
 		page, err := pager.NextPage(ctx)
 		if err != nil {
@@ -82,9 +87,6 @@ func EnvVars(ctx context.Context, env string) (map[string]string, error) {
 		}
 		for _, secret := range page.Value {
 			name := secret.ID.Name()
-			if !strings.HasPrefix(name, "DATABRICKS-") {
-				continue
-			}
 			sv, err := vault.GetSecret(ctx, name, secret.ID.Version(), nil)
 			if err != nil {
 				return nil, fmt.Errorf("get secret %s: %w", name, err)

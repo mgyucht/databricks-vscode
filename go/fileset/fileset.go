@@ -12,7 +12,7 @@ import (
 
 type FileSet []File
 
-func (fi FileSet) Exists(pathRegex, needleRegex string) bool {
+func (fi FileSet) FirstMatch(pathRegex, needleRegex string) *File {
 	path := regexp.MustCompile(pathRegex)
 	needle := regexp.MustCompile(needleRegex)
 	for _, v := range fi {
@@ -20,10 +20,15 @@ func (fi FileSet) Exists(pathRegex, needleRegex string) bool {
 			continue
 		}
 		if v.Match(needle) {
-			return true
+			return &v
 		}
 	}
-	return false
+	return nil
+}
+
+func (fi FileSet) Exists(pathRegex, needleRegex string) bool {
+	m := fi.FirstMatch(pathRegex, needleRegex)
+	return m != nil
 }
 
 type File struct {
@@ -33,6 +38,10 @@ type File struct {
 
 func (fi File) Ext(suffix string) bool {
 	return strings.HasSuffix(fi.Name(), suffix)
+}
+
+func (fi File) Dir() string {
+	return path.Dir(fi.Absolute)
 }
 
 func (fi File) MustMatch(needle string) bool {
