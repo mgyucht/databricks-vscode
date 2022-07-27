@@ -67,6 +67,15 @@ resource "azurerm_storage_blob" "example" {
 
 data "azurerm_client_config" "current" {}
 
+module "defaults" {
+  source = "../defaults"
+}
+
+data "azuread_users" "admins" {
+  user_principal_names = [for u in module.defaults.admins :
+  "${replace(u, "@", "_")}#EXT#@dbtestcustomer.onmicrosoft.com"]
+}
+
 resource "azurerm_key_vault" "this" {
   name                     = "${var.prefix}-kv"
   resource_group_name      = data.azurerm_resource_group.this.name
@@ -75,6 +84,18 @@ resource "azurerm_key_vault" "this" {
   tenant_id                = data.azurerm_client_config.current.tenant_id
   purge_protection_enabled = false
   sku_name                 = "standard"
+
+  dynamic "access_policy" {
+    // we may want to add the SPN client_id from current caller identity
+    // as this thing has to be settable on github actions in automation
+    for_each = toset(data.azuread_users.admins.object_ids)
+    content {
+      object_id = access_policy.value
+      tenant_id = module.defaults.azure_tenant_id
+      secret_permissions = ["Set", "Get", "List", "Delete",
+      "Purge", "Recover", "Restore"]
+    }
+  }
 }
 
 output "key_vault_id" {
