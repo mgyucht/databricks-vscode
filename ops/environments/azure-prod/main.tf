@@ -22,10 +22,6 @@ module "spn" {
 
 provider "databricks" {
   host = module.workspace.workspace_url
-  azure_workspace_resource_id = module.workspace.resource_id
-  azure_tenant_id = module.defaults.azure_tenant_id
-  azure_client_id = module.spn.client_id
-  azure_client_secret = module.spn.client_secret
 }
 
 
@@ -46,7 +42,7 @@ module "secrets" {
   environment = "azure-prod"
   secrets = merge(module.fixtures.test_env, {
     "TEST_PERSONAL_ACCESS_TOKEN" : databricks_token.pat.token_value
-    "TEST_DEFAULT_CLUSTER_NAME" : module.defaults.cluster_names.default_cluster_name
+    "TEST_DEFAULT_CLUSTER_ID" : module.clusters.default_cluster_id
     "DATABRICKS_HOST" : module.workspace.workspace_url,
     "DATABRICKS_AZURE_RESOURCE_ID" : module.workspace.resource_id,
     "ARM_TENANT_ID" : module.defaults.azure_tenant_id,

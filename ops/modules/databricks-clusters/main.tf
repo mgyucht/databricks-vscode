@@ -16,3 +16,7 @@ resource "databricks_cluster" "default_test_cluster" {
     max_workers = 50
   }
 }
+
+output "default_cluster_id" {
+  value = databricks_cluster.default_test_cluster.id
+}
