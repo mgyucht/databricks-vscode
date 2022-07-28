@@ -5,23 +5,16 @@ import (
 	"deco/fileset"
 	"deco/folders"
 	"deco/testenv"
+	"fmt"
 	"io"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
 
-	// "deco/testenv"
-	"fmt"
-
+	"github.com/nxadm/tail"
 	"github.com/spf13/cobra"
 )
-
-func transfer(dst io.WriteCloser, src io.ReadCloser) {
-	defer dst.Close()
-	defer src.Close()
-	io.Copy(dst, src)
-}
 
 var testCmd = &cobra.Command{
 	Use:   "test",
@@ -43,11 +36,9 @@ var testCmd = &cobra.Command{
 			return fmt.Errorf("test %s not found", single)
 		}
 		log.Printf("[INFO] found test in %s", found.Dir())
-
 		reader, writer := io.Pipe()
 		defer reader.Close()
 		defer writer.Close()
-
 		// go test . -run '^TestResourceClusterRead$' -v
 		c := exec.Command("go", "test", ".", "-v", "-run",
 			fmt.Sprintf("^%s$", single))
@@ -69,13 +60,32 @@ var testCmd = &cobra.Command{
 			}
 			log.Printf("[INFO][ENV] %s=%s", k, v)
 		}
-
+		// create temp file to forward logs produced by subprocess of subprocess
+		tfsdkLog, err := os.CreateTemp("/tmp", fmt.Sprintf("debug-%s-*.log", single))
+		if err != nil {
+			return err
+		}
+		defer tfsdkLog.Close()
+		defer os.Remove(tfsdkLog.Name())
+		logfile := tfsdkLog.Name()
+		tailer, err := tail.TailFile(logfile, tail.Config{Follow: true})
+		if err != nil {
+			return err
+		}
+		go io.CopyBuffer(os.Stdout, reader, make([]byte, 128))
+		go func() {
+			for line := range tailer.Lines {
+				writer.Write([]byte(line.Text + "\n"))
+			}
+		}()
+		// Terraform debug logging is a bit involved.
+		// See https://www.terraform.io/plugin/log/managing
+		c.Env = append(c.Env, "TF_LOG=DEBUG")
+		c.Env = append(c.Env, "TF_LOG_SDK=INFO")
+		c.Env = append(c.Env, fmt.Sprintf("TF_LOG_PATH=%s", logfile))
 		c.Dir = found.Dir()
 		c.Stdout = writer
 		c.Stderr = writer
-
-		go transfer(os.Stdout, reader)
-
 		return c.Run()
 	},
 }
