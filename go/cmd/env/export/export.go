@@ -14,7 +14,7 @@ var exportCmd = &cobra.Command{
 	Short: "Exporting environment configuration for `export $(..)`",
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		root.NoLogs()
-		vars, err := testenv.EnvVars(cmd.Context(), env.Name)
+		vars, err := testenv.EnvVars(cmd.Context(), env.GetName())
 		if err != nil {
 			return err
 		}

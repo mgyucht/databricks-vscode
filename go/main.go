@@ -12,6 +12,7 @@ import (
 	_ "deco/cmd/gh/releasenotes"
 	_ "deco/cmd/gh/updateprs"
 	"deco/cmd/root"
+	_ "deco/cmd/version"
 )
 
 func main() {
