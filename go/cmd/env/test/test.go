@@ -80,6 +80,8 @@ var testCmd = &cobra.Command{
 		// https://github.com/marketplace/actions/upload-a-build-artifact
 		// upload artifact apis are a bit involved at the moment...
 		// but perhaps we can really make it work...
+		//   const artifactUrl = `${env.ACTIONS_RUNTIME_URL}_apis/pipelines/workflows/${env.GITHUB_RUN_ID}/artifacts?api-version=6.0-preview`
+
 		return report.WriteReport(Repo, fmt.Sprintf("%s/dist/test-report.json", projectRoot))
 	},
 }

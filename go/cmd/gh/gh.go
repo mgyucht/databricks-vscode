@@ -53,13 +53,16 @@ func (c ghCliToken) Token() (*oauth2.Token, error) {
 }
 
 func Client(ctx context.Context) *github.Client {
+	// TODO: read GITHUB_TOKEN env to check if in GH actions
 	ts := ghCliToken("~/.config/gh/hosts.yml")
 	return github.NewClient(oauth2.NewClient(ctx, ts))
 }
+
+var Org = "databricks"
 
 var Repo string
 
 func init() {
 	root.RootCmd.AddCommand(GhCmd)
-	GhCmd.PersistentFlags().StringVarP(&Repo, "repo", "r", "", "Repository name")
+	GhCmd.PersistentFlags().StringVarP(&Repo, "repo", "r", "terraform-provider-databricks", "Repository name")
 }
