@@ -20,7 +20,6 @@ data "terraform_remote_state" "meta" {
 locals {
   can_of_worms = data.terraform_remote_state.meta.outputs.secrets
 }
-
 provider "databricks" {
   host                = local.can_of_worms["deco-github-azure-prod:DATABRICKS-HOST"]
   azure_client_id     = local.can_of_worms["deco-github-azure-prod:ARM-CLIENT-ID"]

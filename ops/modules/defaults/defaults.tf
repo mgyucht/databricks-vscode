@@ -104,3 +104,9 @@ output "aws_staging_databricks_account_id" {
 output "aws_region" {
   value = "us-west-2"
 }
+
+output "cluster_names" {
+  value = {
+    default_cluster_name = "Default Cluster Name"
+  }
+}
