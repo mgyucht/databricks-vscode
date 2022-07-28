@@ -42,6 +42,7 @@ resource "azurerm_databricks_workspace" "this" {
   public_network_access_enabled = true
   tags                          = azurerm_resource_group.this.tags
 }
+
 output "resource_id" {
   value = azurerm_databricks_workspace.this.id
 }
