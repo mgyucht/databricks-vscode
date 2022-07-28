@@ -1,3 +1,12 @@
+
+terraform {
+  required_providers {
+    databricks = {
+      source = "databricks/databricks"
+    }
+  }
+}
+
 module "defaults" {
   source = "../../modules/defaults"
 }
