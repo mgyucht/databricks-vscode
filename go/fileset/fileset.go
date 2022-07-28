@@ -34,6 +34,7 @@ func (fi FileSet) Exists(pathRegex, needleRegex string) bool {
 type File struct {
 	fs.DirEntry
 	Absolute string
+	Relative string
 }
 
 func (fi File) Ext(suffix string) bool {
@@ -74,6 +75,7 @@ func RecursiveChildren(dir string) (found FileSet, err error) {
 		current := queue[0]
 		queue = queue[1:]
 		if !current.IsDir() {
+			current.Relative = strings.ReplaceAll(current.Absolute, dir+"/", "")
 			found = append(found, current)
 			continue
 		}
@@ -104,7 +106,7 @@ func ReadDir(dir string) (queue []File, err error) {
 	}
 	for _, v := range dirs {
 		absolute := path.Join(dir, v.Name())
-		queue = append(queue, File{v, absolute})
+		queue = append(queue, File{v, absolute, ""})
 	}
 	return
 }

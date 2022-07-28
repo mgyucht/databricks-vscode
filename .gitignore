@@ -4,3 +4,4 @@ target
 ext/*
 .DS_Store
 go/dist
+dist
