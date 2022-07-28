@@ -127,14 +127,36 @@ module "metastore" {
   data_sci_group            = module.account.data_sci.name
 }
 
-module "secrets" {
+// TODO: merge with aws-acct-prod
+// TODO: test env: first look through available envs, 
+// then look at all key vaults in there, that have a special suffix
+// otherwise we're limited with one key-vault per "environment"
+// and it's not great.
+
+module "acct_secrets" {
   source      = "../../modules/github-secrets"
   environment = "aws-uc-prod"
   secrets = {
-    "CLOUD_ENV" : "aws",
+    "CLOUD_ENV" : "unity-catalog-account",
+    "DATABRICKS_HOST" :    module.defaults.aws_prod_account_console,
+    "DATABRICKS_ACCOUNT_ID": module.defaults.aws_prod_databricks_account_id,
+    "DATABRICKS_USERNAME" : data.azurerm_key_vault_secret.username.value,
+    "DATABRICKS_PASSWORD" : data.azurerm_key_vault_secret.password.value,
+    "TEST_UC_WORKSPACE_ID": databricks_mws_workspaces.this.workspace_id,
+    "TEST_DATA_ENG_GROUP" : module.account.data_eng.name,
+    "TEST_DATA_SCI_GROUP" : module.account.data_sci.name,
+  }
+}
+
+module "secrets" {
+  source      = "../../modules/github-secrets"
+  environment = "aws-uc-ws-prod"
+  secrets = {
+    "CLOUD_ENV" : "unity-catalog-workspace",
     "DATABRICKS_HOST" : databricks_mws_workspaces.this.workspace_url,
     "DATABRICKS_USERNAME" : data.azurerm_key_vault_secret.username.value,
     "DATABRICKS_PASSWORD" : data.azurerm_key_vault_secret.password.value,
+    "TEST_UC_WORKSPACE_ID": databricks_mws_workspaces.this.workspace_id,
     "TEST_DATA_ENG_GROUP" : module.account.data_eng.name,
     "TEST_DATA_SCI_GROUP" : module.account.data_sci.name,
   }
