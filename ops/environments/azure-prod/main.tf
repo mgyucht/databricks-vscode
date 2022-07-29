@@ -41,8 +41,8 @@ module "secrets" {
   source      = "../../modules/github-secrets"
   environment = "azure-prod"
   secrets = merge(module.fixtures.test_env, {
-    "TEST_PERSONAL_ACCESS_TOKEN" : databricks_token.pat.token_value
     "TEST_DEFAULT_CLUSTER_ID" : module.clusters.default_cluster_id
+    "DATABRICKS_TOKEN" : databricks_token.pat.token_value
     "DATABRICKS_HOST" : module.workspace.workspace_url,
     "DATABRICKS_AZURE_RESOURCE_ID" : module.workspace.resource_id,
     "ARM_TENANT_ID" : module.defaults.azure_tenant_id,
