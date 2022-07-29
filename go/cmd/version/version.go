@@ -37,9 +37,8 @@ var versionCmd = &cobra.Command{
 		}
 		releases, err := m.LatestReleases()
 		if err != nil {
-			log.Fatalf("error fetching releases: %s", err)
+			return err
 		}
-
 		if len(releases) == 0 {
 			log.Printf("[INFO] no updates")
 			return nil
