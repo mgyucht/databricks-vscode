@@ -4,13 +4,13 @@ import os, sys
 from ghapi.all import GhApi
 
 pull_request_number = sys.argv[1]
-print(f'INFO: Looking for PR#{pull_request_number}')
+repo = sys.argv[2] if len(sys.argv) == 3 else "terraform-provider-databricks"
+print(f'INFO: Looking for PR#{pull_request_number} in repo {repo}')
 
 OWNER = 'databricks'
-REPO = 'terraform-provider-databricks'
 
 try:
-    gh = GhApi(owner=OWNER, repo=REPO)
+    gh = GhApi(owner=OWNER, repo=repo)
     pr = gh.pulls.get(pull_request_number)
     
     ref = pr['head']['ref']

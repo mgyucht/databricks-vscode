@@ -1,0 +1,72 @@
+name: vscode-pr-manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      pull_request_number:
+        description: 'Pull Request Number'
+        required: true
+        type: number
+
+      environment:
+        description: 'Environment to run tests against'
+        type: environment
+        required: true
+
+      yarn_workspace: 
+        description: 'Workspace in which to run integration tests'
+        type: choice
+        options:  
+          - '@databricks/databricks-sdk'
+          - 'databricks'
+          - 'databricks-vscode'
+
+      test_grep:
+        description: 'Run tests matching `grep test_grep`'
+        type: string
+        required: false
+        default: ""
+
+jobs:
+  integration-test:
+    name: "Integration test"
+    strategy: 
+      matrix:
+          environment: [azure-prod-pat]
+          os: [macos-latest]
+          node-version: [16.x]
+          vscode-version: [stable, insiders]
+
+    runs-on: ${{ matrix.os }}
+
+    environment: ${{ matrix.environment }}
+    env: 
+      VSCODE_TEST_VERSION: ${{ matrix.vscode-version }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Unshallow
+        run: git fetch --prune --unshallow
+
+      - name: Expand actions environment secrets to variables
+        run: python3 scripts/tfit-env.py ${{ matrix.environment }} '${{ toJson(secrets) }}' >> $GITHUB_ENV
+
+      - run: cd ext && git clone https://${{ secrets.DECO_GITHUB_TOKEN }}:x-oauth-basic@github.com/databricks/databricks-vscode
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+            node-version: ${{ matrix.node-version }}
+            cache: "yarn"
+            cache-dependency-path: "ext/databricks-vscode/package.json"
+
+      - run: yarn install --immutable
+        working-directory: ext/databricks-vscode
+      
+      - name: Building packages
+        run: yarn run build
+        working-directory: ext/databricks-vscode
+
+      - name: Integration Tests
+        run: yarn workspace ${{ inputs.yarn_workspace }} run test:integ -g ${{ inputs.test_grep }}
+        working-directory: ext/databricks-vscode

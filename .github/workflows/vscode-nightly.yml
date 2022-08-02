@@ -1,0 +1,107 @@
+name: vscode-nightly
+
+on:
+  workflow_dispatch:
+    # manual workflow testing
+    # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
+  schedule:
+    - cron: '0 6 * * *'
+
+jobs:
+  js-sdk-integration-test:
+    name: "JS SDK Integration test"
+    strategy: 
+      matrix:
+          environment: [azure-prod-pat]
+          os: [macos-latest]
+          node-version: [16.x]
+          vscode-version: [stable, insiders]
+
+    runs-on: ${{ matrix.os }}
+
+    environment: ${{ matrix.environment }}
+    env: 
+      VSCODE_TEST_VERSION: ${{ matrix.vscode-version }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Unshallow
+        run: git fetch --prune --unshallow
+
+      - name: Expand actions environment secrets to variables
+        run: python3 scripts/tfit-env.py ${{ matrix.environment }} '${{ toJson(secrets) }}' >> $GITHUB_ENV
+
+      - run: cd ext && git clone https://${{ secrets.DECO_GITHUB_TOKEN }}:x-oauth-basic@github.com/databricks/databricks-vscode
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+            node-version: ${{ matrix.node-version }}
+            cache: "yarn"
+            cache-dependency-path: "ext/databricks-vscode/package.json"
+
+      - run: yarn install --immutable
+        working-directory: ext/databricks-vscode
+      
+      - name: Building packages
+        run: yarn run build
+        working-directory: ext/databricks-vscode
+
+      - name: Integration Tests
+        run: yarn workspace @databricks/databricks-sdk run test:integ
+        working-directory: ext/databricks-vscode
+            
+
+  extension-integration-test:
+    name: "Extension Integration test"
+    needs: [js-sdk-integration-test]
+    strategy: 
+      matrix:
+          environment: [azure-prod-pat]
+          os: [macos-latest]
+          node-version: [16.x]
+          vscode-version: [stable, insiders]
+
+    runs-on: ${{ matrix.os }}
+
+    environment: ${{ matrix.environment }}
+    env: 
+      VSCODE_TEST_VERSION: ${{ matrix.vscode-version }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Unshallow
+        run: git fetch --prune --unshallow
+
+      - name: Expand actions environment secrets to variables
+        run: python3 scripts/tfit-env.py ${{ matrix.environment }} '${{ toJson(secrets) }}' >> $GITHUB_ENV
+
+      - run: cd ext && git clone https://${{ secrets.DECO_GITHUB_TOKEN }}:x-oauth-basic@github.com/databricks/databricks-vscode
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+            node-version: ${{ matrix.node-version }}
+            cache: "yarn"
+            cache-dependency-path: "ext/databricks-vscode/package.json"
+
+      - run: yarn install --immutable
+        working-directory: ext/databricks-vscode
+      
+      - name: Building packages
+        run: yarn run build
+        working-directory: ext/databricks-vscode
+
+      - name: Integration Tests
+        uses: nick-fields/retry@v2
+        with:
+            max_attempts: 3
+            retry_wait_seconds: 2
+            timeout_minutes: 2
+            retry_on: error
+            command: |
+                cd ext/databricks-vscode/packages/databricks-vscode
+                yarn run test:integ:prepare
+                yarn run test:integ:run
+            
+
