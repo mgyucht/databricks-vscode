@@ -21,9 +21,17 @@ func GetName() string {
 	}
 	envs := []prompt.Answer{}
 	for _, v := range testenv.Available() {
-		envs = append(envs, prompt.Answer{v, "", nil})
+		envs = append(envs, prompt.Answer{
+			Value:    v.Name,
+			Details:  v.SourceDir,
+			Callback: nil,
+		})
 	}
-	_, res, _ := prompt.Choice{"env", "Environment", envs}.Ask(prompt.Results{})
+	_, res, _ := prompt.Choice{
+		Key:     "env",
+		Label:   "Environment",
+		Answers: envs,
+	}.Ask(prompt.Results{})
 	return res.Value
 }
 

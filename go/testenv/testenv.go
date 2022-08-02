@@ -5,6 +5,7 @@ import (
 	"deco/fileset"
 	"deco/folders"
 	"deco/terraform"
+	"deco/terraform/tf"
 	"fmt"
 	"log"
 	"os"
@@ -15,50 +16,81 @@ import (
 	"github.com/databricks/terraform-provider-databricks/common"
 )
 
-func Available() []string {
+type Env struct {
+	Name      string
+	SourceDir string
+}
+
+func Available() []Env {
 	projectRoot, err := folders.FindDirWithLeaf(".git")
 	if err != nil {
 		log.Printf("[ERROR] no git: %s", err)
 		return nil
 	}
 	prefix := fmt.Sprintf("%s/ops/environments", projectRoot)
-	dirs, err := fileset.ReadDir(prefix)
+	dir, err := fileset.RecursiveChildren(prefix)
 	if err != nil {
 		log.Printf("[ERROR] no dir %s", err)
 		return nil
 	}
-	envs := []string{}
+	envs := []Env{}
 	special := map[string]bool{
 		"meta":    true,
 		"wiki":    true,
 		"aws-iam": true,
 	}
-	for _, v := range dirs {
-		if special[v.Name()] {
+	for _, file := range dir {
+		if !file.Ext(".tf") {
 			continue
 		}
-		envs = append(envs, v.Name())
+		tfFile, err := tf.NewFromFile(file)
+		if err != nil {
+			continue
+		}
+		tfFile.ForEach(func(block *tf.Block) error {
+			sourceAttr := block.MustStrAttr("source")
+			if !strings.HasSuffix(sourceAttr, "/github-secrets") {
+				return nil
+			}
+			name := block.MustStrAttr("environment")
+			if special[name] {
+				return nil
+			}
+			envs = append(envs, Env{
+				Name:      block.MustStrAttr("environment"),
+				SourceDir: tfFile.File.Dir(),
+			})
+			return nil
+		}, "module")
 	}
 	return envs
 }
 
-func EnvVars(ctx context.Context, env string) (map[string]string, error) {
-	projectRoot, err := folders.FindDirWithLeaf(".git")
-	if err != nil {
-		return nil, fmt.Errorf("cannot find git root: %w", err)
+func getEnv(envName string) (Env, error) {
+	for _, currentEnv := range Available() {
+		if currentEnv.Name == envName {
+			return currentEnv, nil
+		}
 	}
-	wd := fmt.Sprintf("%s/ops/environments/%s", projectRoot, env)
-	tf, err := terraform.NewTerraform(wd)
+	return Env{}, fmt.Errorf("no such environment found: %s", envName)
+}
+
+func EnvVars(ctx context.Context, envName string) (map[string]string, error) {
+	env, err := getEnv(envName)
 	if err != nil {
-		return nil, fmt.Errorf("terraform: %w", err)
+		return nil, err
 	}
-	log.Printf("[INFO] Getting terraform state for %s", wd)
+	tf, err := terraform.NewTerraform(env.SourceDir)
+	if err != nil {
+		return nil, fmt.Errorf("in directory (%s) terraform: %w", env.SourceDir, err)
+	}
+	log.Printf("[INFO] Getting terraform state for %s", env.SourceDir)
 	state, err := tf.Show(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("terraform state: %w", err)
+		return nil, fmt.Errorf("in directory (%s) terraform state: %w", env.SourceDir, err)
 	}
 	vaultURI, err := terraform.FindFirstResource(state, "azurerm_key_vault", func(r *terraform.Resource) *string {
-		if r.MustStr("name") != fmt.Sprintf("deco-gh-%s", env) {
+		if r.MustStr("name") != fmt.Sprintf("deco-gh-%s", env.Name) {
 			return nil
 		}
 		uri := r.MustStr("vault_uri")
@@ -76,7 +108,7 @@ func EnvVars(ctx context.Context, env string) (map[string]string, error) {
 	pager := vault.NewListSecretsPager(nil)
 	vars := map[string]string{}
 	// implicit CLOUD_ENV var
-	split := strings.Split(env, "-")
+	split := strings.Split(env.Name, "-")
 	if len(split) > 1 {
 		vars["CLOUD_ENV"] = split[0]
 	}

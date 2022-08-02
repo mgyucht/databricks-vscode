@@ -12,7 +12,7 @@ var listCmd = &cobra.Command{
 	Short: "Listing all environments",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		for _, v := range testenv.Available() {
-			println(v)
+			println(v.Name, v.SourceDir)
 		}
 		return nil
 	},
