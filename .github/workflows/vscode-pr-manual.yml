@@ -25,7 +25,6 @@ on:
         description: 'Run tests matching `grep test_grep`'
         type: string
         required: false
-        default: ""
 
 jobs:
   integration-test:
@@ -69,6 +68,12 @@ jobs:
         run: yarn run build
         working-directory: ext/databricks-vscode
 
-      - name: Integration Tests
+      - name: Selective Integration Tests
+        if: "${{ inputs.test_grep != ''}}"
         run: yarn workspace ${{ inputs.yarn_workspace }} run test:integ -g ${{ inputs.test_grep }}
+        working-directory: ext/databricks-vscode
+
+      - name: All Integration Tests
+        if: "${{ inputs.test_grep == ''}}"
+        run: yarn workspace ${{ inputs.yarn_workspace }} run test:integ
         working-directory: ext/databricks-vscode
