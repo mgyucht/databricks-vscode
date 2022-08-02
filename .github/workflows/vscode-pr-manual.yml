@@ -50,9 +50,12 @@ jobs:
 
       - name: Expand actions environment secrets to variables
         run: python3 scripts/tfit-env.py ${{ matrix.environment }} '${{ toJson(secrets) }}' >> $GITHUB_ENV
+      
+      - run: pip3 install ghapi
 
-      - run: cd ext && git clone https://${{ secrets.DECO_GITHUB_TOKEN }}:x-oauth-basic@github.com/databricks/databricks-vscode
-
+      - name: Checkout pull request origin
+        run: python3 scripts/checkout-pr.py ${{ inputs.pull_request_number }} databricks-vscode >> $GITHUB_STEP_SUMMARY
+      
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
