@@ -93,6 +93,7 @@ func (r GoTestRunner) RunOne(ctx context.Context, files fileset.FileSet, one str
 			writer.Write([]byte(line.Text + "\n"))
 		}
 	}()
+	
 	// Terraform debug logging is a bit involved.
 	// See https://www.terraform.io/plugin/log/managing
 	cmd.Env = append(cmd.Env, "TF_LOG=DEBUG")
