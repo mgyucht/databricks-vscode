@@ -2,6 +2,7 @@ package prompt
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/manifoldco/promptui"
 )
@@ -80,4 +81,21 @@ type Answer struct {
 
 func (a Answer) String() string {
 	return a.Value
+}
+
+func AskString(question string, answers []string) string {
+	i, _, _ := (&promptui.Select{
+		Label:             question,
+		Items:             answers,
+		StartInSearchMode: true,
+		Searcher: func(input string, idx int) bool {
+			return strings.Contains(strings.ToLower(answers[idx]),
+				strings.ToLower(input))
+		},
+		Templates: &promptui.SelectTemplates{
+			Label:    `{{ .Value }}`,
+			Selected: fmt.Sprintf(`{{ "%s" | faint }}: {{ .Value | bold }}`, question),
+		},
+	}).Run()
+	return answers[i]
 }

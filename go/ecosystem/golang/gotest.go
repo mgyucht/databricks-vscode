@@ -26,6 +26,14 @@ func (r GoTestRunner) Detect(files fileset.FileSet) bool {
 	return files.Exists(`go.mod`, `module .*\n`)
 }
 
+func (r GoTestRunner) ListAll(files fileset.FileSet) (all []string) {
+	found, _ := files.FindAll(`_test.go`, `func (TestAcc\w+)\(t`)
+	for _, v := range found {
+		all = append(all, v...)
+	}
+	return all
+}
+
 func (r GoTestRunner) RunOne(ctx context.Context, files fileset.FileSet, one string) error {
 	found := files.FirstMatch(`_test.go`, fmt.Sprintf(`func %s\(`, one))
 	if found == nil {
@@ -94,10 +102,10 @@ func (r GoTestRunner) RunOne(ctx context.Context, files fileset.FileSet, one str
 	return cmd.Run()
 }
 
-func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet, checkout string) (results reporting.TestReport, err error) {
+func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (results reporting.TestReport, err error) {
 	goMod := files.FirstMatch(`go.mod`, `module .*\n`)
 	if goMod == nil {
-		return nil, fmt.Errorf("%s has no module file", checkout)
+		return nil, fmt.Errorf("%s has no module file", files.Root())
 	}
 	raw, err := goMod.Raw()
 	if err != nil {
@@ -111,33 +119,32 @@ func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet, checkou
 	defer reader.Close()
 	defer writer.Close()
 
-	cmd := exec.Command("go", "test", "-json", "-short", "./...")
+	cmd := exec.Command("go", "test", "-json", "./...", "-run", "^TestAcc")
 	cmd.Stdout = writer
 	cmd.Stderr = writer
-	cmd.Dir = checkout
+	cmd.Dir = files.Root()
 
 	// retrieve environment variables for a specified test environment
 	// TODO: pull up
-	// vars, err := testenv.EnvVars(ctx, env.GetName())
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// // run test with current environment
-	// cmd.Env = os.Environ()
-
-	// // and variables from test environment
-	// for k, v := range vars {
-	// 	cmd.Env = append(cmd.Env, fmt.Sprintf(`%s=%s`, k, v))
-	// 	if strings.HasSuffix(k, "_TOKEN") ||
-	// 		strings.HasSuffix(k, "_CREDENTIALS") ||
-	// 		strings.HasSuffix(k, "_SAS") ||
-	// 		strings.HasSuffix(k, "_KEY") ||
-	// 		strings.HasSuffix(k, "_SECRET") {
-	// 		log.Printf("[DEBUG][ENV] %s=***", k)
-	// 		continue
-	// 	}
-	// 	log.Printf("[DEBUG][ENV] %s=%s", k, v)
-	// }
+	vars, err := testenv.EnvVars(ctx, env.GetName())
+	if err != nil {
+		return nil, err
+	}
+	// run test with current environment
+	cmd.Env = os.Environ()
+	// and variables from test environment
+	for k, v := range vars {
+		cmd.Env = append(cmd.Env, fmt.Sprintf(`%s=%s`, k, v))
+		if strings.HasSuffix(k, "_TOKEN") ||
+			strings.HasSuffix(k, "_CREDENTIALS") ||
+			strings.HasSuffix(k, "_SAS") ||
+			strings.HasSuffix(k, "_KEY") ||
+			strings.HasSuffix(k, "_SECRET") {
+			log.Printf("[DEBUG][ENV] %s=***", k)
+			continue
+		}
+		log.Printf("[DEBUG][ENV] %s=%s", k, v)
+	}
 	go func() {
 		output := map[string][]string{}
 		scanner := bufio.NewScanner(reader)

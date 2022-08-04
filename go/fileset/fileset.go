@@ -1,6 +1,7 @@
 package fileset
 
 import (
+	"fmt"
 	"io"
 	"io/fs"
 	"log"
@@ -11,6 +12,12 @@ import (
 )
 
 type FileSet []File
+
+func (fi FileSet) Root() string {
+	return strings.TrimSuffix(
+		strings.ReplaceAll(fi[0].Absolute, fi[0].Relative, ""),
+		"/")
+}
 
 func (fi FileSet) FirstMatch(pathRegex, needleRegex string) *File {
 	path := regexp.MustCompile(pathRegex)
@@ -24,6 +31,23 @@ func (fi FileSet) FirstMatch(pathRegex, needleRegex string) *File {
 		}
 	}
 	return nil
+}
+
+func (fi FileSet) FindAll(pathRegex, needleRegex string) (map[File][]string, error) {
+	path := regexp.MustCompile(pathRegex)
+	needle := regexp.MustCompile(needleRegex)
+	all := map[File][]string{}
+	for _, v := range fi {
+		if !path.MatchString(v.Absolute) {
+			continue
+		}
+		vall, err := v.FindAll(needle)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", v.Relative, err)
+		}
+		all[v] = vall
+	}
+	return all, nil
 }
 
 func (fi FileSet) Exists(pathRegex, needleRegex string) bool {
@@ -47,6 +71,18 @@ func (fi File) Dir() string {
 
 func (fi File) MustMatch(needle string) bool {
 	return fi.Match(regexp.MustCompile(needle))
+}
+
+func (fi File) FindAll(needle *regexp.Regexp) (all []string, err error) {
+	raw, err := fi.Raw()
+	if err != nil {
+		log.Printf("[ERROR] read %s: %s", fi.Absolute, err)
+		return nil, err
+	}
+	for _, v := range needle.FindAllStringSubmatch(string(raw), -1) {
+		all = append(all, v[1])
+	}
+	return all, nil
 }
 
 func (fi File) Match(needle *regexp.Regexp) bool {
