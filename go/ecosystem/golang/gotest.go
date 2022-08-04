@@ -124,8 +124,8 @@ func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (result
 	cmd.Stderr = writer
 	cmd.Dir = files.Root()
 
-	// retrieve environment variables for a specified test environment
 	// TODO: pull up
+	// retrieve environment variables for a specified test environment
 	vars, err := testenv.EnvVars(ctx, env.GetName())
 	if err != nil {
 		return nil, err
