@@ -14,7 +14,7 @@ var checkoutPr = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
 		client := gh.Client(ctx)
-		pr, _, err := client.PullRequests.Get(ctx, gh.Org, gh.Repo, Pr)
+		pr, _, err := client.PullRequests.Get(ctx, gh.Org, gh.Repo(), Pr)
 		if err != nil {
 			return err
 		}
@@ -22,7 +22,7 @@ var checkoutPr = &cobra.Command{
 		cloneUrl := pr.Head.Repo.GetCloneURL()
 		log.Printf("[INFO] Cloning PR#%d from %s", Pr, cloneUrl)
 		res, err := exec.CommandContext(ctx, "git", "clone", cloneUrl,
-			"--branch", ref, "ext/"+gh.Repo).Output()
+			"--branch", ref, "ext/"+gh.Repo()).Output()
 		if err != nil {
 			return err
 		}

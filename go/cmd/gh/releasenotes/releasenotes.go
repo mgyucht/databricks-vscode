@@ -2,6 +2,7 @@ package releasenotes
 
 import (
 	"deco/cmd/gh"
+	"deco/prompt"
 	"fmt"
 	"log"
 	"regexp"
@@ -18,7 +19,7 @@ var releaseNotes = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		ctx := cmd.Context()
 		client := gh.Client(ctx)
-		tags, _, err := client.Repositories.ListTags(ctx, gh.Org, gh.Repo,
+		tags, _, err := client.Repositories.ListTags(ctx, gh.Org, gh.Repo(),
 			&github.ListOptions{
 				Page:    0,
 				PerPage: 1,
@@ -27,8 +28,8 @@ var releaseNotes = &cobra.Command{
 			return err
 		}
 		lastRelease := tags[0]
-		cmp, _, err := client.Repositories.CompareCommits(ctx, gh.Org, gh.Repo,
-			lastRelease.GetName(), Head, nil)
+		cmp, _, err := client.Repositories.CompareCommits(ctx, gh.Org, gh.Repo(),
+			lastRelease.GetName(), Head(), nil)
 		if err != nil {
 			return err
 		}
@@ -37,7 +38,7 @@ var releaseNotes = &cobra.Command{
 		for _, commit := range cmp.Commits {
 			msg := strings.Split(commit.Commit.GetMessage(), "\n")[0]
 
-			prLink := fmt.Sprintf("[#$1](https://github.com/%s/%s/pull/$1)", gh.Org, gh.Repo)
+			prLink := fmt.Sprintf("[#$1](https://github.com/%s/%s/pull/$1)", gh.Org, gh.Repo())
 			msg = issueNre.ReplaceAllString(msg, prLink)
 
 			registryDsLink := "[databricks_$1](https://registry.terraform.io/" +
@@ -67,13 +68,21 @@ var releaseNotes = &cobra.Command{
 	},
 }
 
+func Head() string {
+	if head != "" {
+		return head
+	}
+	head = prompt.AskString("Head", []string{"master", "main"})
+	return head
+}
+
 var issueNre = regexp.MustCompile(`(?m)#(\d+)`)
 var dataSourceRe = regexp.MustCompile(`(?m)\x60databricks_(\w+)\x60 data `)
 var resourceRe = regexp.MustCompile(`(?m)\x60databricks_(\w+)\x60`)
 
-var Head string
+var head string
 
 func init() {
 	gh.GhCmd.AddCommand(releaseNotes)
-	releaseNotes.Flags().StringVar(&Head, "head", "master", "head commit ref")
+	releaseNotes.Flags().StringVar(&head, "head", "", "head commit ref")
 }

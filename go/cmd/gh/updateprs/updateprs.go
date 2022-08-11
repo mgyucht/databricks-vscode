@@ -15,7 +15,7 @@ var updatePrs = &cobra.Command{
 		ctx := cmd.Context()
 		client := gh.Client(ctx)
 
-		commits, _, err := client.Repositories.ListCommits(ctx, "databricks", gh.Repo,
+		commits, _, err := client.Repositories.ListCommits(ctx, gh.Org, gh.Repo(),
 			&github.CommitsListOptions{
 				SHA: "master",
 				ListOptions: github.ListOptions{
@@ -30,7 +30,7 @@ var updatePrs = &cobra.Command{
 		// todo: truncate string
 		log.Printf("[INFO] Last commit is `%s` (%s)", lastCommit.Commit.GetMessage(),
 			lastCommit.GetSHA())
-		prs, _, err := client.PullRequests.List(ctx, "databricks", gh.Repo, nil)
+		prs, _, err := client.PullRequests.List(ctx, gh.Org, gh.Repo(), nil)
 		if err != nil {
 			return err
 		}
@@ -40,7 +40,7 @@ var updatePrs = &cobra.Command{
 			}
 			log.Printf("[INFO] Updating #%d (%s) to %s", pr.GetNumber(), pr.GetTitle(),
 				lastCommit.GetSHA())
-			resp, _, err := client.PullRequests.UpdateBranch(ctx, "databricks", gh.Repo, pr.GetNumber(),
+			resp, _, err := client.PullRequests.UpdateBranch(ctx, gh.Org, gh.Repo(), pr.GetNumber(),
 				&github.PullRequestBranchUpdateOptions{
 					ExpectedHeadSHA: pr.Head.SHA,
 				})

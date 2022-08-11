@@ -3,6 +3,9 @@ package gh
 import (
 	"context"
 	"deco/cmd/root"
+	"deco/fileset"
+	"deco/folders"
+	"deco/prompt"
 	"fmt"
 	"io"
 	"os"
@@ -58,11 +61,31 @@ func Client(ctx context.Context) *github.Client {
 	return github.NewClient(oauth2.NewClient(ctx, ts))
 }
 
+func Repo() string {
+	if repo != "" {
+		return repo
+	}
+	projectRoot, err := folders.FindDirWithLeaf(".git")
+	if err != nil {
+		panic(fmt.Errorf("not in eng-dev-ecosystem checkout: %w", err))
+	}
+	repos := []string{}
+	dirs, err := fileset.ReadDir(fmt.Sprintf("%s/ext", projectRoot))
+	if err != nil {
+		panic(fmt.Errorf("reading eng-dev-ecosystem/ext: %w", err))
+	}
+	for _, v := range dirs {
+		repos = append(repos, v.Name())
+	}
+	repo = prompt.AskString("Repo", repos)
+	return repo
+}
+
 var Org = "databricks"
 
-var Repo string
+var repo string
 
 func init() {
 	root.RootCmd.AddCommand(GhCmd)
-	GhCmd.PersistentFlags().StringVarP(&Repo, "repo", "r", "terraform-provider-databricks", "Repository name")
+	GhCmd.PersistentFlags().StringVarP(&repo, "repo", "r", "", "Repository name")
 }
