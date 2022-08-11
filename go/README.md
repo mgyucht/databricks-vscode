@@ -4,10 +4,10 @@
 
 First install
 
-1. `brew install golang goreleaser`
-2. Make sure to have `ext/terraform-provider-databricks` symlink
-3. `goreleaser snapshot --rm-dist`
-4. Symlink `dist/deco_darwin_amd64_v1/deco` to any directory in your `$PATH`
+1. Make sure to have `ext/terraform-provider-databricks` symlink
+2. `brew install golang goreleaser`
+3. `cd go && goreleaser release --snapshot --rm-dist`
+4. `ln -s $PWD/dist/deco_darwin_amd64_v1/deco /usr/local/bin/deco`
 5. `deco completion zsh > /usr/local/share/zsh/site-functions/_deco` to enable tab-completion
 6. restart terminal for `zsh` to load new changes
 
