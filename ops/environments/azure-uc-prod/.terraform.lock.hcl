@@ -5,6 +5,7 @@ provider "registry.terraform.io/databricks/databricks" {
   version = "1.0.2"
   hashes = [
     "h1:0KOZtKdTeLLJ33lct+p0jUZ2lQQgz5frnqsBQ0WuCD0=",
+    "h1:QTR3owwbwdWARcJu3O8kPw/ThFPmAXGDPPV0V2ipGBM=",
     "zh:16ff11cd23d833a04de68f5af7a91c376228e751d156f22afbfb4338c7b761e1",
     "zh:22c6af34c651ac29c122bdf431cf34db893e667cb6f2dc75203bef7eca296c73",
     "zh:59a8d72b8839db4c993ae99d37a8595f35ddfb7ddda35a2a0a0cc7a1cecffe29",
@@ -22,6 +23,7 @@ provider "registry.terraform.io/hashicorp/azuread" {
   version = "2.26.1"
   hashes = [
     "h1:78LBpsTXfN9Mean0dhgwEY+8asxzu3dv9InOssxpo+w=",
+    "h1:9kGNyiBKCGSNUbKj+pHwxjGjO8e67D9pse8f9tce8Rg=",
     "zh:0336aaad8a845401e6f2fae9749d2f0d3bbb92704fa3127a1a8cc77322d4aadb",
     "zh:1652c1a1ce591403097ffc1c4ae7a057c59a32743c76a88a4825542b8ef4f40d",
     "zh:1c3e89cf19118fc07d7b04257251fc9897e722c16e0a0df7b07fcd261f8c12e7",
@@ -40,6 +42,7 @@ provider "registry.terraform.io/hashicorp/azuread" {
 provider "registry.terraform.io/hashicorp/azurerm" {
   version = "3.14.0"
   hashes = [
+    "h1:UPoCjHOmnfO3IrPPM39yXGMcs5+re8qrUt/YcCVkvy8=",
     "h1:mA6SICkn/uOzMye8C52sgVVgh5BWJNpfEbASuOEAM6w=",
     "zh:03b0dfe15cca2fc44c5f3bc62dedd921765cb3b0e66763ae6de433d332f8038b",
     "zh:0691f8182f7c6a1ba0f985a5504f455390ab046776cc3e545d7334cbe8559edd",
@@ -59,6 +62,7 @@ provider "registry.terraform.io/hashicorp/azurerm" {
 provider "registry.terraform.io/hashicorp/time" {
   version = "0.7.2"
   hashes = [
+    "h1:/OoDbNb/z86XjvSlgna568gttFfAk9SoWRa277b3Pgw=",
     "h1:NKy1QrNLlP5mKy5Tea6lQSRsVoyydJQKh6WvNTdBF4I=",
     "zh:0bbe0158c2a9e3f5be911b7e94477586110c51746bb13d102054f22754565bda",
     "zh:3250af7fd49b8aaf2ccc895588af05197d886e38b727e3ba33bcbb8cc96ad34d",
