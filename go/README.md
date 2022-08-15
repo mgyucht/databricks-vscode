@@ -12,3 +12,8 @@ First install
 6. restart terminal for `zsh` to load new changes
 
 Once first install is done, you'll need to repeat only the step 3.
+
+To be able to use the `deco gh` subcommand, perform these steps:
+
+1. `brew install gh`
+2. `gh auth login`
