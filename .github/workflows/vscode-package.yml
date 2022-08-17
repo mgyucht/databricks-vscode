@@ -1,0 +1,65 @@
+name: vscode-pr-manual
+
+on:
+  workflow_dispatch:
+
+jobs:
+  package-vscode-with-bricks-cli:
+    name: "Package VSCode with bricks CLI"
+    strategy:
+      matrix:
+        arch:
+          [
+            {
+              bricks_arch: darwin_arm64,
+              vsix_arch: darwin-arm64,
+              os: macos-latest,
+            },
+          ]
+        node-version: [16.x]
+
+    runs-on: ${{ matrix.arch.os }}
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.DECO_GITHUB_TOKEN }}
+      BRICKS_ARCH: ${{ matrix.arch.bricks_arch }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Unshallow
+        run: git fetch --prune --unshallow
+
+      - name: Expand actions environment secrets to variables
+        run: python3 scripts/tfit-env.py ${{ matrix.environment }} '${{ toJson(secrets) }}' >> $GITHUB_ENV
+
+      - run: cd ext && git clone https://${{ secrets.DECO_GITHUB_TOKEN }}:x-oauth-basic@github.com/databricks/databricks-vscode
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+          cache-dependency-path: "ext/databricks-vscode/package.json"
+
+      - run: yarn install --immutable
+        working-directory: ext/databricks-vscode
+
+      - name: Building packages
+        run: yarn run build
+        working-directory: ext/databricks-vscode
+
+      - run: yarn workspace databricks package:cli:release
+        working-directory: ext/databricks-vscode
+
+      - run: mkdir -p packages/databricks-vscode/artifacts
+        working-directory: ext/databricks-vscode
+
+      - run: yarn workspace databricks package -o artifacts -t ${{ matrix.arch.vsix_arch }}
+        working-directory: ext/databricks-vscode
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: VSIX artifacts
+          path: ext/databricks-vscode/packages/databricks-vscode/artifacts
