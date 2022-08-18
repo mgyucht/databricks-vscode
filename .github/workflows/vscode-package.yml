@@ -1,7 +1,9 @@
-name: vscode-pr-manual
+name: vscode-package
 
 on:
   workflow_dispatch:
+  pull_request:
+    branch: ["main"]
 
 jobs:
   package-vscode-with-bricks-cli:
@@ -30,9 +32,6 @@ jobs:
       - name: Unshallow
         run: git fetch --prune --unshallow
 
-      - name: Expand actions environment secrets to variables
-        run: python3 scripts/tfit-env.py ${{ matrix.environment }} '${{ toJson(secrets) }}' >> $GITHUB_ENV
-
       - run: cd ext && git clone https://${{ secrets.DECO_GITHUB_TOKEN }}:x-oauth-basic@github.com/databricks/databricks-vscode
 
       - name: Use Node.js ${{ matrix.node-version }}
@@ -49,7 +48,7 @@ jobs:
         run: yarn run build
         working-directory: ext/databricks-vscode
 
-      - run: yarn workspace databricks package:cli:release
+      - run: yarn workspace databricks package:cli:fetch
         working-directory: ext/databricks-vscode
 
       - run: mkdir -p packages/databricks-vscode/artifacts
