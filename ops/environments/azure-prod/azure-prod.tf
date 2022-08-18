@@ -21,15 +21,15 @@ module "spn" {
 }
 
 provider "databricks" {
-  host = module.workspace.workspace_url
+  alias = "workspace"
+  host  = module.workspace.workspace_url
 }
 
-
-module "users" {
-  source = "../../modules/databricks-decoadmins"
-}
-module "clusters" {
-  source = "../../modules/databricks-clusters"
+module "databricks_fixtures" {
+  providers = {
+    databricks = databricks.workspace
+  }
+  source = "../../modules/databricks-fixtures"
 }
 
 // TODO: azurerm_key_vault_access_policy for SPN and team users
@@ -38,7 +38,7 @@ module "secrets" {
   source      = "../../modules/github-secrets"
   environment = "azure-prod"
   secrets = merge(module.fixtures.test_env, {
-    "TEST_DEFAULT_CLUSTER_ID" : module.clusters.default_cluster_id
+    "TEST_DEFAULT_CLUSTER_ID" : module.databricks_fixtures.default_cluster_id
     "DATABRICKS_HOST" : module.workspace.workspace_url,
     "DATABRICKS_AZURE_RESOURCE_ID" : module.workspace.resource_id,
     "ARM_TENANT_ID" : module.defaults.azure_tenant_id,

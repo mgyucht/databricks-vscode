@@ -10,6 +10,7 @@ resource "databricks_group" "this" {
 resource "databricks_service_principal" "this" {
   display_name   = "eng-dev-ecosystem-spn-${var.name}"
   application_id = var.azure_application_id
+  force = true
 }
 
 resource "databricks_group_member" "this" {

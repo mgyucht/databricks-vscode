@@ -102,22 +102,12 @@ output "key_vault_id" {
   value = azurerm_key_vault.this.id
 }
 
-resource "azurerm_key_vault_access_policy" "this" {
-  key_vault_id       = azurerm_key_vault.this.id
-  tenant_id          = data.azurerm_client_config.current.tenant_id
-  object_id          = data.azurerm_client_config.current.object_id
-  secret_permissions = ["Delete", "Get", "List", "Set"]
-}
-
 // "Key Vault Administrator" role required for SP
 resource "azurerm_key_vault_secret" "this" {
   name         = "answer"
   value        = "42"
   key_vault_id = azurerm_key_vault.this.id
   tags         = data.azurerm_resource_group.this.tags
-  depends_on = [
-    azurerm_key_vault_access_policy.this
-  ]
 }
 
 output "test_env" {

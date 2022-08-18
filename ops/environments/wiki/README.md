@@ -21,10 +21,19 @@
 ## aws-uc-prod
  * Cloud: `aws`
  * Environment: `prod`
+ * Databricks Host: https://accounts.cloud.databricks.com/
+ * Account ID: `4d9d3bc8-66c3-4e5a-8a0a-551f564257f0`
+ * Account Console: https://accounts.cloud.databricks.com/login?account_id=4d9d3bc8-66c3-4e5a-8a0a-551f564257f0
+ * Available environment: `CLOUD_ENV`, `DATABRICKS_ACCOUNT_ID`, `DATABRICKS_HOST`, `DATABRICKS_PASSWORD`, `DATABRICKS_USERNAME`, `TEST_DATA_ENG_GROUP`, `TEST_DATA_SCI_GROUP`, `TEST_UC_WORKSPACE_ID`
+ * Previews: "unity_catalog": "ENABLED"
+
+## aws-uc-ws-prod
+ * Cloud: `aws`
+ * Environment: `prod`
  * Databricks Host: https://dbc-2dc7e9b3-a01f.cloud.databricks.com
  * Account ID: `4d9d3bc8-66c3-4e5a-8a0a-551f564257f0`
  * Account Console: https://accounts.cloud.databricks.com/login?account_id=4d9d3bc8-66c3-4e5a-8a0a-551f564257f0
- * Available environment: `CLOUD_ENV`, `DATABRICKS_HOST`, `DATABRICKS_PASSWORD`, `DATABRICKS_USERNAME`, `TEST_DATA_ENG_GROUP`, `TEST_DATA_SCI_GROUP`
+ * Available environment: `CLOUD_ENV`, `DATABRICKS_HOST`, `DATABRICKS_PASSWORD`, `DATABRICKS_USERNAME`, `TEST_DATA_ENG_GROUP`, `TEST_DATA_SCI_GROUP`, `TEST_UC_WORKSPACE_ID`
  * Previews: "unity_catalog": "ENABLED"
 
 ## azure-prod
@@ -33,7 +42,25 @@
  * Databricks Host: https://adb-309687753508875.15.azuredatabricks.net
  * Account ID: `5a8ac58d-9557-497a-8832-90bd35e641bf`
  * Account Console: https://accounts.azuredatabricks.net/login?account_id=5a8ac58d-9557-497a-8832-90bd35e641bf
- * Available environment: `ARM_CLIENT_ID`, `ARM_CLIENT_SECRET`, `ARM_TENANT_ID`, `DATABRICKS_AZURE_RESOURCE_ID`, `DATABRICKS_HOST`, `TEST_KEY_VAULT_DNS_NAME`, `TEST_KEY_VAULT_NAME`, `TEST_KEY_VAULT_RESOURCE_ID`, `TEST_KEY_VAULT_SECRET`, `TEST_KEY_VAULT_SECRET_VALUE`, `TEST_STORAGE_V2_ABFSS`, `TEST_STORAGE_V2_ACCOUNT`, `TEST_STORAGE_V2_KEY`, `TEST_STORAGE_V2_WASBS`, `TEST_STORAGE_V2_WASBS_SAS`
+ * Available environment: `ARM_CLIENT_ID`, `ARM_CLIENT_SECRET`, `ARM_TENANT_ID`, `DATABRICKS_AZURE_RESOURCE_ID`, `DATABRICKS_HOST`, `TEST_DEFAULT_CLUSTER_ID`, `TEST_KEY_VAULT_DNS_NAME`, `TEST_KEY_VAULT_NAME`, `TEST_KEY_VAULT_RESOURCE_ID`, `TEST_KEY_VAULT_SECRET`, `TEST_KEY_VAULT_SECRET_VALUE`, `TEST_STORAGE_V2_ABFSS`, `TEST_STORAGE_V2_ACCOUNT`, `TEST_STORAGE_V2_KEY`, `TEST_STORAGE_V2_WASBS`, `TEST_STORAGE_V2_WASBS_SAS`
+ * Previews: "identity_federation": "ENABLED"
+
+## azure-prod-acct
+ * Cloud: `azure`
+ * Environment: `prod`
+ * Databricks Host: https://accounts.azuredatabricks.net/
+ * Account ID: `5a8ac58d-9557-497a-8832-90bd35e641bf`
+ * Account Console: https://accounts.azuredatabricks.net/login?account_id=5a8ac58d-9557-497a-8832-90bd35e641bf
+ * Available environment: `ARM_CLIENT_ID`, `ARM_CLIENT_SECRET`, `ARM_TENANT_ID`, `DATABRICKS_ACCOUNT_ID`, `DATABRICKS_HOST`
+ * Previews: "identity_federation": "ENABLED"
+
+## azure-prod-pat
+ * Cloud: `azure`
+ * Environment: `prod`
+ * Databricks Host: https://adb-309687753508875.15.azuredatabricks.net
+ * Account ID: `5a8ac58d-9557-497a-8832-90bd35e641bf`
+ * Account Console: https://accounts.azuredatabricks.net/login?account_id=5a8ac58d-9557-497a-8832-90bd35e641bf
+ * Available environment: `DATABRICKS_HOST`, `DATABRICKS_TOKEN`, `TEST_DEFAULT_CLUSTER_ID`, `TEST_KEY_VAULT_DNS_NAME`, `TEST_KEY_VAULT_NAME`, `TEST_KEY_VAULT_RESOURCE_ID`, `TEST_KEY_VAULT_SECRET`, `TEST_KEY_VAULT_SECRET_VALUE`, `TEST_STORAGE_V2_ABFSS`, `TEST_STORAGE_V2_ACCOUNT`, `TEST_STORAGE_V2_KEY`, `TEST_STORAGE_V2_WASBS`, `TEST_STORAGE_V2_WASBS_SAS`
  * Previews: "identity_federation": "ENABLED"
 
 ## azure-stg

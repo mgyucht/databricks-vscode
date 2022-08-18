@@ -85,7 +85,7 @@ locals {
   raw_workspaces = { for env in local.vaults :
     replace(replace(env, "deco-gh-", ""), "deco-github-", "") => {
       workspaces = [for k, v in local.can_of_worms : v if k == "${env}:DATABRICKS-HOST"]
-      env        = split("-", env)[length(split("-", env)) - 1]
+      env        = length(regexall(".*-prod.*", env)) > 0 ? "prod" : "staging"
       variables = sort([for k, v in local.can_of_worms :
       replace(split(":", k)[1], "-", "_") if env == split(":", k)[0]])
   } }
