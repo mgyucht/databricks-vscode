@@ -1,0 +1,13 @@
+{% import '_helpers.ts.jinja2' as helpers %}
+
+/* eslint-disable @typescript-eslint/naming-convention */
+
+import {ApiClient} from "../api-client";
+import * as notebook from "./notebook";
+import * as file from "./file";
+
+{% set scope = get_scope(['workspace']) %}
+
+{{ helpers.types_for_scope(scope) }}
+
+{{ helpers.gen_service(services['workspace.WorkspaceService'], scope, version='2.0') }}

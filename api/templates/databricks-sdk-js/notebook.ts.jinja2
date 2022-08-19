@@ -1,0 +1,5 @@
+{% import '_helpers.ts.jinja2' as helpers %}
+
+{% set scope = get_scope(['notebook']) %}
+
+{{ helpers.types_for_scope(scope) }}
