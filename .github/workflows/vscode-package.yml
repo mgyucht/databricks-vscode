@@ -2,20 +2,34 @@ name: vscode-package
 
 on:
   workflow_dispatch:
-  pull_request:
-    branch: ["main"]
 
 jobs:
   package-vscode-with-bricks-cli:
     name: "Package VSCode with bricks CLI"
     strategy:
       matrix:
+      # VSIX architextures: https://github.com/microsoft/vscode-vsce/blob/main/src/package.ts
         arch:
           [
             {
               bricks_arch: darwin_arm64,
               vsix_arch: darwin-arm64,
               os: macos-latest,
+            },
+            {
+              bricks_arch: darwin_amd64,
+              vsix_arch: darwin-x64,
+              os: macos-latest,
+            },
+            {
+              bricks_arch: linux_arm64,
+              vsix_arch: linux-arm64,
+              os: ubuntu-latest,
+            },
+            {
+              bricks_arch: linux_amd64,
+              vsix_arch: linux-x64,
+              os: ubuntu-latest,
             },
           ]
         node-version: [16.x]
@@ -60,5 +74,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: VSIX artifacts
+          name: Bricks ${{matrix.arch.bricks_arch}} - VSIX ${{matrix.arch.vsix_arch}}
           path: ext/databricks-vscode/packages/databricks-vscode/artifacts
