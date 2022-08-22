@@ -207,7 +207,19 @@ class Message(BaseType):
         super().__init__(file, obj)
 
     def fields(self):
-        return [Field(self, o) for o in self.obj['fields']]
+        fields = []
+        for field in self.obj['fields']:
+            # oneof fields will be flattened into the object itself
+            if field['field_type'] == 'oneof':
+                for oneof_field in field['oneof']:
+                    fields.append(Field(self, oneof_field))
+            else:
+                fields.append(Field(self, field))
+
+        return fields
+
+    def enums(self):
+        return [e for e in self.obj['enums']]
 
     def required_fields(self):
         return [f for f in self.fields() if f.is_required()]
@@ -309,6 +321,10 @@ class File:
         for obj in self.obj['content']:
             if obj['enum']:
                 yield Enum(self, obj['enum'])
+        
+        for message in self.messages():
+            for enum in message.enums():
+                yield Enum(self, enum)
 
     def messages(self) -> Iterator[Message]:
         messages = []
