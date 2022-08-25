@@ -138,11 +138,11 @@ module "acct_secrets" {
   environment = "aws-uc-prod"
   secrets = {
     "CLOUD_ENV" : "unity-catalog-account",
-    "DATABRICKS_HOST" :    module.defaults.aws_prod_account_console,
-    "DATABRICKS_ACCOUNT_ID": module.defaults.aws_prod_databricks_account_id,
+    "DATABRICKS_HOST" : module.defaults.aws_prod_account_console,
+    "DATABRICKS_ACCOUNT_ID" : module.defaults.aws_prod_databricks_account_id,
     "DATABRICKS_USERNAME" : data.azurerm_key_vault_secret.username.value,
     "DATABRICKS_PASSWORD" : data.azurerm_key_vault_secret.password.value,
-    "TEST_UC_WORKSPACE_ID": databricks_mws_workspaces.this.workspace_id,
+    "TEST_UC_WORKSPACE_ID" : databricks_mws_workspaces.this.workspace_id,
     "TEST_DATA_ENG_GROUP" : module.account.data_eng.name,
     "TEST_DATA_SCI_GROUP" : module.account.data_sci.name,
   }
@@ -156,7 +156,7 @@ module "secrets" {
     "DATABRICKS_HOST" : databricks_mws_workspaces.this.workspace_url,
     "DATABRICKS_USERNAME" : data.azurerm_key_vault_secret.username.value,
     "DATABRICKS_PASSWORD" : data.azurerm_key_vault_secret.password.value,
-    "TEST_UC_WORKSPACE_ID": databricks_mws_workspaces.this.workspace_id,
+    "TEST_UC_WORKSPACE_ID" : databricks_mws_workspaces.this.workspace_id,
     "TEST_DATA_ENG_GROUP" : module.account.data_eng.name,
     "TEST_DATA_SCI_GROUP" : module.account.data_sci.name,
   }
