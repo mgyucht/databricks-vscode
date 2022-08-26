@@ -27,9 +27,8 @@ var shellCmd = &cobra.Command{
 			environ = append(environ, fmt.Sprintf("%s=%s", k, v))
 		}
 		// We point DATABRICKS_CONFIG_FILE to a null file to avoid 
-		// conflicts from having PAT auth setup in a .databrickscfg file
-		// and Azure auth setup in environmental variables like 
-		// ARM_CLIENT_ID, ARM_CLIENT_SECRET, ARM_TENANT_ID etc
+		// conflicts between a pre-existing auth setup (typically in a 
+		// .databrickscfg file) and auth injected into the enviorment
 		environ = append(environ, "DATABRICKS_CONFIG_FILE=/dev/null")
 		return syscall.Exec("/bin/bash", []string{}, environ)
 	},
