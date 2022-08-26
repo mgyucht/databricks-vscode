@@ -26,6 +26,10 @@ var shellCmd = &cobra.Command{
 		for k, v := range vars {
 			environ = append(environ, fmt.Sprintf("%s=%s", k, v))
 		}
+		// We point DATABRICKS_CONFIG_FILE to a null file to avoid 
+		// conflicts between a pre-existing auth setup (typically in a 
+		// .databrickscfg file) and auth injected into the enviorment
+		environ = append(environ, "DATABRICKS_CONFIG_FILE=/dev/null")
 		return syscall.Exec("/bin/bash", []string{}, environ)
 	},
 }
