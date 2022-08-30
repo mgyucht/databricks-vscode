@@ -1,0 +1,53 @@
+name: sdk-go-pr-manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      pull_request_number:
+        description: 'Pull Request Number'
+        required: true
+        type: number
+
+      environment:
+        description: 'Environment to run tests against'
+        type: environment
+        required: true
+
+jobs:
+  integration-tests-pull-request:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # This step is only needed while the deco CLI still depends on TF (see #42).
+      - name: Checkout terraform-provider-databricks
+        uses: actions/checkout@v2
+        with:
+          repository: databricks/terraform-provider-databricks
+          path: ext/terraform-provider-databricks
+
+      - name: Checkout databricks-sdk-go
+        uses: actions/checkout@v2
+        with:
+          repository: databricks/databricks-sdk-go
+          ref: refs/pull/${{ inputs.pull_request_number }}/merge
+          token: ${{ secrets.DECO_GITHUB_TOKEN }}
+          path: ext/databricks-sdk-go
+
+      - uses: actions/setup-go@v1
+        with:
+          go-version: 1.18.x
+
+      - name: Vendor dependencies
+        run: |
+          if ! go mod vendor; then
+            go mod tidy
+          fi
+          git diff || true
+        working-directory: go
+
+      - name: Run tests
+        run: go run main.go env test all --name ${{ inputs.environment }} --repo databricks-sdk-go
+        working-directory: go
