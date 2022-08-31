@@ -17,6 +17,7 @@ module "secrets_staging" {
   source      = "../../modules/github-secrets"
   environment = "gcp-staging"
   secrets = {
+    "CLOUD_ENV" : "gcp",
     "DATABRICKS_HOST" : databricks_mws_workspaces.deco_staging.workspace_url,
     "DATABRICKS_GOOGLE_SERVICE_ACCOUNT" : google_service_account.admin.email,
   }

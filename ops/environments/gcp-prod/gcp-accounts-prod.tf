@@ -33,6 +33,7 @@ module "secrets_acct_prod" {
   secrets = {
     "CLOUD_ENV" : "gcp-accounts",
     "TEST_FILTER" : "TestGcpAcc",
+    "TEST_PREFIX" : "nightly",
     "DATABRICKS_HOST" : "https://accounts.gcp.databricks.com/",
     "DATABRICKS_ACCOUNT_ID" : module.defaults.google_production_account,
     "DATABRICKS_GOOGLE_SERVICE_ACCOUNT" : google_service_account.admin.email,

@@ -19,6 +19,7 @@ module "secrets" {
   source      = "../../modules/github-secrets"
   environment = "gcp-prod"
   secrets = {
+    "CLOUD_ENV" : "gcp",
     "DATABRICKS_HOST" : databricks_mws_workspaces.deco_production.workspace_url,
     "DATABRICKS_TOKEN" : databricks_mws_workspaces.deco_production.token[0].token_value,
   }

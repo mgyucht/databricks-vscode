@@ -52,13 +52,28 @@ jobs:
   changelog:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - run: pip3 install ghapi
-      - run: cd ext && git clone https://${{ secrets.DECO_GITHUB_TOKEN }}:x-oauth-basic@github.com/databricks/databricks-sdk-go
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Checkout databricks-sdk-go
+        uses: actions/checkout@v2
+        with:
+          repository: databricks/databricks-sdk-go
+          token: ${{ secrets.DECO_GITHUB_TOKEN }}
+          path: ext/databricks-sdk-go
+
       - uses: actions/setup-go@v1
         with:
           go-version: 1.18.x
+
+      - name: Make vendor for deco CLI
+        run: go mod vendor
+        working-directory: go
+
       - run: go run main.go gh release-notes -r terraform-provider-databricks --head master >> $GITHUB_STEP_SUMMARY
+        working-directory: go
+        env:
+          GITHUB_TOKEN: ${{ secrets.DECO_GITHUB_TOKEN }}
 
 ### Disabling completeness check before the bot user is added as reader to docs repo      
   # completeness:

@@ -77,6 +77,27 @@ func getEnv(envName string) (Env, error) {
 	return Env{}, fmt.Errorf("no such environment found: %s", envName)
 }
 
+func filterEnv(in map[string]string) (map[string]string, error) {
+	out := map[string]string{}
+	for k, v := range in {
+		if k == "github_token" {
+			// this is an internal token for github actions.
+			// skipping it to avoid potential confusion.
+			// perhaps it might be useful in some cases.
+			continue
+		}
+		if k == "GOOGLE_CREDENTIALS" {
+			googleCreds, err := base64.StdEncoding.DecodeString(v)
+			if err != nil {
+				return nil, fmt.Errorf("cannot decode google creds: %w", err)
+			}
+			v = strings.ReplaceAll(string(googleCreds), "\n", "")
+		}
+		out[k] = v
+	}
+	return out, nil
+}
+
 func EnvVars(ctx context.Context, envName string) (map[string]string, error) {
 	// alternatively retrieve secrets from github actions context env var
 	githubSecretsJson := os.Getenv("GITHUB_SECRETS_JSON")
@@ -86,28 +107,7 @@ func EnvVars(ctx context.Context, envName string) (map[string]string, error) {
 		if err != nil {
 			return nil, fmt.Errorf("cannot parse all github secrets: %w", err)
 		}
-		keys := []string{}
-		for k := range allSecrets {
-			keys = append(keys, k)
-		}
-		for _, k := range keys {
-			switch k {
-			case "github_token":
-				continue
-			case "GOOGLE_CREDENTIALS":
-				v := allSecrets[k]
-				googleCreds, err := base64.StdEncoding.DecodeString(v)
-				if err != nil {
-					return nil, fmt.Errorf("cannot decode google creds: %w", err)
-				}
-				allSecrets[k] = strings.ReplaceAll(string(googleCreds), "\n", "")
-			}
-		}
-		if allSecrets["CLOUD_ENV"] == "" {
-			// add CLOUD_ENV if it's not explictly set
-			allSecrets["CLOUD_ENV"] = strings.Split(envName, "-")[0]
-		}
-		return allSecrets, nil
+		return filterEnv(allSecrets)
 	}
 	env, err := getEnv(envName)
 	if err != nil {
@@ -159,7 +159,7 @@ func EnvVars(ctx context.Context, envName string) (map[string]string, error) {
 			vars[strings.ReplaceAll(name, "-", "_")] = *sv.Value
 		}
 	}
-	return vars, nil
+	return filterEnv(vars)
 }
 
 // TODO: HAS ENVIRONMENT SIDE EFFECTS! Will be fixed with Go SDK

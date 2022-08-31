@@ -46,6 +46,7 @@ module "secrets-azure-account" {
   source      = "../../modules/github-secrets"
   environment = "azure-prod-acct"
   secrets = {
+    "CLOUD_ENV" : "unity-catalog-account",
     "DATABRICKS_HOST" : module.defaults.azure_prod_account_console,
     "DATABRICKS_ACCOUNT_ID" : module.defaults.azure_prod_account_id,
     "ARM_TENANT_ID" : module.defaults.azure_tenant_id,

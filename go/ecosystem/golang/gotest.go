@@ -34,6 +34,26 @@ func (r GoTestRunner) ListAll(files fileset.FileSet) (all []string) {
 	return all
 }
 
+func (r GoTestRunner) setCmdEnv(cmd *exec.Cmd, vars map[string]string) error {
+	// run test with current environment
+	cmd.Env = os.Environ()
+	// and variables from test environment
+	for k, v := range vars {
+		cmd.Env = append(cmd.Env, fmt.Sprintf(`%s=%s`, k, v))
+		if strings.HasSuffix(k, "_TOKEN") ||
+			strings.HasSuffix(k, "_CREDENTIALS") ||
+			strings.HasSuffix(k, "_PASSWORD") ||
+			strings.HasSuffix(k, "_SAS") ||
+			strings.HasSuffix(k, "_KEY") ||
+			strings.HasSuffix(k, "_SECRET") {
+			log.Printf("[DEBUG][ENV] %s=***", k)
+			continue
+		}
+		log.Printf("[DEBUG][ENV] %s=%s", k, v)
+	}
+	return nil
+}
+
 func (r GoTestRunner) RunOne(ctx context.Context, files fileset.FileSet, one string) error {
 	found := files.FirstMatch(`_test.go`, fmt.Sprintf(`func %s\(`, one))
 	if found == nil {
@@ -58,24 +78,10 @@ func (r GoTestRunner) RunOne(ctx context.Context, files fileset.FileSet, one str
 	if err != nil {
 		return err
 	}
-
-	// run test with current environment
-	cmd.Env = os.Environ()
-
-	// and variables from test environment
-	for k, v := range vars {
-		cmd.Env = append(cmd.Env, fmt.Sprintf(`%s=%s`, k, v))
-		if strings.HasSuffix(k, "_TOKEN") ||
-			strings.HasSuffix(k, "_CREDENTIALS") ||
-			strings.HasSuffix(k, "_SAS") ||
-			strings.HasSuffix(k, "_KEY") ||
-			strings.HasSuffix(k, "_SECRET") {
-			log.Printf("[DEBUG][ENV] %s=***", k)
-			continue
-		}
-		log.Printf("[DEBUG][ENV] %s=%s", k, v)
+	err = r.setCmdEnv(cmd, vars)
+	if err != nil {
+		return err
 	}
-
 	// create temp file to forward logs produced by subprocess of subprocess
 	debug, err := os.CreateTemp("/tmp", fmt.Sprintf("debug-%s-*.log", one))
 	if err != nil {
@@ -120,31 +126,27 @@ func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (result
 	defer reader.Close()
 	defer writer.Close()
 
-	cmd := exec.Command("go", "test", "-json", "./...", "-run", "^TestAcc")
-	cmd.Stdout = writer
-	cmd.Stderr = writer
-	cmd.Dir = files.Root()
-
 	// TODO: pull up
 	// retrieve environment variables for a specified test environment
 	vars, err := testenv.EnvVars(ctx, env.GetName())
 	if err != nil {
 		return nil, err
 	}
-	// run test with current environment
-	cmd.Env = os.Environ()
-	// and variables from test environment
-	for k, v := range vars {
-		cmd.Env = append(cmd.Env, fmt.Sprintf(`%s=%s`, k, v))
-		if strings.HasSuffix(k, "_TOKEN") ||
-			strings.HasSuffix(k, "_CREDENTIALS") ||
-			strings.HasSuffix(k, "_SAS") ||
-			strings.HasSuffix(k, "_KEY") ||
-			strings.HasSuffix(k, "_SECRET") {
-			log.Printf("[DEBUG][ENV] %s=***", k)
-			continue
-		}
-		log.Printf("[DEBUG][ENV] %s=%s", k, v)
+
+	// certain environments need to further filter down the set of tests to run,
+	// hence the `TEST_FILTER` environment variable (for now) with `TestAcc` as
+	// the default prefix.
+	testFilter, ok := vars["TEST_FILTER"]
+	if !ok {
+		testFilter = "TestAcc"
+	}
+	cmd := exec.Command("go", "test", "-json", "./...", "-run", fmt.Sprintf("^%s", testFilter))
+	cmd.Stdout = writer
+	cmd.Stderr = writer
+	cmd.Dir = files.Root()
+	err = r.setCmdEnv(cmd, vars)
+	if err != nil {
+		return nil, err
 	}
 	go func() {
 		output := map[string][]string{}
@@ -177,15 +179,17 @@ func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (result
 				})
 				log.Printf("[INFO] ✅ %s (%0.3fs)", evt.Test, evt.Elapsed)
 			case "skip":
+				testLog := strings.Join(output[key], "")
 				// filter out "package contains no tests"
 				results = append(results, reporting.TestResult{
 					Time:    evt.Time,
 					Package: evt.Package,
 					Name:    evt.Test,
 					Skip:    true,
-					Output:  strings.Join(output[key], ""),
+					Output:  testLog,
 					Elapsed: evt.Elapsed,
 				})
+				log.Printf("[DEBUG] 🦥 %s: %s", evt.Test, testLog)
 			case "fail":
 				testLog := strings.Join(output[key], "")
 				results = append(results, reporting.TestResult{
@@ -203,7 +207,7 @@ func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (result
 			}
 		}
 		err = scanner.Err()
-		if err != io.ErrClosedPipe {
+		if err != nil && err != io.ErrClosedPipe {
 			log.Printf("[ERROR] cannot scan json lines: %s", err)
 			return
 		}
