@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 	"path"
-
+	
 	"github.com/sethvargo/go-githubactions"
 	"github.com/spf13/cobra"
 )
@@ -29,8 +29,7 @@ var allCmd = &cobra.Command{
 		if runner == nil {
 			return fmt.Errorf("no supported ecosystem detected")
 		}
-		// TODO: figure out a better strategy, fail command on error
-		report, _ := runner.RunAll(cmd.Context(), files)
+		report, allTestsResult := runner.RunAll(cmd.Context(), files)
 		log.Printf("[INFO] %s", report)
 
 		if os.Getenv("GITHUB_STEP_SUMMARY") != "" {
@@ -41,8 +40,11 @@ var allCmd = &cobra.Command{
 		// upload artifact apis are a bit involved at the moment...
 		// but perhaps we can really make it work...
 		//   const artifactUrl = `${env.ACTIONS_RUNTIME_URL}_apis/pipelines/workflows/${env.GITHUB_RUN_ID}/artifacts?api-version=6.0-preview`
-
-		return report.WriteReport(repo, path.Join(files.Root(), "../../dist/test-report.json"))
+		err = report.WriteReport(repo, path.Join(files.Root(), "../../dist/test-report.json"))
+		if err != nil {
+			log.Printf("[ERR] %s", err)
+		}
+		return allTestsResult
 	},
 }
 

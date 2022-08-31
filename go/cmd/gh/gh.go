@@ -30,6 +30,13 @@ type ghConf struct {
 }
 
 func (c ghCliToken) Token() (*oauth2.Token, error) {
+	envToken := os.Getenv("GITHUB_TOKEN")
+	if envToken != "" {
+		return &oauth2.Token{
+			AccessToken: envToken,
+			TokenType:   "Bearer",
+		}, nil
+	}
 	filename := strings.ReplaceAll(string(c), "~", os.Getenv("HOME"))
 	f, err := os.Open(filename)
 	if err != nil {
@@ -56,7 +63,6 @@ func (c ghCliToken) Token() (*oauth2.Token, error) {
 }
 
 func Client(ctx context.Context) *github.Client {
-	// TODO: read GITHUB_TOKEN env to check if in GH actions
 	ts := ghCliToken("~/.config/gh/hosts.yml")
 	return github.NewClient(oauth2.NewClient(ctx, ts))
 }

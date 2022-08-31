@@ -19,59 +19,73 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Unshallow
-        run: git fetch --prune --unshallow
+      - name: Checkout databricks-sdk-go
+        uses: actions/checkout@v2
+        with:
+          repository: databricks/databricks-sdk-go
+          token: ${{ secrets.DECO_GITHUB_TOKEN }}
+          path: ext/databricks-sdk-go
 
-      - run: cd ext && git clone https://github.com/databricks/terraform-provider-databricks
+      - name: Checkout terraform-provider-databricks
+        uses: actions/checkout@v2
+        with:
+          repository: databricks/terraform-provider-databricks
+          path: ext/terraform-provider-databricks
 
-      - name: Expand actions environment secrets to variables
-        run: python3 scripts/tfit-env.py ${{ matrix.env }} '${{ toJson(secrets) }}' >> $GITHUB_ENV
-      
       - uses: actions/setup-go@v1
         with:
           go-version: 1.18.x
 
-      - name: Set go env
-        run: |
-          echo "GOPATH=$(go env GOPATH)" >> $GITHUB_ENV
-          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
-          go install gotest.tools/gotestsum@latest
+      - name: Make vendor for deco CLI
+        run: go mod vendor
+        working-directory: go
 
-      - name: Run provider integration tests
-        run: make vendor && bash scripts/it.sh
+      - name: Make vendor for Terraform Provider
+        run: go mod vendor
         working-directory: ext/terraform-provider-databricks
-      
-      # main summary page of a job run
-      - name: Test Summary
-        uses: test-summary/action@v1
-        with:
-          paths: ext/terraform-provider-databricks/junit.xml
-        if: always()
 
-      # dedicated page, needs a separate click to view, 
-      # like https://github.com/databricks/eng-dev-ecosystem/runs/7214261090
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        with:
-          name: Test Report for ${{matrix.env}}
-          path: ext/terraform-provider-databricks/junit.xml
-          reporter: java-junit
-        if: always()
+      - run: go run main.go env test all --name ${{ matrix.env }} --repo terraform-provider-databricks
+        working-directory: go
+        env:
+          GITHUB_SECRETS_JSON: '${{ toJson(secrets) }}'
+
   changelog:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - run: pip3 install ghapi
-      - run: python3 scripts/release-notes.py >> $GITHUB_STEP_SUMMARY
-  completeness:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - run: cd ext && git clone https://github.com/databricks/terraform-provider-databricks
-      - run: cd ext && git clone https://${{ secrets.DECO_GITHUB_TOKEN }}:x-oauth-basic@github.com/databricks/docs
+      - run: cd ext && git clone https://${{ secrets.DECO_GITHUB_TOKEN }}:x-oauth-basic@github.com/databricks/databricks-sdk-go
       - uses: actions/setup-go@v1
         with:
           go-version: 1.18.x
-      - run: go mod vendor && go run coverage-report/main.go >> $GITHUB_STEP_SUMMARY
-        working-directory: go
+      - run: go run main.go gh release-notes -r terraform-provider-databricks --head master >> $GITHUB_STEP_SUMMARY
+
+### Disabling completeness check before the bot user is added as reader to docs repo      
+  # completeness:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - run: cd ext && git clone https://${{ secrets.DECO_GITHUB_TOKEN }}:x-oauth-basic@github.com/databricks/docs
+  #     - name: Checkout databricks-sdk-go
+  #       uses: actions/checkout@v2
+  #       with:
+  #         repository: databricks/databricks-sdk-go
+  #         token: ${{ secrets.DECO_GITHUB_TOKEN }}
+  #         path: ext/databricks-sdk-go
+
+  #     - name: Checkout terraform-provider-databricks
+  #       uses: actions/checkout@v2
+  #       with:
+  #         repository: databricks/terraform-provider-databricks
+  #         path: ext/terraform-provider-databricks
+
+  #     - uses: actions/setup-go@v1
+  #       with:
+  #         go-version: 1.18.x
+
+  #     - run: go mod vendor
+  #       working-directory: go
+
+  #     - run: go run main.go tf cov >> $GITHUB_STEP_SUMMARY
+  #       working-directory: go
   

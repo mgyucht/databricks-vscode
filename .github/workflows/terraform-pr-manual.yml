@@ -23,52 +23,33 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - run: pip3 install ghapi
-      
-      - name: Checkout pull request origin
-        run: python3 scripts/checkout-pr.py ${{ inputs.pull_request_number }} >> $GITHUB_STEP_SUMMARY
-      
-      - name: Expand actions environment secrets to variables
-        run: python3 scripts/tfit-env.py ${{ inputs.environment }} '${{ toJson(secrets) }}' >> $GITHUB_ENV
-      
       - uses: actions/setup-go@v1
         with:
           go-version: 1.18.x
 
-      - name: Set go env
-        run: |
-          echo "GOPATH=$(go env GOPATH)" >> $GITHUB_ENV
-          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
-          go install gotest.tools/gotestsum@latest
+      - name: Checkout databricks-sdk-go
+        uses: actions/checkout@v2
+        with:
+          repository: databricks/databricks-sdk-go
+          token: ${{ secrets.DECO_GITHUB_TOKEN }}
+          path: ext/databricks-sdk-go
 
-      - run: make vendor && bash scripts/it.sh
+      - name: Checkout terraform-provider-databricks
+        uses: actions/checkout@v2
+        with:
+          repository: databricks/terraform-provider-databricks
+          ref: refs/pull/${{ inputs.pull_request_number }}/merge
+          path: ext/terraform-provider-databricks
+
+      - name: Make vendor for deco CLI
+        run: go mod vendor
+        working-directory: go
+
+      - name: Make vendor for Terraform Provider
+        run: go mod vendor
         working-directory: ext/terraform-provider-databricks
 
-      # main summary page of a job run
-      - name: Test Summary
-        uses: test-summary/action@v1
-        with:
-          paths: ext/terraform-provider-databricks/junit.xml
-        if: always()
-
-      # dedicated page, needs a separate click to view, 
-      # like https://github.com/databricks/eng-dev-ecosystem/runs/7214261090
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        with:
-          name: Test Report for ${{matrix.env}}
-          path: ext/terraform-provider-databricks/junit.xml
-          reporter: java-junit
-        if: always()
-  completeness:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - run: pip3 install ghapi
-      - run: python3 scripts/checkout-pr.py ${{ inputs.pull_request_number }}
-      - run: cd ext && git clone https://${{ secrets.DECO_GITHUB_TOKEN }}:x-oauth-basic@github.com/databricks/docs
-      - uses: actions/setup-go@v1
-        with:
-          go-version: 1.18.x
-      - run: go mod vendor && go run coverage-report/main.go >> $GITHUB_STEP_SUMMARY
+      - run: go run main.go env test all --name ${{ inputs.environment }} --repo terraform-provider-databricks
         working-directory: go
+        env:
+          GITHUB_SECRETS_JSON: '${{ toJson(secrets) }}'

@@ -6,6 +6,8 @@ import (
 	"deco/folders"
 	"deco/terraform"
 	"deco/terraform/tf"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -13,7 +15,7 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/keyvault/azsecrets"
-	"github.com/databricks/terraform-provider-databricks/common"
+	"github.com/databricks/databricks-sdk-go/databricks"
 )
 
 type Env struct {
@@ -76,6 +78,37 @@ func getEnv(envName string) (Env, error) {
 }
 
 func EnvVars(ctx context.Context, envName string) (map[string]string, error) {
+	// alternatively retrieve secrets from github actions context env var
+	githubSecretsJson := os.Getenv("GITHUB_SECRETS_JSON")
+	if githubSecretsJson != "" {
+		var allSecrets map[string]string
+		err := json.Unmarshal([]byte(githubSecretsJson), &allSecrets)
+		if err != nil {
+			return nil, fmt.Errorf("cannot parse all github secrets: %w", err)
+		}
+		keys := []string{}
+		for k := range allSecrets {
+			keys = append(keys, k)
+		}
+		for _, k := range keys {
+			switch k {
+			case "github_token":
+				continue
+			case "GOOGLE_CREDENTIALS":
+				v := allSecrets[k]
+				googleCreds, err := base64.StdEncoding.DecodeString(v)
+				if err != nil {
+					return nil, fmt.Errorf("cannot decode google creds: %w", err)
+				}
+				allSecrets[k] = strings.ReplaceAll(string(googleCreds), "\n", "")
+			}
+		}
+		if allSecrets["CLOUD_ENV"] == "" {
+			// add CLOUD_ENV if it's not explictly set
+			allSecrets["CLOUD_ENV"] = strings.Split(envName, "-")[0]
+		}
+		return allSecrets, nil
+	}
 	env, err := getEnv(envName)
 	if err != nil {
 		return nil, err
@@ -130,7 +163,7 @@ func EnvVars(ctx context.Context, envName string) (map[string]string, error) {
 }
 
 // TODO: HAS ENVIRONMENT SIDE EFFECTS! Will be fixed with Go SDK
-func NewClientFor(ctx context.Context, env string) (*common.DatabricksClient, error) {
+func NewConfigFor(ctx context.Context, env string) (*databricks.Config, error) {
 	vars, err := EnvVars(ctx, env)
 	if err != nil {
 		return nil, fmt.Errorf("env vars: %w", err)
@@ -139,6 +172,8 @@ func NewClientFor(ctx context.Context, env string) (*common.DatabricksClient, er
 	for k, v := range vars {
 		os.Setenv(k, v)
 	}
-	log.Printf("[INFO] Configuring DatabricksClient for %s env", env)
-	return common.NewClientFromEnvironment(), nil
+	log.Printf("[INFO] Creating *databricks.Config for %s env", env)
+
+	cfg := &databricks.Config{}
+	return cfg, cfg.EnsureResolved()
 }

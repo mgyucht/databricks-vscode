@@ -7,8 +7,9 @@ import (
 	"log"
 	"strings"
 
-	"github.com/databricks/terraform-provider-databricks/scim"
-	"github.com/databricks/terraform-provider-databricks/workspace"
+	"github.com/databricks/databricks-sdk-go/service/users"
+	"github.com/databricks/databricks-sdk-go/service/workspace"
+	"github.com/databricks/databricks-sdk-go/workspaces"
 	"github.com/spf13/cobra"
 )
 
@@ -19,17 +20,20 @@ var cleanupCmd = &cobra.Command{
 		if env.Name == "" {
 			return fmt.Errorf("no environment given")
 		}
-		client, err := testenv.NewClientFor(cmd.Context(), env.Name)
+		cfg, err := testenv.NewConfigFor(cmd.Context(), env.Name)
 		if err != nil {
 			return err
 		}
-		usersApi := scim.NewUsersAPI(cmd.Context(), client)
-		users, err := usersApi.Filter("")
+		if cfg.IsAccountsClient() {
+			return fmt.Errorf("currently only workspace client supported")
+		}
+		ws := workspaces.New(cfg)
+		users, err := ws.Users.ListUsers(cmd.Context(), users.ListUsersRequest{})
 		if err != nil {
 			return err
 		}
 		log.Printf("[INFO] Cleaning up users")
-		for _, u := range users {
+		for _, u := range users.Resources {
 			email := u.Emails[0].Value
 			if !strings.ContainsRune(email, '@') {
 				// this is SPN
@@ -39,30 +43,32 @@ var cleanupCmd = &cobra.Command{
 				// valid databricks email
 				continue
 			}
-			err = usersApi.Delete(u.ID)
+			err = ws.Users.DeleteUserById(cmd.Context(), u.Id)
 			if err != nil {
 				return err
 			}
 			log.Printf("[INFO] Removing leftover from tests %s (%s)",
 				email, u.DisplayName)
 		}
-		if client.AccountID == "" {
-			// it's a workspace client
-			wsApi := workspace.NewNotebooksAPI(cmd.Context(), client)
-			folders, err := wsApi.List("/Users", false)
+		// it's a workspace client
+		folders, err := ws.Workspace.List(cmd.Context(), workspace.ListRequest{
+			Path: "/Users",
+		})
+		if err != nil {
+			return err
+		}
+		for _, v := range folders.Objects {
+			if strings.Contains(v.Path, "@databricks.com") {
+				continue
+			}
+			err = ws.Workspace.Delete(cmd.Context(), workspace.DeleteRequest{
+				Path:      v.Path,
+				Recursive: true,
+			})
 			if err != nil {
 				return err
 			}
-			for _, v := range folders {
-				if strings.Contains(v.Path, "@databricks.com") {
-					continue
-				}
-				err = wsApi.Delete(v.Path, true)
-				if err != nil {
-					return err
-				}
-				log.Printf("[INFO] Removing notebook folder leftover: %s\n", v.Path)
-			}
+			log.Printf("[INFO] Removing notebook folder leftover: %s\n", v.Path)
 		}
 		log.Printf("[INFO] Done.")
 		return nil

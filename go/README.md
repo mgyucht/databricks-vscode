@@ -4,7 +4,7 @@
 
 First install
 
-1. Make sure to have `ext/terraform-provider-databricks` symlink
+1. Make sure to have `ext/databricks-sdk-go` symlink
 2. `brew install golang goreleaser`
 3. `cd go && goreleaser release --snapshot --rm-dist`
 4. `ln -s $PWD/dist/deco_darwin_amd64_v1/deco /usr/local/bin/deco`

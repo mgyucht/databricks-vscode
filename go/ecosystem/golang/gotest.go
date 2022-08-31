@@ -93,7 +93,7 @@ func (r GoTestRunner) RunOne(ctx context.Context, files fileset.FileSet, one str
 			writer.Write([]byte(line.Text + "\n"))
 		}
 	}()
-	
+
 	// Terraform debug logging is a bit involved.
 	// See https://www.terraform.io/plugin/log/managing
 	cmd.Env = append(cmd.Env, "TF_LOG=DEBUG")
@@ -153,9 +153,10 @@ func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (result
 		var re = regexp.MustCompile(`(?mUs)Error:\s+(.*)Test:\s+`)
 		for scanner.Scan() {
 			var evt goTestEvent
-			err = json.Unmarshal(scanner.Bytes(), &evt)
+			line := scanner.Bytes()
+			err = json.Unmarshal(line, &evt)
 			if err != nil {
-				log.Printf("[ERROR] cannot parse JSON line: %s", err)
+				log.Printf("[ERROR] cannot parse JSON line: %s - %s", err, string(line))
 				return
 			}
 			if evt.Test == "" {

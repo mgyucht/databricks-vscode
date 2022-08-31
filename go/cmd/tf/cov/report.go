@@ -1,4 +1,4 @@
-package main
+package cov
 
 import (
 	"deco/fileset"
@@ -8,11 +8,11 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/databricks/terraform-provider-databricks/provider"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	tfjson "github.com/hashicorp/terraform-json"
 )
 
-const providerSubmodule = "../ext/terraform-provider-databricks"
+var providerSubmodule = "../ext/terraform-provider-databricks"
+
 const docsSubmodule = "../ext/docs"
 
 type CoverageReport struct {
@@ -116,7 +116,7 @@ func (fc FieldCoverage) EverythingCovered() bool {
 	return fc.Docs && fc.AccTest && fc.UnitTest
 }
 
-func newResourceCoverage(files, databricksDocs fileset.FileSet, name string, s map[string]*schema.Schema, data bool) ResourceCoverage {
+func newResourceCoverage(files, databricksDocs fileset.FileSet, name string, s *tfjson.SchemaBlock, data bool) ResourceCoverage {
 	r := ResourceCoverage{
 		Name:    name,
 		Data:    data,
@@ -138,34 +138,31 @@ func newResourceCoverage(files, databricksDocs fileset.FileSet, name string, s m
 	return r
 }
 
-func main() {
+func prepare(p *tfjson.ProviderSchema) error {
 	databricksDocs, err := fileset.RecursiveChildren(docsSubmodule)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	providerFiles, err := fileset.RecursiveChildren(providerSubmodule)
 	if err != nil {
-		panic(err)
+		return err
 	}
-
-	p := provider.DatabricksProvider()
 	var cr CoverageReport
 	var longestResourceName, longestFieldName int
-
-	for k, v := range p.ResourcesMap {
+	for k, v := range p.ResourceSchemas {
 		if len(k) > longestResourceName {
 			longestResourceName = len(k)
 		}
-		r := newResourceCoverage(providerFiles, databricksDocs, k, v.Schema, false)
-		r.Deprecated = v.DeprecationMessage != ""
+		r := newResourceCoverage(providerFiles, databricksDocs, k, v.Block, false)
+		r.Deprecated = v.Block.Deprecated
 		cr.Resources = append(cr.Resources, r)
 	}
-	for k, v := range p.DataSourcesMap {
+	for k, v := range p.DataSourceSchemas {
 		if len(k) > longestResourceName {
 			longestResourceName = len(k)
 		}
-		r := newResourceCoverage(providerFiles, databricksDocs, k, v.Schema, true)
-		r.Deprecated = v.DeprecationMessage != ""
+		r := newResourceCoverage(providerFiles, databricksDocs, k, v.Block, true)
+		r.Deprecated = v.Block.Deprecated
 		cr.Resources = append(cr.Resources, r)
 	}
 	sort.Slice(cr.Resources, func(i, j int) bool {
@@ -218,16 +215,17 @@ func main() {
 	// 		))
 	// 	}
 	// }
+	return nil
 }
 
-func fields(r ResourceCoverage, s map[string]*schema.Schema, files fileset.FileSet) (fields []FieldCoverage) {
+func fields(r ResourceCoverage, s *tfjson.SchemaBlock, files fileset.FileSet) (fields []FieldCoverage) {
 	type pathWrapper struct {
-		r    *schema.Resource
+		tfjson.SchemaBlock
 		path []string
 	}
 	queue := []pathWrapper{
 		{
-			r: &schema.Resource{Schema: s},
+			SchemaBlock: *s,
 		},
 	}
 	doc := fileset.File{Absolute: r.DocLocation()}
@@ -239,21 +237,25 @@ func fields(r ResourceCoverage, s map[string]*schema.Schema, files fileset.FileS
 	for {
 		head := queue[0]
 		queue = queue[1:]
-		for field, v := range head.r.Schema {
+		for field, block := range head.NestedBlocks {
 			if noisyDuplicates[field] {
 				continue
 			}
-			path := append(head.path, field)
-			if nested, ok := v.Elem.(*schema.Resource); ok {
-				queue = append(queue, pathWrapper{
-					r:    nested,
-					path: path,
-				})
+			if block.Block == nil {
+				continue
 			}
+			path := append(head.path, field)
+			queue = append(queue, pathWrapper{
+				SchemaBlock: *block.Block,
+				path:        path,
+			})
+		}
+		for field, attr := range head.Attributes {
+			path := append(head.path, field)
 			fc := FieldCoverage{
 				Name: strings.Join(path, "."),
 			}
-			if v.Computed {
+			if attr.Computed {
 				fc.Name += " (computed)"
 			}
 			if r.Docs {

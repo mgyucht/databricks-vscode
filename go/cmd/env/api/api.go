@@ -1,26 +1,29 @@
 package api
 
 import (
-	"deco/cmd/root"
+	"deco/cmd/env"
 	"deco/testenv"
 	"fmt"
 
 	"github.com/TylerBrock/colorjson"
+	"github.com/databricks/databricks-sdk-go/databricks/client"
 	"github.com/spf13/cobra"
 )
 
 var apiCmd = &cobra.Command{
-	Use:   "api",
+	Use:   "api <path>",
 	Short: "Makes a call to Databricks REST API in environment",
-	Args:  cobra.ExactArgs(2),
+	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		client, err := testenv.NewClientFor(cmd.Context(), args[0])
+		cfg, err := testenv.NewConfigFor(cmd.Context(), env.GetName())
 		if err != nil {
 			return err
 		}
 		var response any
-		path := args[1]
-		err = client.Get(cmd.Context(), path, nil, &response)
+		path := args[0]
+
+		apiClient := client.New(cfg)
+		err = apiClient.Get(cmd.Context(), path, nil, &response)
 		if err != nil {
 			return fmt.Errorf("GET %s: %w", path, err)
 		}
@@ -36,5 +39,5 @@ var apiCmd = &cobra.Command{
 }
 
 func init() {
-	root.RootCmd.AddCommand(apiCmd)
+	env.EnvCmd.AddCommand(apiCmd)
 }
