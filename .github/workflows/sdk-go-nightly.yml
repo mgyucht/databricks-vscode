@@ -9,7 +9,14 @@ on:
     - cron: '0 6 * * *'
 
 jobs:
+  build-deco:
+    name: "Build Deco CLI"
+    uses: ./.github/workflows/build-deco.yml
+    secrets: inherit
+
   integration-tests-prod:
+    needs: [build-deco]
+
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -27,12 +34,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      # This step is only needed while the deco CLI still depends on TF (see #42).
-      - name: Checkout terraform-provider-databricks
-        uses: actions/checkout@v2
-        with:
-          repository: databricks/terraform-provider-databricks
-          path: ext/terraform-provider-databricks
+      - name: Setup Deco CLI
+        uses: ./.github/actions/setup-deco-cli
 
       - name: Checkout databricks-sdk-go
         uses: actions/checkout@v2
@@ -45,14 +48,11 @@ jobs:
         with:
           go-version: 1.18.x
 
-      - name: Vendor dependencies
-        run: |
-          if ! go mod vendor; then
-            go mod tidy
-          fi
-          git diff || true
-        working-directory: go
+      - name: Download dependencies for databricks-sdk-go
+        run: go mod download
+        working-directory: ext/databricks-sdk-go
 
       - name: Run tests
-        run: go run main.go env test all --name ${{ matrix.env }} --repo databricks-sdk-go
-        working-directory: go
+        run: deco env test all --name ${{ matrix.env }} --repo databricks-sdk-go
+        env:
+          GITHUB_SECRETS_JSON: '${{ toJson(secrets) }}'
