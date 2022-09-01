@@ -24,5 +24,5 @@ import (
 
 func main() {
 	databricks.WithProduct("deco", "0.0.1")
-	root.RootCmd.Execute()
+	root.Execute()
 }
