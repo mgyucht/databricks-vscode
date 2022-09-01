@@ -27,8 +27,15 @@ on:
         required: false
 
 jobs:
+  build-deco:
+    name: "Build Deco CLI"
+    uses: ./.github/workflows/build-deco.yml
+    secrets: inherit
+
   integration-test:
     name: "Integration test"
+    needs: [build-deco]
+
     strategy: 
       matrix:
           environment: [azure-prod-pat]
@@ -44,12 +51,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Unshallow
-        run: git fetch --prune --unshallow
+      - name: Setup Deco CLI
+        uses: ./.github/actions/setup-deco-cli
 
       - name: Expand actions environment secrets to variables
-        run: python3 scripts/tfit-env.py ${{ matrix.environment }} '${{ toJson(secrets) }}' >> $GITHUB_ENV
-      
+        run: deco env export --name ${{ matrix.environment }} --quote-values=false >> $GITHUB_ENV
+        env:
+          GITHUB_SECRETS_JSON: '${{ toJson(secrets) }}'
+
       - run: cd ext && git clone https://${{ secrets.DECO_GITHUB_TOKEN }}:x-oauth-basic@github.com/databricks/databricks-vscode
       - run: git fetch origin pull/${{ inputs.pull_request_number }}/head && git checkout FETCH_HEAD
         working-directory: ext/databricks-vscode

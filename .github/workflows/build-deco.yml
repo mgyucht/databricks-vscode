@@ -1,0 +1,61 @@
+name: build-deco
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout eng-dev-ecosystem
+        uses: actions/checkout@v2
+
+      - name: Checkout databricks-sdk-go
+        uses: actions/checkout@v2
+        with:
+          repository: databricks/databricks-sdk-go
+          token: ${{ secrets.DECO_GITHUB_TOKEN }}
+          path: ext/databricks-sdk-go
+
+      - uses: actions/setup-go@v1
+        with:
+          go-version: 1.18.x
+
+      # From https://github.com/actions/cache/blob/main/examples.md#go---modules
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Download dependencies
+        shell: bash
+        run: |
+          # Try to download dependencies.
+          # If this fails, we assume that the hashes listed in `go.sum` are out of date.
+          # Run `go mod tidy` if so, to update `go.sum`.
+          # Note: we can avoid this step by vendoring and committing all dependencies.
+          if ! go mod download; then
+            go mod tidy
+            # Print changes made to `go.sum`.
+            git diff || true
+          fi
+        working-directory: go
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v3
+        with:
+          version: latest
+          args: release --snapshot --rm-dist
+          workdir: go
+
+      - name: Store binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: deco
+          path: go/dist/deco_*/deco*
