@@ -2,6 +2,10 @@
     "gopls": {
         "experimentalWorkspaceModule": true
     },
+    "[go]": {
+        "editor.insertSpaces": false,
+        "editor.formatOnSave": true
+    },
     "[terraform]": {
         "editor.defaultFormatter": "hashicorp.terraform",
         "editor.formatOnSave": true,

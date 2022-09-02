@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 	"path"
-	
+
 	"github.com/sethvargo/go-githubactions"
 	"github.com/spf13/cobra"
 )
