@@ -18,9 +18,10 @@ jobs:
     needs: [build-deco]
 
     strategy: 
+      fail-fast: false 
       matrix:
           environment: [azure-prod-pat]
-          os: [macos-latest]
+          os: [macos-latest, windows-latest]
           node-version: [16.x]
           vscode-version: [stable, insiders]
 
@@ -29,6 +30,7 @@ jobs:
     environment: ${{ matrix.environment }}
     env: 
       VSCODE_TEST_VERSION: ${{ matrix.vscode-version }}
+
     steps:
       - uses: actions/checkout@v3
 
@@ -37,6 +39,7 @@ jobs:
 
       - name: Expand actions environment secrets to variables
         run: deco env export --name ${{ matrix.environment }} --quote-values=false >> $GITHUB_ENV
+        shell: bash
         env:
           GITHUB_SECRETS_JSON: '${{ toJson(secrets) }}'
 
@@ -65,9 +68,10 @@ jobs:
     name: "Extension Integration test"
     needs: [js-sdk-integration-test]
     strategy: 
+      fail-fast: false
       matrix:
           environment: [azure-prod-pat]
-          os: [macos-latest]
+          os: [macos-latest, windows-latest]
           node-version: [16.x]
           vscode-version: [stable, insiders]
 
@@ -76,6 +80,7 @@ jobs:
     environment: ${{ matrix.environment }}
     env: 
       VSCODE_TEST_VERSION: ${{ matrix.vscode-version }}
+
     steps:
       - uses: actions/checkout@v3
 
@@ -84,6 +89,7 @@ jobs:
 
       - name: Expand actions environment secrets to variables
         run: deco env export --name ${{ matrix.environment }} --quote-values=false >> $GITHUB_ENV
+        shell: bash
         env:
           GITHUB_SECRETS_JSON: '${{ toJson(secrets) }}'
 
@@ -96,22 +102,25 @@ jobs:
             cache: "yarn"
             cache-dependency-path: "ext/databricks-vscode/package.json"
 
-      - run: yarn install --immutable
-        working-directory: ext/databricks-vscode
-      
-      - name: Building packages
-        run: yarn run build
-        working-directory: ext/databricks-vscode
-
       - name: Integration Tests
         uses: nick-fields/retry@v2
         with:
             max_attempts: 3
             retry_wait_seconds: 2
-            timeout_minutes: 2
-            retry_on: error
+            timeout_minutes: 10
+            retry_on: any
             command: |
-                cd ext/databricks-vscode/packages/databricks-vscode
-                yarn run test:integ:prepare
-                yarn run test:integ:run
+                cd ext/databricks-vscode
+                yarn workspace databricks run test:integ:clean
+                yarn install --immutable
+                yarn build
+                yarn workspace databricks run test:integ
+
+      - name: Upload test logs
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v3
+        with:
+            name: test-logs ${{ join(inputs.*, ' - ') }} - ${{ github.event_name }}
+            path: ext/databricks-vscode/packages/databricks-vscode/src/test/logs
             

@@ -39,7 +39,7 @@ jobs:
     strategy: 
       matrix:
           environment: [azure-prod-pat]
-          os: [ubuntu-latest, macos-latest]
+          os: [windows-latest, macos-latest]
           node-version: [16.x]
           vscode-version: [stable, insiders]
 

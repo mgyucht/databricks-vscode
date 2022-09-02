@@ -27,7 +27,7 @@ runs:
           dir="${dir}_linux"
           ;;
         Windows)
-          dir="${dir}_linux"
+          dir="${dir}_windows"
           ;;
         macOS)
           dir="${dir}_darwin"
@@ -54,5 +54,11 @@ runs:
           echo "Directory does not exist: $dir"
           exit 1
         fi
+
+        if [ "$RUNNER_OS" == "Windows" ]; then
+          cd $dir
+          mv ./deco.exe ./deco
+        fi
+        
 
         echo "$dir" >> $GITHUB_PATH
