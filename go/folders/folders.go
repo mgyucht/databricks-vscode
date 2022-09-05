@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-func findDirWithLeaf(leaf string, dir string) (string, error) {
+func findDirWithLeaf(dir string, leaf string) (string, error) {
 	for {
 		_, err := os.Stat(fmt.Sprintf("%s/%s", dir, leaf))
 		if errors.Is(err, os.ErrNotExist) {
@@ -28,20 +28,36 @@ func findDirWithLeaf(leaf string, dir string) (string, error) {
 	}
 }
 
-// This function assumes your deco binary in PATH is a symlink pointing
-// to a deco binary in the eng-dev-ecosystem repository
+// This function assumes
+// EITHER
+// your deco binary in $PATH is a symlink pointing to a deco binary in the
+// eng-dev-ecosystem repository and you called this function with args[0] == "deco"
+// eg. `deco env list`
+// OR
+// The current working directory is or is in eng-dev-ecosystem repo
+// eg. `go run main.go env list`
 func FindEngDevEcosystemRoot() (string, error) {
+	if os.Args[0] != "deco" {
+		wd, err := os.Getwd()
+		if err != nil {
+			return "", fmt.Errorf("cannot find $PWD: %s", err)
+		}
+		return findDirWithLeaf(wd, ".git")
+	}
+
 	decoBinaryPath, err := exec.LookPath("deco")
 	if err != nil {
 		return "", fmt.Errorf("cannot find path for deco binary: %s", err)
 	}
 
-	// binary in PATH should be syslinked to a binary in eng-dev-ecosystem repository
+	// binary in PATH should be symlinked to a binary in eng-dev-ecosystem repository
+	// Please look at ~/eng-dev-ecosystem/go/Read.me for instructions on how to symlink the
+	// binary executable
 	decoBinaryInEngDevEcosystem, err := filepath.EvalSymlinks(decoBinaryPath)
 	if err != nil {
 		return "", err
 	}
 
-	engDevEcosystemRoot, err := findDirWithLeaf(".git", filepath.Dir(decoBinaryInEngDevEcosystem))
+	engDevEcosystemRoot, err := findDirWithLeaf(filepath.Dir(decoBinaryInEngDevEcosystem), ".git")
 	return engDevEcosystemRoot, err
 }
