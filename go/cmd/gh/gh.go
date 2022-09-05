@@ -65,7 +65,7 @@ func Repo() string {
 	if repo != "" {
 		return repo
 	}
-	projectRoot, err := folders.FindDirWithLeaf(".git")
+	projectRoot, err := folders.FindEngDevEcosystemRoot()
 	if err != nil {
 		panic(fmt.Errorf("not in eng-dev-ecosystem checkout: %w", err))
 	}

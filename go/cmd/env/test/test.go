@@ -17,7 +17,7 @@ var Runners = []ecosystem.TestRunner{
 }
 
 func CheckoutFileset() (string, fileset.FileSet, error) {
-	projectRoot, err := folders.FindDirWithLeaf(".git")
+	projectRoot, err := folders.FindEngDevEcosystemRoot()
 	if err != nil {
 		return "", nil, err
 	}
