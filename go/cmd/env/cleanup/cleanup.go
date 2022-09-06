@@ -7,7 +7,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/databricks/databricks-sdk-go/service/users"
+	"github.com/databricks/databricks-sdk-go/service/scim"
 	"github.com/databricks/databricks-sdk-go/service/workspace"
 	"github.com/databricks/databricks-sdk-go/workspaces"
 	"github.com/spf13/cobra"
@@ -28,7 +28,7 @@ var cleanupCmd = &cobra.Command{
 			return fmt.Errorf("currently only workspace client supported")
 		}
 		ws := workspaces.New(cfg)
-		users, err := ws.Users.ListUsers(cmd.Context(), users.ListUsersRequest{})
+		users, err := ws.Users.ListUsers(cmd.Context(), scim.ListUsersRequest{})
 		if err != nil {
 			return err
 		}
