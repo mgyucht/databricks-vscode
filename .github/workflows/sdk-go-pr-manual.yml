@@ -48,6 +48,6 @@ jobs:
         working-directory: ext/databricks-sdk-go
 
       - name: Run tests
-        run: deco env test all --name ${{ matrix.env }} --repo databricks-sdk-go
+        run: deco env test all --name ${{ inputs.environment }} --repo databricks-sdk-go
         env:
           GITHUB_SECRETS_JSON: '${{ toJson(secrets) }}'
