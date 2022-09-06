@@ -37,7 +37,8 @@ func findDirWithLeaf(dir string, leaf string) (string, error) {
 // The current working directory is or is in eng-dev-ecosystem repo
 // eg. `go run main.go env list`
 func FindEngDevEcosystemRoot() (string, error) {
-	if os.Args[0] != "deco" {
+	const DECO_CMD = "deco"
+	if os.Args[0] != DECO_CMD {
 		wd, err := os.Getwd()
 		if err != nil {
 			return "", fmt.Errorf("cannot find $PWD: %s", err)
@@ -45,7 +46,7 @@ func FindEngDevEcosystemRoot() (string, error) {
 		return findDirWithLeaf(wd, ".git")
 	}
 
-	decoBinaryPath, err := exec.LookPath("deco")
+	decoBinaryPath, err := exec.LookPath(DECO_CMD)
 	if err != nil {
 		return "", fmt.Errorf("cannot find path for deco binary: %s", err)
 	}
