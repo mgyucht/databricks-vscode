@@ -24,7 +24,7 @@ type Env struct {
 }
 
 func Available() []Env {
-	projectRoot, err := folders.FindDirWithLeaf(".git")
+	projectRoot, err := folders.FindEngDevEcosystemRoot()
 	if err != nil {
 		log.Printf("[ERROR] no git: %s", err)
 		return nil
