@@ -11,11 +11,12 @@ func TestDiscover(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestChangedFilesInRepo(t *testing.T) {
-	files, err := changedFoldersInRepo()
-	assert.NoError(t, err)
-	assert.True(t, len(files) > 1)
-}
+// Note(@pietern): Test is disabled because it requires a dirty working tree to pass.
+// func TestChangedFilesInRepo(t *testing.T) {
+// 	files, err := changedFoldersInRepo()
+// 	assert.NoError(t, err)
+// 	assert.True(t, len(files) > 1)
+// }
 
 func TestDo(t *testing.T) {
 	_, err := planAll()
