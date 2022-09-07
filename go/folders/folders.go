@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-func findDirWithLeaf(dir string, leaf string) (string, error) {
+func FindDirWithLeaf(dir string, leaf string) (string, error) {
 	for {
 		_, err := os.Stat(fmt.Sprintf("%s/%s", dir, leaf))
 		if errors.Is(err, os.ErrNotExist) {
@@ -43,7 +43,7 @@ func FindEngDevEcosystemRoot() (string, error) {
 		if err != nil {
 			return "", fmt.Errorf("cannot find $PWD: %s", err)
 		}
-		return findDirWithLeaf(wd, ".git")
+		return FindDirWithLeaf(wd, ".git")
 	}
 
 	decoBinaryPath, err := exec.LookPath(DECO_CMD)
@@ -59,6 +59,6 @@ func FindEngDevEcosystemRoot() (string, error) {
 		return "", err
 	}
 
-	engDevEcosystemRoot, err := findDirWithLeaf(filepath.Dir(decoBinaryInEngDevEcosystem), ".git")
+	engDevEcosystemRoot, err := FindDirWithLeaf(filepath.Dir(decoBinaryInEngDevEcosystem), ".git")
 	return engDevEcosystemRoot, err
 }

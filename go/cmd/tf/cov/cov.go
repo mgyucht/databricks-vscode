@@ -15,7 +15,11 @@ var tfcovCmd = &cobra.Command{
 	Use:   "cov",
 	Short: "Coverage for Terraform Provider",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		projectRoot, err := folders.FindDirWithLeaf(".git")
+		wd, err := os.Getwd()
+		if err != nil {
+			return fmt.Errorf("cannot find $PWD: %s", err)
+		}
+		projectRoot, err := folders.FindDirWithLeaf(wd, ".git")
 		if err != nil {
 			return err
 		}
