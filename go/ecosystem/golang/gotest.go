@@ -15,6 +15,7 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/nxadm/tail"
@@ -123,8 +124,6 @@ func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (result
 
 	// make sure to sync on writing to stdout
 	reader, writer := io.Pipe()
-	defer reader.Close()
-	defer writer.Close()
 
 	// TODO: pull up
 	// retrieve environment variables for a specified test environment
@@ -148,7 +147,14 @@ func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (result
 	if err != nil {
 		return nil, err
 	}
+
+	// We have to wait for the output to be fully processed before returning.
+	var wg sync.WaitGroup
+	wg.Add(1)
+
 	go func() {
+		defer wg.Done()
+
 		output := map[string][]string{}
 		scanner := bufio.NewScanner(reader)
 		var err error
@@ -212,7 +218,16 @@ func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (result
 			return
 		}
 	}()
-	return results, cmd.Run()
+
+	err = cmd.Run()
+
+	// The process has terminated; close the writer it had been writing into.
+	writer.Close()
+
+	// Wait for the goroutine above to finish appending to `results`.
+	wg.Wait()
+
+	return results, err
 }
 
 type goTestEvent struct {
