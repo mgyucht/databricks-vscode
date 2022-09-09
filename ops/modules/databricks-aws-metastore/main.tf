@@ -9,10 +9,21 @@ variable "data_sci_group" {}
 variable "metastore_data_access_arn" {}
 
 resource "databricks_metastore" "this" {
-  name          = var.name
-  storage_root  = "s3://${var.bucket}/metastore"
-  owner         = var.owner_group
-  force_destroy = true
+  name                = var.name
+  storage_root        = "s3://${var.bucket}/metastore"
+  owner               = var.owner_group
+  force_destroy       = true
+  delta_sharing_scope = "INTERNAL_AND_EXTERNAL"
+  
+  delta_sharing_recipient_token_lifetime_in_seconds = "300"
+}
+
+output "metastore_id" {
+  value = databricks_metastore.this.id
+}
+
+output "global_metastore_id" {
+  value = databricks_metastore.this.global_metastore_id
 }
 
 // Assign to all workspaces in the account

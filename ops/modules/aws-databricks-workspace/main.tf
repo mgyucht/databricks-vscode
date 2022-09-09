@@ -17,6 +17,10 @@ resource "databricks_mws_credentials" "this" {
   credentials_name = "${var.prefix}-creds"
 }
 
+output "credentials_id" {
+  value = databricks_mws_credentials.this.credentials_id
+}
+
 resource "databricks_mws_networks" "this" {
   account_id         = var.databricks_account_id
   network_name       = "${var.prefix}-network"
@@ -29,6 +33,10 @@ resource "databricks_mws_storage_configurations" "this" {
   account_id                 = var.databricks_account_id
   storage_configuration_name = "${var.prefix}-storage"
   bucket_name                = var.bucket_name
+}
+
+output "storage_configuration_id" {
+  value = databricks_mws_storage_configurations.this.storage_configuration_id
 }
 
 resource "databricks_mws_customer_managed_keys" "storage" {
