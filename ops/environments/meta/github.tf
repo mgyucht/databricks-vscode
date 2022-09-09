@@ -12,7 +12,8 @@ provider "github" {
 
 // put a token required for private repo checkouts from github actions
 resource "github_actions_secret" "github_token" {
-  repository      = "eng-dev-ecosystem"
+  for_each        = toset(["eng-dev-ecosystem", "databricks-vscode", "bricks"])
+  repository      = each.key
   secret_name     = "DECO_GITHUB_TOKEN"
   plaintext_value = data.azurerm_key_vault_secret.deco_github_token.value
 }
