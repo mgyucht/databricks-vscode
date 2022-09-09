@@ -1,5 +1,8 @@
 output "private_subnets" {
-  value = module.vpc.private_subnets
+  value = [
+    module.vpc.private_subnets[0],
+    module.vpc.private_subnets[1]
+  ]
 }
 
 output "vpc_id" {
@@ -44,8 +47,8 @@ output "test_env" {
 
     "TEST_VPC_ID" : module.vpc.vpc_id,
     "TEST_SECURITY_GROUP" : module.vpc.default_security_group_id,
-    "TEST_SUBNET_PRIVATE" : module.vpc.private_subnets[0],
-    "TEST_SUBNET_PRIVATE2" : module.vpc.private_subnets[1],
+    "TEST_SUBNET_PRIVATE" : module.vpc.private_subnets[2],
+    "TEST_SUBNET_PRIVATE2" : module.vpc.private_subnets[3],
 
     "TEST_RELAY_VPC_ENDPOINT" : aws_vpc_endpoint.relay.id,
 
