@@ -123,7 +123,7 @@ func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (result
 	module := strings.Split(lines[0], " ")[1]
 
 	// make sure to sync on writing to stdout
-	reader, writer := io.Pipe()
+	pipeReader, pipeWriter := io.Pipe()
 
 	// TODO: pull up
 	// retrieve environment variables for a specified test environment
@@ -140,13 +140,22 @@ func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (result
 		testFilter = "TestAcc"
 	}
 	cmd := exec.Command("go", "test", "-json", "./...", "-run", fmt.Sprintf("^%s", testFilter))
-	cmd.Stdout = writer
-	cmd.Stderr = writer
+	cmd.Stdout = pipeWriter
+	cmd.Stderr = pipeWriter
 	cmd.Dir = files.Root()
 	err = r.setCmdEnv(cmd, vars)
 	if err != nil {
 		return nil, err
 	}
+
+	// Tee into file so we can debug issues with logic below.
+	teeFile, err := os.OpenFile("test.log", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Printf("[ERROR] unable to open log file: %s", err)
+		return nil, err
+	}
+	defer teeFile.Close()
+	reader := io.TeeReader(pipeReader, teeFile)
 
 	// We have to wait for the output to be fully processed before returning.
 	var wg sync.WaitGroup
@@ -222,7 +231,7 @@ func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (result
 	err = cmd.Run()
 
 	// The process has terminated; close the writer it had been writing into.
-	writer.Close()
+	pipeWriter.Close()
 
 	// Wait for the goroutine above to finish appending to `results`.
 	wg.Wait()

@@ -56,3 +56,10 @@ jobs:
         run: deco env test all --name ${{ matrix.env }} --repo databricks-sdk-go -v
         env:
           GITHUB_SECRETS_JSON: '${{ toJson(secrets) }}'
+
+      - name: Archive logs
+        if: always()
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{ matrix.env }}-test.log
+          path: test.log

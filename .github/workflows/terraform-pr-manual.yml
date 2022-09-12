@@ -53,3 +53,10 @@ jobs:
         working-directory: go
         env:
           GITHUB_SECRETS_JSON: '${{ toJson(secrets) }}'
+
+      - name: Archive logs
+        if: always()
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{ inputs.environment }}-test.log
+          path: go/test.log
