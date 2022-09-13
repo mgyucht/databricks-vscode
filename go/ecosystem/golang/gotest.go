@@ -135,7 +135,7 @@ func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (result
 	if !ok {
 		testFilter = "TestAcc"
 	}
-	cmd := exec.Command("go", "test", "-json", "./...", "-run", fmt.Sprintf("^%s", testFilter))
+	cmd := exec.Command("go", "test", "-json", "./...", "-timeout", "15m", "-run", fmt.Sprintf("^%s", testFilter))
 	cmd.Stdout = pipeWriter
 	cmd.Stderr = pipeWriter
 	cmd.Dir = files.Root()
