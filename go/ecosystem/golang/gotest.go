@@ -1,22 +1,18 @@
 package golang
 
 import (
-	"bufio"
 	"context"
 	"deco/cmd/env"
 	"deco/ecosystem/reporting"
 	"deco/fileset"
 	"deco/testenv"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"os"
 	"os/exec"
-	"regexp"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/nxadm/tail"
 )
@@ -164,67 +160,12 @@ func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (result
 	go func() {
 		defer wg.Done()
 
-		output := map[string][]string{}
-		scanner := bufio.NewScanner(reader)
-		var err error
-		var re = regexp.MustCompile(`(?mUs)Error:\s+(.*)Test:\s+`)
-		for scanner.Scan() {
-			var evt goTestEvent
-			line := scanner.Bytes()
-			err = json.Unmarshal(line, &evt)
-			if err != nil {
-				log.Printf("[ERROR] cannot parse JSON line: %s - %s", err, string(line))
-				return
-			}
-			if evt.Test == "" {
-				continue
-			}
-			evt.Package = strings.ReplaceAll(evt.Package, module+"/", "")
-			key := fmt.Sprintf("%s/%s", evt.Package, evt.Test)
-			switch evt.Action {
-			case "output":
-				output[key] = append(output[key], evt.Output)
-			case "pass":
-				results = append(results, reporting.TestResult{
-					Time:    evt.Time,
-					Package: evt.Package,
-					Name:    evt.Test,
-					Pass:    true,
-					Elapsed: evt.Elapsed,
-				})
-				log.Printf("[INFO] ✅ %s (%0.3fs)", evt.Test, evt.Elapsed)
-			case "skip":
-				testLog := strings.Join(output[key], "")
-				// filter out "package contains no tests"
-				results = append(results, reporting.TestResult{
-					Time:    evt.Time,
-					Package: evt.Package,
-					Name:    evt.Test,
-					Skip:    true,
-					Output:  testLog,
-					Elapsed: evt.Elapsed,
-				})
-				log.Printf("[DEBUG] 🦥 %s: %s", evt.Test, testLog)
-			case "fail":
-				testLog := strings.Join(output[key], "")
-				results = append(results, reporting.TestResult{
-					Time:    evt.Time,
-					Package: evt.Package,
-					Name:    evt.Test,
-					Output:  testLog,
-					Elapsed: evt.Elapsed,
-				})
-				concise := re.FindAllString(testLog, -1)
-				log.Printf("[INFO] ❌ %s (%0.3fs)\n%s",
-					evt.Test, evt.Elapsed, strings.Join(concise, "\n"))
-			default:
-				continue
-			}
-		}
-		err = scanner.Err()
-		if err != nil && err != io.ErrClosedPipe {
-			log.Printf("[ERROR] cannot scan json lines: %s", err)
-			return
+		ch := ReadTestEvents(reader)
+		results = CollectTestReport(ch)
+
+		// Strip root module from package name for brevity.
+		for i := range results {
+			results[i].Package = strings.TrimPrefix(results[i].Package, module+"/")
 		}
 	}()
 
@@ -233,17 +174,8 @@ func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (result
 	// The process has terminated; close the writer it had been writing into.
 	pipeWriter.Close()
 
-	// Wait for the goroutine above to finish appending to `results`.
+	// Wait for the goroutine above to finish collecting the test report.
 	wg.Wait()
 
 	return results, err
-}
-
-type goTestEvent struct {
-	Time    time.Time // encodes as an RFC3339-format string
-	Action  string
-	Package string
-	Test    string
-	Elapsed float64 // seconds
-	Output  string
 }
