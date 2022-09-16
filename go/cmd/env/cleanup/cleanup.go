@@ -61,7 +61,7 @@ var cleanupCmd = &cobra.Command{
 			if strings.Contains(v.Path, "@databricks.com") {
 				continue
 			}
-			err = ws.Workspace.Delete(cmd.Context(), workspace.DeleteRequest{
+			err = ws.Workspace.Delete(cmd.Context(), workspace.Delete{
 				Path:      v.Path,
 				Recursive: true,
 			})
