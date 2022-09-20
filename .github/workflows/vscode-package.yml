@@ -62,13 +62,13 @@ jobs:
         run: yarn run build
         working-directory: ext/databricks-vscode
 
-      - run: yarn workspace databricks package:cli:fetch
+      - run: yarn workspace databricks-vscode package:cli:fetch
         working-directory: ext/databricks-vscode
 
       - run: mkdir -p packages/databricks-vscode/artifacts
         working-directory: ext/databricks-vscode
 
-      - run: yarn workspace databricks package -o artifacts -t ${{ matrix.arch.vsix_arch }}
+      - run: yarn workspace databricks-vscode package -o artifacts -t ${{ matrix.arch.vsix_arch }}
         working-directory: ext/databricks-vscode
 
       - name: Upload artifacts

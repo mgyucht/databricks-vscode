@@ -18,7 +18,7 @@ on:
         type: choice
         options:  
           - '@databricks/databricks-sdk'
-          - 'databricks'
+          - '@databricks/databricks-vscode'
           - 'databricks-vscode'
 
       test_grep:
