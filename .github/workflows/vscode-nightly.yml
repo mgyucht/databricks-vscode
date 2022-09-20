@@ -111,10 +111,10 @@ jobs:
             retry_on: any
             command: |
                 cd ext/databricks-vscode
-                yarn workspace databricks run test:integ:clean
+                yarn workspace databricks-vscode run test:integ:clean
                 yarn install --immutable
                 yarn build
-                yarn workspace databricks run test:integ
+                yarn workspace databricks-vscode run test:integ
 
       - name: Upload test logs
         if: always()
