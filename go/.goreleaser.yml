@@ -13,12 +13,19 @@ builds:
       - darwin
     goarch:
       - amd64
-      - '386'
       - arm
       - arm64
     ignore:
-      - goos: darwin
-        goarch: '386'
+      # Only build amd64 for Linux
+      - goos: linux
+        goarch: arm
+      - goos: linux
+        goarch: arm64
+      # Only build amd64 for Windows
+      - goos: windows
+        goarch: arm
+      - goos: windows
+        goarch: arm64
     # Snapshots should not have a `_vZZZ` suffix.
     # We assume the executable is named `deco` both on developer machines (see README.md) and in GitHub Actions.
     binary: '{{ .ProjectName }}{{ if not .IsSnapshot }}_v{{ .Version }}{{ end }}'
