@@ -64,7 +64,7 @@ module "vpc_endpoints" {
     kinesis-streams = {
       service             = "kinesis-streams"
       private_dns_enabled = true
-      subnet_ids          = module.vpc.private_subnets
+      subnet_ids          = [module.vpc.private_subnets[0], module.vpc.private_subnets[1]]
       tags = {
         Name = "${local.prefix}-kinesis-vpc-endpoint"
       }

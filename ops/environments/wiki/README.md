@@ -18,13 +18,22 @@
  * Available environment: `AWS_ACCOUNT_ID`, `AWS_REGION`, `CLOUD_ENV`, `DATABRICKS_ACCOUNT_ID`, `DATABRICKS_HOST`, `DATABRICKS_PASSWORD`, `DATABRICKS_USERNAME`, `TEST_CROSSACCOUNT_ARN`, `TEST_FILTER`, `TEST_MANAGED_KMS_KEY_ALIAS`, `TEST_MANAGED_KMS_KEY_ARN`, `TEST_METASTORE_BUCKET`, `TEST_OTHER_BUCKET`, `TEST_RELAY_VPC_ENDPOINT`, `TEST_ROOT_BUCKET`, `TEST_SECURITY_GROUP`, `TEST_STORAGE_KMS_KEY_ALIAS`, `TEST_STORAGE_KMS_KEY_ARN`, `TEST_SUBNET_PRIVATE`, `TEST_SUBNET_PRIVATE2`, `TEST_VPC_ID`
  * Previews: "unity_catalog": "ENABLED"
 
+## aws-prod-ucacct
+ * Cloud: `aws`
+ * Environment: `prod`
+ * Databricks Host: https://accounts.cloud.databricks.com/
+ * Account ID: `4d9d3bc8-66c3-4e5a-8a0a-551f564257f0`
+ * Account Console: https://accounts.cloud.databricks.com/login?account_id=4d9d3bc8-66c3-4e5a-8a0a-551f564257f0
+ * Available environment: `CLOUD_ENV`, `DATABRICKS_ACCOUNT_ID`, `DATABRICKS_HOST`, `DATABRICKS_PASSWORD`, `DATABRICKS_USERNAME`, `TEST_DATA_ENG_GROUP`, `TEST_DATA_SCI_GROUP`, `TEST_FILTER`, `TEST_GLOBAL_METASTORE_ID`, `TEST_METASTORE_ID`, `TEST_WORKSPACE_ID`
+ * Previews: "unity_catalog": "ENABLED"
+
 ## aws-prod-ucws
  * Cloud: `aws`
  * Environment: `prod`
  * Databricks Host: https://dbc-70c57887-2d7f.cloud.databricks.com
  * Account ID: `4d9d3bc8-66c3-4e5a-8a0a-551f564257f0`
  * Account Console: https://accounts.cloud.databricks.com/login?account_id=4d9d3bc8-66c3-4e5a-8a0a-551f564257f0
- * Available environment: `CLOUD_ENV`, `DATABRICKS_HOST`, `DATABRICKS_PASSWORD`, `DATABRICKS_USERNAME`, `TEST_DATA_ENG_GROUP`, `TEST_DATA_SCI_GROUP`, `TEST_GLOBAL_METASTORE_ID`, `TEST_METASTORE_ID`, `TEST_WORKSPACE_ID`
+ * Available environment: `CLOUD_ENV`, `DATABRICKS_HOST`, `DATABRICKS_PASSWORD`, `DATABRICKS_USERNAME`, `TEST_BUCKET`, `TEST_DATA_ENG_GROUP`, `TEST_DATA_SCI_GROUP`, `TEST_FILTER`, `TEST_GLOBAL_METASTORE_ID`, `TEST_METASTORE_ADMIN_GROUP_NAME`, `TEST_METASTORE_DATA_ACCESS_ARN`, `TEST_METASTORE_ID`, `TEST_WORKSPACE_ID`, `THIS_WORKSPACE_ID`
  * Previews: "unity_catalog": "ENABLED"
 
 ## azure-prod

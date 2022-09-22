@@ -37,13 +37,13 @@ module "databricks_fixtures" {
 module "secrets" {
   source      = "../../modules/github-secrets"
   environment = "azure-prod"
-  secrets = merge(module.fixtures.test_env, {
-    "CLOUD_ENV" : "azure",
-    "TEST_DEFAULT_CLUSTER_ID" : module.databricks_fixtures.default_cluster_id
-    "DATABRICKS_HOST" : module.workspace.workspace_url,
-    "DATABRICKS_AZURE_RESOURCE_ID" : module.workspace.resource_id,
-    "ARM_TENANT_ID" : module.defaults.azure_tenant_id,
-    "ARM_CLIENT_SECRET" : module.spn.client_secret,
-    "ARM_CLIENT_ID" : module.spn.client_id,
-  })
+  secrets = merge(module.fixtures.test_env, 
+    merge(module.databricks_fixtures.test_env, {
+      "CLOUD_ENV" : "azure",
+      "DATABRICKS_HOST" : module.workspace.workspace_url,
+      "DATABRICKS_AZURE_RESOURCE_ID" : module.workspace.resource_id,
+      "ARM_TENANT_ID" : module.defaults.azure_tenant_id,
+      "ARM_CLIENT_SECRET" : module.spn.client_secret,
+      "ARM_CLIENT_ID" : module.spn.client_id,
+  }))
 }

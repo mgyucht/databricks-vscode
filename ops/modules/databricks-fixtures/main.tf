@@ -19,8 +19,10 @@ module "clusters" {
   source = "../databricks-clusters"
 }
 
-output "default_cluster_id" {
-  value = module.clusters.default_cluster_id
+output "test_env" {
+  value = {
+    "TEST_DEFAULT_CLUSTER_ID": module.clusters.default_cluster_id,
+  }
 }
 
 resource "databricks_token" "pat" {

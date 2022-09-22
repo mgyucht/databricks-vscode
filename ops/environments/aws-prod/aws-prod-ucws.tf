@@ -17,7 +17,7 @@ resource "databricks_mws_workspaces" "dummy" {
 }
 
 provider "databricks" {
-  alias     = "workspace"
+  alias     = "ucws"
   auth_type = "basic"
   host      = databricks_mws_workspaces.this.workspace_url
   username  = data.azurerm_key_vault_secret.username.value
@@ -34,7 +34,7 @@ module "metastore_bucket" {
 module "metastore" {
   source = "../../modules/databricks-aws-metastore"
   providers = {
-    databricks = databricks.workspace
+    databricks = databricks.ucws
   }
 
   name                      = module.metastore_bucket.bucket

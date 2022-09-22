@@ -21,12 +21,25 @@ module "workspace" {
   storage_cmk_alias          = module.fixtures.storage_cmk_alias
 }
 
+provider "databricks" {
+  alias = "workspace"
+  host  = module.workspace.databricks_host
+  token = module.workspace.databricks_token
+}
+
+module "databricks_fixtures" {
+  providers = {
+    databricks = databricks.workspace
+  }
+  source = "../../modules/databricks-fixtures"
+}
+
 module "no_uc_workspace" {
   source      = "../../modules/github-secrets"
   environment = "aws-prod"
-  secrets = merge(module.fixtures.test_env, {
+  secrets = merge(module.databricks_fixtures.test_env, {
     "CLOUD_ENV" : "aws",
-    "DATABRICKS_HOST" : module.workspace.databricks_host
+    "DATABRICKS_HOST" : module.workspace.databricks_host,
     "DATABRICKS_TOKEN" : module.workspace.databricks_token
   })
 }
