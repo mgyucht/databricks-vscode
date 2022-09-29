@@ -1,6 +1,6 @@
 # eng-dev-ecosystem
 
-See roadmpa for [Python](PYTHON_ROADMAP.md).
+See roadmap for [Python](PYTHON_ROADMAP.md).
 
 # infrastructure
 
