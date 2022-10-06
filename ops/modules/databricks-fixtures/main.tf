@@ -21,7 +21,10 @@ module "clusters" {
 
 output "test_env" {
   value = {
-    "TEST_DEFAULT_CLUSTER_ID": module.clusters.default_cluster_id,
+    "TEST_DEFAULT_CLUSTER_ID" : module.clusters.default_cluster_id,
+    "TEST_BRICKS_CLUSTER_ID" : module.clusters.bricks_cluster_id,
+    "TEST_VSCODE_CLUSTER_ID" : module.clusters.vscode_cluster_id,
+    "TEST_DATABRICKS_SDK_GO_CLUSTER_ID" : module.clusters.databricks_sdk_go_cluster_id,
   }
 }
 
