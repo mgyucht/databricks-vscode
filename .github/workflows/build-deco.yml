@@ -10,10 +10,10 @@ jobs:
 
     steps:
       - name: Checkout eng-dev-ecosystem
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Checkout databricks-sdk-go
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: databricks/databricks-sdk-go
           token: ${{ secrets.DECO_GITHUB_TOKEN }}

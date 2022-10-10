@@ -21,21 +21,22 @@ jobs:
     environment: ${{ inputs.environment }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - uses: actions/setup-go@v1
+      - name: Setup Go
+        uses: actions/setup-go@v3
         with:
           go-version: 1.18.x
 
       - name: Checkout databricks-sdk-go
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: databricks/databricks-sdk-go
           token: ${{ secrets.DECO_GITHUB_TOKEN }}
           path: ext/databricks-sdk-go
 
       - name: Checkout terraform-provider-databricks
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: databricks/terraform-provider-databricks
           ref: refs/pull/${{ inputs.pull_request_number }}/merge
