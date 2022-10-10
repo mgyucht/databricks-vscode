@@ -14,7 +14,7 @@ resource "databricks_metastore" "this" {
   owner               = var.owner_group
   force_destroy       = true
   delta_sharing_scope = "INTERNAL_AND_EXTERNAL"
-  
+
   delta_sharing_recipient_token_lifetime_in_seconds = "300"
 }
 
@@ -56,13 +56,20 @@ resource "databricks_catalog" "sandbox" {
 
 resource "databricks_grants" "sandbox" {
   catalog = databricks_catalog.sandbox.name
+
   grant {
-    principal  = var.data_eng_group
-    privileges = ["USAGE", "CREATE"]
+    principal = var.data_eng_group
+    privileges = [
+      "CREATE_SCHEMA",
+      "USE_CATALOG",
+    ]
   }
+
   grant {
-    principal  = var.data_sci_group
-    privileges = ["USAGE"]
+    principal = var.data_sci_group
+    privileges = [
+      "USE_CATALOG",
+    ]
   }
 }
 
@@ -77,8 +84,11 @@ resource "databricks_schema" "things" {
 
 resource "databricks_grants" "things" {
   schema = databricks_schema.things.id
+
   grant {
-    principal  = var.data_sci_group
-    privileges = ["USAGE"]
+    principal = var.data_sci_group
+    privileges = [
+      "USE_SCHEMA",
+    ]
   }
 }
