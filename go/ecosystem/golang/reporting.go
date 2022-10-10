@@ -121,6 +121,8 @@ func CollectTestReport(ch <-chan TestEvent) (report reporting.TestReport) {
 				Elapsed: testEvent.Elapsed,
 			})
 			log.Printf("[INFO] ❌ %s (%0.3fs)\n%s", testEvent.Test, testEvent.Elapsed, summarize(testLog))
+			// We print the full error logs in case the test fails for easier debugging on github actions
+			log.Printf("[INFO][%s] %s", testEvent.Test, testLog)
 		default:
 			continue
 		}

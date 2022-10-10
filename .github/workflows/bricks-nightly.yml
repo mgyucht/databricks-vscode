@@ -1,0 +1,61 @@
+name: bricks-nightly
+
+on:
+  workflow_dispatch:
+    # manual workflow testing
+    # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
+
+  schedule:
+    - cron: '0 6 * * *'
+
+
+jobs:
+  build-deco:
+    name: "Build Deco CLI"
+    uses: ./.github/workflows/build-deco.yml
+    secrets: inherit
+
+  integration-tests-prod:
+    needs: [build-deco]
+
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+          - azure-prod
+          - gcp-prod
+          - aws-prod
+  
+    environment: ${{ matrix.env }}
+
+    steps:
+      - name: Checkout eng-dev-ecosystem
+        uses: actions/checkout@v3
+
+      - name: Setup Deco CLI
+        uses: ./.github/actions/setup-deco-cli
+
+      - name: Checkout bricks repo
+        uses: actions/checkout@v3
+        with:
+          repository: databricks/bricks
+          token: ${{ secrets.DECO_GITHUB_TOKEN }}
+          path: ext/bricks
+          submodules: true
+
+      - name: Setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.18.x
+          cache: true
+          cache-dependency-path: ext/bricks/go.mod
+
+      - name: Download dependencies for bricks
+        run: go mod download
+        working-directory: ext/bricks
+
+      - name: Run all bricks acceptance tests
+        run: deco env test all --name ${{ matrix.env }} --repo bricks
+        env:
+          GITHUB_SECRETS_JSON: '${{ toJson(secrets) }}'

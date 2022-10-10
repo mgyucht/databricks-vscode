@@ -14,9 +14,7 @@ import (
 type FileSet []File
 
 func (fi FileSet) Root() string {
-	return strings.TrimSuffix(
-		strings.ReplaceAll(fi[0].Absolute, fi[0].Relative, ""),
-		"/")
+	return strings.TrimSuffix(fi[0].Absolute, "/"+fi[0].Relative)
 }
 
 func (fi FileSet) FirstMatch(pathRegex, needleRegex string) *File {
@@ -119,6 +117,11 @@ func RecursiveChildren(dir string) (found FileSet, err error) {
 			continue
 		}
 		if current.Name() == "scripts" {
+			continue
+		}
+		// ext directory contains external projects at the current project depends
+		// on. We should ignore it for listing files in the project
+		if current.Name() == "ext" {
 			continue
 		}
 		children, err := ReadDir(current.Absolute)

@@ -10,6 +10,7 @@ import (
 	_ "deco/cmd/env/test"
 	_ "deco/cmd/env/test/all"
 	_ "deco/cmd/env/test/debug"
+	_ "deco/cmd/env/test/list"
 	_ "deco/cmd/gh"
 	_ "deco/cmd/gh/checkoutpr"
 	_ "deco/cmd/gh/releasenotes"

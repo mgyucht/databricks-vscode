@@ -40,7 +40,8 @@ var allCmd = &cobra.Command{
 		// upload artifact apis are a bit involved at the moment...
 		// but perhaps we can really make it work...
 		//   const artifactUrl = `${env.ACTIONS_RUNTIME_URL}_apis/pipelines/workflows/${env.GITHUB_RUN_ID}/artifacts?api-version=6.0-preview`
-		err = report.WriteReport(repo, path.Join(files.Root(), "../../dist/test-report.json"))
+		root := files.Root()
+		err = report.WriteReport(repo, path.Join(root, "../../dist/test-report.json"))
 		if err != nil {
 			log.Printf("[ERR] %s", err)
 		}

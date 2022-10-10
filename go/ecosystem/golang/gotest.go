@@ -108,8 +108,9 @@ func (r GoTestRunner) RunOne(ctx context.Context, files fileset.FileSet, one str
 
 func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (results reporting.TestReport, err error) {
 	goMod := files.FirstMatch(`go.mod`, `module .*\n`)
+	root := files.Root()
 	if goMod == nil {
-		return nil, fmt.Errorf("%s has no module file", files.Root())
+		return nil, fmt.Errorf("%s has no module file", root)
 	}
 	raw, err := goMod.Raw()
 	if err != nil {
@@ -135,10 +136,10 @@ func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (result
 	if !ok {
 		testFilter = "TestAcc"
 	}
-	cmd := exec.Command("go", "test", "-json", "./...", "-timeout", "15m", "-run", fmt.Sprintf("^%s", testFilter))
+	cmd := exec.Command("go", "test", "./...", "-json", "-timeout", "15m", "-run", fmt.Sprintf("^%s", testFilter))
 	cmd.Stdout = pipeWriter
 	cmd.Stderr = pipeWriter
-	cmd.Dir = files.Root()
+	cmd.Dir = root
 	err = r.setCmdEnv(cmd, vars)
 	if err != nil {
 		return nil, err
@@ -159,7 +160,6 @@ func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (result
 
 	go func() {
 		defer wg.Done()
-
 		ch := ReadTestEvents(reader)
 		results = CollectTestReport(ch)
 
@@ -169,6 +169,9 @@ func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (result
 		}
 	}()
 
+	// Print statements helpful for debugging in the github actions logs
+	fmt.Println("[DEBUG] Test execution command: ", cmd.String())
+	fmt.Println("[DEBUG] Test execution directory: ", cmd.Dir)
 	err = cmd.Run()
 
 	// The process has terminated; close the writer it had been writing into.
