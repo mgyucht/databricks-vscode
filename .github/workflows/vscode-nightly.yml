@@ -123,4 +123,26 @@ jobs:
         with:
             name: test-logs ${{ join(inputs.*, ' - ') }} - ${{ github.event_name }}
             path: ext/databricks-vscode/packages/databricks-vscode/src/test/logs
-            
+
+  slack-notify:
+    name: "Post Slack notification"
+    runs-on: ubuntu-latest
+
+    needs: [js-sdk-integration-test, extension-integration-test, build-deco]
+    if: always()
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Deco CLI
+        uses: ./.github/actions/setup-deco-cli
+
+      - name: Post Slack notification
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          deco slack post-action-status
+        env:
+          GITHUB_JOB_REGEXP: "^(JS SDK Integration test|Extension Integration test)"
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: eng-dev-ecosystem-team

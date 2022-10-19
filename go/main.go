@@ -16,6 +16,8 @@ import (
 	_ "deco/cmd/gh/releasenotes"
 	_ "deco/cmd/gh/updateprs"
 	"deco/cmd/root"
+	_ "deco/cmd/slack"
+	_ "deco/cmd/slack/post"
 	_ "deco/cmd/tf"
 	_ "deco/cmd/tf/cov"
 	_ "deco/cmd/version"
