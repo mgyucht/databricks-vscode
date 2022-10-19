@@ -60,7 +60,7 @@ func getenv(name string) (string, error) {
 	return value, nil
 }
 
-func LoadActionStatus(ctx context.Context, gh *GitHub, jobs []*github.WorkflowJob) (*Webhook, error) {
+func LoadActionStatus(ctx context.Context, run *WorkflowRunClient, jobs []*github.WorkflowJob) (*Webhook, error) {
 	githubWorkflow, err := getenv("GITHUB_WORKFLOW")
 	if err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func LoadActionStatus(ctx context.Context, gh *GitHub, jobs []*github.WorkflowJo
 		return nil, err
 	}
 
-	runURL := fmt.Sprintf("https://github.com/%s/%s/actions/runs/%d", gh.Owner, gh.Repo, gh.RunID)
+	runURL := fmt.Sprintf("https://github.com/%s/%s/actions/runs/%d", run.Owner, run.Repo, run.RunID)
 	text := fmt.Sprintf(":failed: *%s* failed (<%s|run>)", githubWorkflow, runURL)
 	wh := Webhook{
 		Text:      text,
@@ -109,32 +109,40 @@ func LoadActionStatus(ctx context.Context, gh *GitHub, jobs []*github.WorkflowJo
 	return &wh, nil
 }
 
-type GitHub struct {
+type WorkflowRunClient struct {
 	*github.Client
+	*github.WorkflowRun
 
 	Owner string
 	Repo  string
 	RunID int64
 }
 
-func NewGitHubClient(ctx context.Context) (*GitHub, error) {
+func NewWorkflowRunClient(ctx context.Context) (*WorkflowRunClient, error) {
 	parts := strings.SplitN(os.Getenv("GITHUB_REPOSITORY"), "/", 2)
 	runID, err := strconv.ParseInt(os.Getenv("GITHUB_RUN_ID"), 10, 64)
 	if err != nil {
 		return nil, err
 	}
 
-	return &GitHub{
+	run := &WorkflowRunClient{
 		Client: gh.Client(ctx),
 
 		Owner: parts[0],
 		Repo:  parts[1],
 		RunID: runID,
-	}, nil
+	}
+
+	run.WorkflowRun, _, err = run.Actions.GetWorkflowRunByID(ctx, run.Owner, run.Repo, run.RunID)
+	if err != nil {
+		return nil, err
+	}
+
+	return run, nil
 }
 
-func (gh *GitHub) GetJobs(ctx context.Context, pattern string) ([]*github.WorkflowJob, error) {
-	jobs, _, err := gh.Actions.ListWorkflowJobs(ctx, gh.Owner, gh.Repo, gh.RunID, &github.ListWorkflowJobsOptions{})
+func (run *WorkflowRunClient) GetJobs(ctx context.Context, pattern string) ([]*github.WorkflowJob, error) {
+	jobs, _, err := run.Actions.ListWorkflowJobs(ctx, run.Owner, run.Repo, run.RunID, &github.ListWorkflowJobsOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -151,13 +159,13 @@ func (gh *GitHub) GetJobs(ctx context.Context, pattern string) ([]*github.Workfl
 	return out, nil
 }
 
-func Post(ctx context.Context, gh *GitHub, jobs []*github.WorkflowJob) error {
+func Post(ctx context.Context, run *WorkflowRunClient, jobs []*github.WorkflowJob) error {
 	webhook, err := getenv("SLACK_WEBHOOK")
 	if err != nil {
 		return err
 	}
 
-	wh, err := LoadActionStatus(ctx, gh, jobs)
+	wh, err := LoadActionStatus(ctx, run, jobs)
 	if err != nil {
 		return err
 	}
@@ -183,9 +191,17 @@ var post = &cobra.Command{
 	Use:   "post-action-status",
 	Short: "Post to a Slack webhook URL",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		gh, err := NewGitHubClient(cmd.Context())
+		run, err := NewWorkflowRunClient(cmd.Context())
 		if err != nil {
 			return err
+		}
+
+		// If this run is not the first attempt, someone must be triggering re-runs.
+		// We don't want to spam Slack with notifications for these runs.
+		attempt := run.GetRunAttempt()
+		if attempt > 1 {
+			log.Printf("[INFO] This run is attempt %d; not posting Slack message", attempt)
+			return nil
 		}
 
 		regexp, err := getenv("GITHUB_JOB_REGEXP")
@@ -193,7 +209,7 @@ var post = &cobra.Command{
 			return err
 		}
 
-		jobs, err := gh.GetJobs(cmd.Context(), regexp)
+		jobs, err := run.GetJobs(cmd.Context(), regexp)
 		if err != nil {
 			return err
 		}
@@ -210,7 +226,7 @@ var post = &cobra.Command{
 		}
 
 		log.Printf("[INFO] One or more jobs failed; posting Slack message")
-		return Post(cmd.Context(), gh, jobs)
+		return Post(cmd.Context(), run, jobs)
 
 	},
 }
