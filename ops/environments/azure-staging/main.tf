@@ -27,7 +27,16 @@ module "secrets" {
   source      = "../../modules/github-secrets"
   environment = "azure-stg"
   secrets = merge(module.fixtures.test_env, {
+    "CLOUD_ENV" : "azure",
     "DATABRICKS_HOST" : module.workspace.workspace_url,
-    // DATABRICKS_TOKEN added manually
+    "DATABRICKS_AZURE_RESOURCE_ID" : module.workspace.resource_id,
+    "ARM_TENANT_ID" : module.defaults.azure_tenant_id,
+    "ARM_CLIENT_SECRET" : module.spn.client_secret,
+    "ARM_CLIENT_ID" : module.spn.client_id,
+
+    // In staging we need to authenticate with a non-standard login application,
+    // before we authenticate for the workspace. The login application ID for
+    // production is hardcoded in the SDK.
+    "DATABRICKS_AZURE_LOGIN_APP_ID" : "4a67d088-db5c-48f1-9ff2-0aace800ae68",
   })
 }
