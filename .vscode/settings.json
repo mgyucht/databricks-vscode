@@ -10,10 +10,11 @@
         "editor.defaultFormatter": "hashicorp.terraform",
         "editor.formatOnSave": true,
         "editor.formatOnSaveMode": "file"
-    }
+    },
     "[terraform-vars]": {
         "editor.defaultFormatter": "hashicorp.terraform",
         "editor.formatOnSave": true,
         "editor.formatOnSaveMode": "file"
-    }
+    },
+    "files.trimTrailingWhitespace": true,
 }
