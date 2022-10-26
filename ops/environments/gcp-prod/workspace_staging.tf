@@ -11,6 +11,24 @@ resource "databricks_mws_workspaces" "deco_staging" {
       project_id = module.defaults.google_project
     }
   }
+
+  token {}
+}
+
+provider "databricks" {
+  alias                  = "workspace_staging"
+  host                   = databricks_mws_workspaces.deco_staging.workspace_url
+  google_service_account = google_service_account.admin.email
+}
+
+module "databricks_fixtures_staging" {
+  depends_on = [
+    databricks_mws_workspaces.deco_staging
+  ]
+  providers = {
+    databricks = databricks.workspace_staging
+  }
+  source = "../../modules/databricks-fixtures"
 }
 
 module "secrets_staging" {

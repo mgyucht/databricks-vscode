@@ -15,6 +15,22 @@ resource "databricks_mws_workspaces" "deco_production" {
   token {}
 }
 
+provider "databricks" {
+  alias                  = "workspace_production"
+  host                   = databricks_mws_workspaces.deco_production.workspace_url
+  google_service_account = google_service_account.admin.email
+}
+
+module "databricks_fixtures_production" {
+  depends_on = [
+    databricks_mws_workspaces.deco_production
+  ]
+  providers = {
+    databricks = databricks.workspace_production
+  }
+  source = "../../modules/databricks-fixtures"
+}
+
 module "secrets" {
   source      = "../../modules/github-secrets"
   environment = "gcp-prod"
