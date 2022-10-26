@@ -1,1 +1,0 @@
-# Azure AAD Auth doesn't work for this yet
