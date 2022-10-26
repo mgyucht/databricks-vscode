@@ -1,3 +1,5 @@
+data "google_client_config" "current" {}
+
 // Enable testing for GCP Accounts
 // See https://github.com/databricks/terraform-provider-databricks/pull/1479
 resource "google_compute_network" "vpc" {
@@ -24,7 +26,7 @@ resource "google_compute_subnetwork" "this" {
 }
 
 resource "google_service_account_key" "this" {
-  service_account_id = google_service_account.admin.name
+  service_account_id = module.service_account.name
 }
 
 module "secrets_acct_prod" {
@@ -36,7 +38,7 @@ module "secrets_acct_prod" {
     "TEST_PREFIX" : "nightly",
     "DATABRICKS_HOST" : "https://accounts.gcp.databricks.com/",
     "DATABRICKS_ACCOUNT_ID" : module.defaults.google_production_account,
-    "DATABRICKS_GOOGLE_SERVICE_ACCOUNT" : google_service_account.admin.email,
+    "DATABRICKS_GOOGLE_SERVICE_ACCOUNT" : module.service_account.email,
     "GOOGLE_CREDENTIALS" : google_service_account_key.this.private_key,
     "GOOGLE_PROJECT" : data.google_client_config.current.project,
     "GOOGLE_REGION" : module.defaults.google_region,

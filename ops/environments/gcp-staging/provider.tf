@@ -17,7 +17,7 @@ provider "google" {
 
 provider "databricks" {
   alias = "accounts"
-  host  = "https://accounts.gcp.databricks.com"
+  host  = "https://accounts.staging.gcp.databricks.com"
 
   auth_type              = "google-accounts"
   google_service_account = module.service_account.email
