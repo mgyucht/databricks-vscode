@@ -23,9 +23,16 @@ module "spn" {
 provider "databricks" {
   alias = "workspace"
   host  = module.workspace.workspace_url
+
+  azure_client_id     = module.spn.client_id
+  azure_client_secret = module.spn.client_secret
+  azure_tenant_id     = module.defaults.azure_tenant_id
 }
 
 module "databricks_fixtures" {
+  depends_on = [
+    module.spn,
+  ]
   providers = {
     databricks = databricks.workspace
   }
@@ -37,7 +44,7 @@ module "databricks_fixtures" {
 module "secrets" {
   source      = "../../modules/github-secrets"
   environment = "azure-prod"
-  secrets = merge(module.fixtures.test_env, 
+  secrets = merge(module.fixtures.test_env,
     merge(module.databricks_fixtures.test_env, {
       "CLOUD_ENV" : "azure",
       "DATABRICKS_HOST" : module.workspace.workspace_url,

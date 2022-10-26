@@ -21,6 +21,26 @@ module "spn" {
   }
 }
 
+provider "databricks" {
+  alias = "workspace"
+  host  = module.workspace.workspace_url
+
+  azure_client_id     = module.spn.client_id
+  azure_client_secret = module.spn.client_secret
+  azure_tenant_id     = module.defaults.azure_tenant_id
+  azure_login_app_id  = "4a67d088-db5c-48f1-9ff2-0aace800ae68"
+}
+
+module "databricks_fixtures" {
+  depends_on = [
+    module.spn,
+  ]
+  providers = {
+    databricks = databricks.workspace
+  }
+  source = "../../modules/databricks-fixtures"
+}
+
 // TODO: azurerm_key_vault_access_policy for SPN and team users
 
 module "secrets" {
