@@ -1,5 +1,5 @@
-// holds static list of admins of developer ecosystem team. 
-// affects azure and all created workspace invites. 
+// holds static list of admins of developer ecosystem team.
+// affects azure and all created workspace invites.
 // please document every usage of it in this readme.
 output "admins" {
   value = [
@@ -11,6 +11,7 @@ output "admins" {
     "serge.smertin@databricks.com",
     "shreyas.goenka@databricks.com",
     "erzen.kaja@databricks.com",
+    "paul.cornell@databricks.com",
   ]
 }
 
