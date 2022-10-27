@@ -6,11 +6,16 @@ description: |
 runs:
   using: "composite"
   steps:
-    - name: Download artifact
+    - name: Download artifact from current run (if applicable)
       uses: actions/download-artifact@v3
+      continue-on-error: true
       with:
         name: deco
         path: .bin
+
+    - name: Download artifact from main branch (if applicable)
+      shell: bash
+      run: bash .github/actions/setup-deco-cli/download.sh
 
     - name: Fix permissions
       shell: bash
@@ -59,6 +64,5 @@ runs:
           cd $dir
           mv ./deco.exe ./deco
         fi
-        
 
         echo "$dir" >> $GITHUB_PATH
