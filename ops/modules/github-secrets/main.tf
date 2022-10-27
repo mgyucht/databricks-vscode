@@ -13,8 +13,7 @@ variable "secrets" {
   type        = map(string)
 
   validation {
-    condition = toset([for k, _ in var.secrets :
-    regex("[0-9A-Z_]*", k)]) == toset([for k, _ in var.secrets : k])
+    condition     = toset([for k, _ in var.secrets : regex("[0-9A-Z_]*", k)]) == toset([for k, _ in var.secrets : k])
     error_message = "Only valid environment variable names as keys."
   }
 }
@@ -24,8 +23,15 @@ data "azurerm_resource_group" "this" {
 }
 
 data "azuread_users" "admins" {
-  user_principal_names = [for u in module.defaults.admins :
-  "${replace(u, "@", "_")}#EXT#@dbtestcustomer.onmicrosoft.com"]
+  user_principal_names = [
+    for u in module.defaults.admins : "${replace(u, "@", "_")}#EXT#@dbtestcustomer.onmicrosoft.com"
+  ]
+}
+
+data "azuread_users" "friends" {
+  user_principal_names = [
+    for u in module.defaults.friends : "${replace(u, "@", "_")}#EXT#@dbtestcustomer.onmicrosoft.com"
+  ]
 }
 
 resource "azurerm_key_vault" "this" {
@@ -48,8 +54,27 @@ resource "azurerm_key_vault" "this" {
     content {
       object_id = access_policy.value
       tenant_id = module.defaults.azure_tenant_id
-      secret_permissions = ["Set", "Get", "List", "Delete",
-      "Purge", "Recover", "Restore"]
+      secret_permissions = [
+        "Set",
+        "Get",
+        "List",
+        "Delete",
+        "Purge",
+        "Recover",
+        "Restore",
+      ]
+    }
+  }
+
+  dynamic "access_policy" {
+    for_each = toset(data.azuread_users.friends.object_ids)
+    content {
+      object_id = access_policy.value
+      tenant_id = module.defaults.azure_tenant_id
+      secret_permissions = [
+        "Get",
+        "List",
+      ]
     }
   }
 }

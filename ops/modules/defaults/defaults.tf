@@ -15,6 +15,14 @@ output "admins" {
   ]
 }
 
+// Static list of friends of the Developer Ecosystem team.
+// Users listed here are granted read access to our secret vaults.
+output "friends" {
+  value = [
+    "jesse.whitehouse@databricks.com",
+  ]
+}
+
 output "tags" {
   value = {
     "Owner" : "eng-dev-ecosystem-team@databricks.com"
