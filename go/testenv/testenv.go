@@ -4,7 +4,6 @@ import (
 	"context"
 	"deco/fileset"
 	"deco/folders"
-	"deco/terraform"
 	"deco/terraform/tf"
 	"encoding/base64"
 	"encoding/json"
@@ -113,31 +112,15 @@ func EnvVars(ctx context.Context, envName string) (map[string]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	tf, err := terraform.NewTerraform(env.SourceDir)
-	if err != nil {
-		return nil, fmt.Errorf("in directory (%s) terraform: %w", env.SourceDir, err)
-	}
-	log.Printf("[INFO] Getting terraform state for %s", env.SourceDir)
-	state, err := tf.Show(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("in directory (%s) terraform state: %w", env.SourceDir, err)
-	}
-	vaultURI, err := terraform.FindFirstResource(state, "azurerm_key_vault", func(r *terraform.Resource) *string {
-		if r.MustStr("name") != fmt.Sprintf("deco-gh-%s", env.Name) {
-			return nil
-		}
-		uri := r.MustStr("vault_uri")
-		return &uri
-	})
-	if err != nil {
-		return nil, fmt.Errorf("no vault found: %w", err)
-	}
+
 	credential, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
 		return nil, fmt.Errorf("azure default auth: %w", err)
 	}
-	log.Printf("[INFO] Listing secrets from %s", *vaultURI)
-	vault := azsecrets.NewClient(*vaultURI, credential, nil)
+
+	vaultURI := fmt.Sprintf("https://deco-gh-%s.vault.azure.net/", env.Name)
+	log.Printf("[INFO] Listing secrets from %s", vaultURI)
+	vault := azsecrets.NewClient(vaultURI, credential, nil)
 	pager := vault.NewListSecretsPager(nil)
 	vars := map[string]string{}
 	// implicit CLOUD_ENV var
