@@ -34,9 +34,12 @@ module "databricks_fixtures" {
 module "secrets" {
   source      = "../../modules/github-secrets"
   environment = "gcp-staging"
-  secrets = merge(module.databricks_fixtures.test_env, {
-    "CLOUD_ENV" : "gcp",
-    "DATABRICKS_HOST" : databricks_mws_workspaces.workspace.workspace_url,
-    "DATABRICKS_TOKEN" : databricks_mws_workspaces.workspace.token[0].token_value,
-  })
+  secrets = merge(
+    module.databricks_fixtures.test_env,
+    {
+      "CLOUD_ENV" : "gcp",
+      "DATABRICKS_HOST" : databricks_mws_workspaces.workspace.workspace_url,
+      "DATABRICKS_TOKEN" : databricks_mws_workspaces.workspace.token[0].token_value,
+    },
+  )
 }

@@ -31,12 +31,25 @@ module "databricks_fixtures" {
   source = "../../modules/databricks-fixtures"
 }
 
+# DBSQL endpoints in GCP are only available in our production workspace.
+# It is explicitly disallowed in our staging workspace because it has HIPAA compliance enabled.
+module "sql_warehouses" {
+  providers = {
+    databricks = databricks.workspace
+  }
+  source = "../../modules/databricks-sql-warehouses"
+}
+
 module "secrets" {
   source      = "../../modules/github-secrets"
   environment = "gcp-prod"
-  secrets = merge(module.databricks_fixtures.test_env, {
-    "CLOUD_ENV" : "gcp",
-    "DATABRICKS_HOST" : databricks_mws_workspaces.workspace.workspace_url,
-    "DATABRICKS_TOKEN" : databricks_mws_workspaces.workspace.token[0].token_value,
-  })
+  secrets = merge(
+    module.databricks_fixtures.test_env,
+    module.sql_warehouses.test_env,
+    {
+      "CLOUD_ENV" : "gcp",
+      "DATABRICKS_HOST" : databricks_mws_workspaces.workspace.workspace_url,
+      "DATABRICKS_TOKEN" : databricks_mws_workspaces.workspace.token[0].token_value,
+    },
+  )
 }
