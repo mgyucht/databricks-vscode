@@ -22,7 +22,10 @@ var apiCmd = &cobra.Command{
 		var response any
 		path := args[0]
 
-		apiClient := client.New(cfg)
+		apiClient, err := client.New(cfg)
+		if err != nil {
+			return err
+		}
 		err = apiClient.Get(cmd.Context(), path, nil, &response)
 		if err != nil {
 			return fmt.Errorf("GET %s: %w", path, err)
