@@ -29,6 +29,7 @@ module "databricks_fixtures" {
     databricks = databricks.workspace
   }
   source = "../../modules/databricks-fixtures"
+  cloud  = "gcp"
 }
 
 module "secrets" {
