@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/TylerBrock/colorjson"
-	"github.com/databricks/databricks-sdk-go/databricks/client"
+	"github.com/databricks/databricks-sdk-go/client"
 	"github.com/spf13/cobra"
 )
 
@@ -26,7 +26,7 @@ var apiCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		err = apiClient.Get(cmd.Context(), path, nil, &response)
+		err = apiClient.Do(cmd.Context(), "GET", path, nil, &response)
 		if err != nil {
 			return fmt.Errorf("GET %s: %w", path, err)
 		}

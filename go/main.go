@@ -7,6 +7,7 @@ import (
 	_ "deco/cmd/env/export"
 	_ "deco/cmd/env/list"
 	_ "deco/cmd/env/run"
+	_ "deco/cmd/env/save"
 	_ "deco/cmd/env/shell"
 	_ "deco/cmd/env/test"
 	_ "deco/cmd/env/test/all"
@@ -23,7 +24,7 @@ import (
 	_ "deco/cmd/tf/cov"
 	_ "deco/cmd/version"
 
-	"github.com/databricks/databricks-sdk-go/databricks"
+	"github.com/databricks/databricks-sdk-go"
 )
 
 func main() {

@@ -32,7 +32,8 @@ func GetName() string {
 		Label:   "Environment",
 		Answers: envs,
 	}.Ask(prompt.Results{})
-	return res.Value
+	Name = res.Value
+	return Name
 }
 
 func init() {

@@ -7,9 +7,9 @@ import (
 	"log"
 	"strings"
 
+	"github.com/databricks/databricks-sdk-go"
 	"github.com/databricks/databricks-sdk-go/service/scim"
 	"github.com/databricks/databricks-sdk-go/service/workspace"
-	"github.com/databricks/databricks-sdk-go/workspaces"
 	"github.com/spf13/cobra"
 )
 
@@ -27,13 +27,16 @@ var cleanupCmd = &cobra.Command{
 		if cfg.IsAccountsClient() {
 			return fmt.Errorf("currently only workspace client supported")
 		}
-		ws := workspaces.New(cfg)
-		users, err := ws.Users.ListUsers(cmd.Context(), scim.ListUsersRequest{})
+		ws, err := databricks.NewWorkspaceClient((*databricks.Config)(cfg))
+		if err != nil {
+			return err
+		}
+		users, err := ws.Users.ListUsersAll(cmd.Context(), scim.ListUsersRequest{})
 		if err != nil {
 			return err
 		}
 		log.Printf("[INFO] Cleaning up users")
-		for _, u := range users.Resources {
+		for _, u := range users {
 			email := u.Emails[0].Value
 			if !strings.ContainsRune(email, '@') {
 				// this is SPN
@@ -51,13 +54,13 @@ var cleanupCmd = &cobra.Command{
 				email, u.DisplayName)
 		}
 		// it's a workspace client
-		folders, err := ws.Workspace.List(cmd.Context(), workspace.ListRequest{
+		folders, err := ws.Workspace.ListAll(cmd.Context(), workspace.ListRequest{
 			Path: "/Users",
 		})
 		if err != nil {
 			return err
 		}
-		for _, v := range folders.Objects {
+		for _, v := range folders {
 			if strings.Contains(v.Path, "@databricks.com") {
 				continue
 			}

@@ -14,7 +14,7 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/keyvault/azsecrets"
-	"github.com/databricks/databricks-sdk-go/databricks"
+	"github.com/databricks/databricks-sdk-go/config"
 )
 
 type Env struct {
@@ -145,18 +145,24 @@ func EnvVars(ctx context.Context, envName string) (map[string]string, error) {
 	return filterEnv(vars)
 }
 
-// TODO: HAS ENVIRONMENT SIDE EFFECTS! Will be fixed with Go SDK
-func NewConfigFor(ctx context.Context, env string) (*databricks.Config, error) {
+func NewConfigFor(ctx context.Context, env string) (*config.Config, error) {
 	vars, err := EnvVars(ctx, env)
 	if err != nil {
 		return nil, fmt.Errorf("env vars: %w", err)
 	}
-	// TODO: THIS IS UGLY AND HAS TO BE REWRITTEN LATER
-	for k, v := range vars {
-		os.Setenv(k, v)
-	}
 	log.Printf("[INFO] Creating *databricks.Config for %s env", env)
-
-	cfg := &databricks.Config{}
+	cfg := &config.Config{}
+	for _, a := range config.ConfigAttributes {
+		for _, ev := range a.EnvVars {
+			v, ok := vars[ev]
+			if !ok {
+				continue
+			}
+			err = a.SetS(cfg, v)
+			if err != nil {
+				return nil, fmt.Errorf("set %s: %w", a.Name, err)
+			}
+		}
+	}
 	return cfg, cfg.EnsureResolved()
 }
