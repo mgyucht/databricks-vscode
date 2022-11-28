@@ -136,6 +136,10 @@ func (r GoTestRunner) RunAll(ctx context.Context, files fileset.FileSet) (result
 	if !ok {
 		testFilter = "TestAcc"
 	}
+	// we may later need to add something like  `"-parallel", "20"``, preferably configurable.
+	// on GitHub actions we have only a single core available, hence no test parallelism.
+	// on the other hand, current way of logging pollutes test log output with another test log output,
+	// that may lead to confusion. Hence, on CI it's still better to have no parallelism.
 	cmd := exec.Command("go", "test", "./...", "-json", "-timeout", "1h", "-run", fmt.Sprintf("^%s", testFilter))
 	cmd.Stdout = pipeWriter
 	cmd.Stderr = pipeWriter

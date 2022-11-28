@@ -11,6 +11,7 @@ import (
 	_ "deco/cmd/env/shell"
 	_ "deco/cmd/env/test"
 	_ "deco/cmd/env/test/all"
+	_ "deco/cmd/env/test/cov"
 	_ "deco/cmd/env/test/debug"
 	_ "deco/cmd/env/test/list"
 	_ "deco/cmd/gh"

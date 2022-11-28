@@ -31,7 +31,7 @@ var cleanupCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		users, err := ws.Users.ListUsersAll(cmd.Context(), scim.ListUsersRequest{})
+		users, err := ws.Users.ListAll(cmd.Context(), scim.ListUsersRequest{})
 		if err != nil {
 			return err
 		}
@@ -46,7 +46,7 @@ var cleanupCmd = &cobra.Command{
 				// valid databricks email
 				continue
 			}
-			err = ws.Users.DeleteUserById(cmd.Context(), u.Id)
+			err = ws.Users.DeleteById(cmd.Context(), u.Id)
 			if err != nil {
 				return err
 			}
@@ -54,7 +54,7 @@ var cleanupCmd = &cobra.Command{
 				email, u.DisplayName)
 		}
 		// it's a workspace client
-		folders, err := ws.Workspace.ListAll(cmd.Context(), workspace.ListRequest{
+		folders, err := ws.Workspace.ListAll(cmd.Context(), workspace.List{
 			Path: "/Users",
 		})
 		if err != nil {
