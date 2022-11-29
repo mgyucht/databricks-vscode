@@ -22,7 +22,7 @@ type kv struct{ k, v string }
 
 var exportCmd = &cobra.Command{
 	Use:   "export",
-	Short: "Exporting environment configuration for `export $(..)`",
+	Short: "Exporting environment configuration for `export $(..)`. Used in testing CI for VSCode Extension.",
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		root.NoLogs()
 		vars, err := testenv.EnvVars(cmd.Context(), env.GetName())
@@ -58,6 +58,6 @@ var exportCmd = &cobra.Command{
 
 func init() {
 	exportCmd.Flags().BoolVar(&quoteValues, "quote-values", false, "Include single quotes around values")
-	exportCmd.Flags().BoolVar(&asJson, "as-json", true, "Print as json profile for ~/.databricks/debug-env.json")
+	exportCmd.Flags().BoolVar(&asJson, "as-json", false, "Print as json profile for ~/.databricks/debug-env.json")
 	env.EnvCmd.AddCommand(exportCmd)
 }
