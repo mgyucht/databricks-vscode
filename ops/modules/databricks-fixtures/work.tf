@@ -62,7 +62,7 @@ resource "databricks_sql_endpoint" "this" {
   tags {
     dynamic "custom_tags" {
       for_each = merge({
-        "Source" : "databricks/eng-dev-ecosystem"
+        "Source" : "eng_dev_ecosystem"
       }, each.value.custom_tags)
       content {
         key   = custom_tags.key
