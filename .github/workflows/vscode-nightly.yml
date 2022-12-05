@@ -2,10 +2,10 @@ name: vscode-nightly
 
 on:
   workflow_dispatch:
-    # manual workflow testing
-    # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
+  # manual workflow testing
+  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
   schedule:
-    - cron: '0 6 * * *'
+    - cron: "0 6 * * *"
 
 jobs:
   build-deco:
@@ -17,18 +17,18 @@ jobs:
     name: "JS SDK Integration test"
     needs: [build-deco]
 
-    strategy: 
-      fail-fast: false 
+    strategy:
+      fail-fast: false
       matrix:
-          environment: [azure-prod-pat]
-          os: [macos-latest, windows-latest]
-          node-version: [16.x]
-          vscode-version: [stable, insiders]
+        environment: [azure-prod-pat]
+        os: [macos-latest, windows-latest]
+        node-version: [16.x]
+        vscode-version: [stable, insiders]
 
     runs-on: ${{ matrix.os }}
 
     environment: ${{ matrix.environment }}
-    env: 
+    env:
       VSCODE_TEST_VERSION: ${{ matrix.vscode-version }}
 
     steps:
@@ -41,20 +41,20 @@ jobs:
         run: deco env export --name ${{ matrix.environment }} --quote-values=false >> $GITHUB_ENV
         shell: bash
         env:
-          GITHUB_SECRETS_JSON: '${{ toJson(secrets) }}'
+          GITHUB_SECRETS_JSON: "${{ toJson(secrets) }}"
 
       - run: cd ext && git clone https://${{ secrets.DECO_GITHUB_TOKEN }}:x-oauth-basic@github.com/databricks/databricks-vscode
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-            node-version: ${{ matrix.node-version }}
-            cache: "yarn"
-            cache-dependency-path: "ext/databricks-vscode/package.json"
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+          cache-dependency-path: "ext/databricks-vscode/package.json"
 
       - run: yarn install --immutable
         working-directory: ext/databricks-vscode
-      
+
       - name: Building packages
         run: yarn run build
         working-directory: ext/databricks-vscode
@@ -62,24 +62,33 @@ jobs:
       - name: Integration Tests
         run: yarn workspace @databricks/databricks-sdk run test:integ
         working-directory: ext/databricks-vscode
-            
 
   extension-integration-test:
     name: "Extension Integration test"
-    needs: [js-sdk-integration-test]
-    strategy: 
+    needs: [build-deco]
+
+    strategy:
       fail-fast: false
       matrix:
-          environment: [azure-prod-pat]
-          os: [macos-latest, windows-latest]
-          node-version: [16.x]
-          vscode-version: [stable, insiders]
+        environment: [azure-prod-pat]
+        arch:
+          [
+            { bricks_arch: darwin_amd64, os: macos-latest },
+            { bricks_arch: windows_amd64, os: windows-latest },
+          ]
+        node-version: [16.x]
+        vscode-version: [stable, insiders]
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.arch.os }}
 
     environment: ${{ matrix.environment }}
-    env: 
+    env:
       VSCODE_TEST_VERSION: ${{ matrix.vscode-version }}
+      BRICKS_ARCH: ${{ matrix.arch.bricks_arch }}
+
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - uses: actions/checkout@v3
@@ -91,38 +100,48 @@ jobs:
         run: deco env export --name ${{ matrix.environment }} --quote-values=false >> $GITHUB_ENV
         shell: bash
         env:
-          GITHUB_SECRETS_JSON: '${{ toJson(secrets) }}'
+          GITHUB_SECRETS_JSON: "${{ toJson(secrets) }}"
 
       - run: cd ext && git clone https://${{ secrets.DECO_GITHUB_TOKEN }}:x-oauth-basic@github.com/databricks/databricks-vscode
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-            node-version: ${{ matrix.node-version }}
-            cache: "yarn"
-            cache-dependency-path: "ext/databricks-vscode/package.json"
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+          cache-dependency-path: "ext/databricks-vscode/package.json"
+
+      - name: Cache wdio
+        uses: actions/cache@v3
+        with:
+          path: /tmp/wdio-vscode-service
+          key: ${{ matrix.arch.os }}-${{ matrix.vscode-version }}-wdio
+
+      - run: yarn install --immutable
+        working-directory: ext/databricks-vscode
+
+      - name: Fetching Bricks CLI
+        run: yarn run package:cli:fetch
+        working-directory: ext/databricks-vscode/packages/databricks-vscode
+        env:
+          # TODO: Remove this once the bricks repo is public
+          GH_TOKEN: ${{ secrets.DECO_GITHUB_TOKEN }}
+
+      - name: Building packages
+        run: yarn run build
+        working-directory: ext/databricks-vscode
 
       - name: Integration Tests
-        uses: nick-fields/retry@v2
-        with:
-            max_attempts: 3
-            retry_wait_seconds: 2
-            timeout_minutes: 10
-            retry_on: any
-            command: |
-                cd ext/databricks-vscode
-                yarn workspace databricks-vscode run test:integ:clean
-                yarn install --immutable
-                yarn build
-                yarn workspace databricks-vscode run test:integ
+        run: yarn run test:integ
+        working-directory: ext/databricks-vscode/packages/databricks-vscode
 
       - name: Upload test logs
         if: always()
         continue-on-error: true
         uses: actions/upload-artifact@v3
         with:
-            name: test-logs ${{ join(inputs.*, ' - ') }} - ${{ github.event_name }}
-            path: ext/databricks-vscode/packages/databricks-vscode/src/test/logs
+          name: test-logs ${{ join(matrix.arch.*, ' - ') }} - ${{matrix.vscode-version}} - ${{ github.event_name }}
+          path: ext/databricks-vscode/packages/databricks-vscode/logs
 
   slack-notify:
     name: "Post Slack notification"
