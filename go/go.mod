@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.1.0
-	github.com/databricks/databricks-sdk-go v0.0.0
+	github.com/databricks/databricks-sdk-go v0.1.1
 	github.com/hashicorp/go-version v1.6.0
 	github.com/hashicorp/hc-install v0.4.0
 	github.com/hashicorp/hcl/v2 v2.13.0
@@ -85,5 +85,3 @@ require (
 	gopkg.in/ini.v1 v1.67.0
 	gopkg.in/yaml.v3 v3.0.1
 )
-
-replace github.com/databricks/databricks-sdk-go v0.0.0 => ../ext/databricks-sdk-go

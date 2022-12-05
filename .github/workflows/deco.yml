@@ -23,13 +23,6 @@ jobs:
       - name: Checkout eng-dev-ecosystem
         uses: actions/checkout@v3
 
-      - name: Checkout databricks-sdk-go
-        uses: actions/checkout@v3
-        with:
-          repository: databricks/databricks-sdk-go
-          token: ${{ secrets.DECO_GITHUB_TOKEN }}
-          path: ext/databricks-sdk-go
-
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
@@ -73,13 +66,6 @@ jobs:
     steps:
       - name: Checkout eng-dev-ecosystem
         uses: actions/checkout@v3
-
-      - name: Checkout databricks-sdk-go
-        uses: actions/checkout@v3
-        with:
-          repository: databricks/databricks-sdk-go
-          token: ${{ secrets.DECO_GITHUB_TOKEN }}
-          path: ext/databricks-sdk-go
 
       - name: Setup Go
         uses: actions/setup-go@v3
