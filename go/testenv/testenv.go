@@ -131,7 +131,7 @@ func EnvVars(ctx context.Context, envName string) (map[string]string, error) {
 	for pager.More() {
 		page, err := pager.NextPage(ctx)
 		if err != nil {
-			log.Fatal(err)
+			return nil, fmt.Errorf("listing secrets from %s: %w", vaultURI, err)
 		}
 		for _, secret := range page.Value {
 			name := secret.ID.Name()
