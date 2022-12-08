@@ -31,6 +31,10 @@ jobs:
     env:
       VSCODE_TEST_VERSION: ${{ matrix.vscode-version }}
 
+    defaults:
+      run:
+        shell: bash
+
     steps:
       - uses: actions/checkout@v3
 
@@ -60,8 +64,9 @@ jobs:
         working-directory: ext/databricks-vscode
 
       - name: Integration Tests
-        run: yarn workspace @databricks/databricks-sdk run test:integ
-        working-directory: ext/databricks-vscode
+        run: |
+          for i in {1..2}; do yarn run test:integ && exit 0 || echo "RETRYING....."; done
+        working-directory: ext/databricks-vscode/packages/databricks-sdk-js
 
   extension-integration-test:
     name: "Extension Integration test"
@@ -132,7 +137,8 @@ jobs:
         working-directory: ext/databricks-vscode
 
       - name: Integration Tests
-        run: yarn run test:integ
+        run: |
+          for i in {1..2}; do yarn run test:integ && exit 0 || echo "RETRYING....."; done
         working-directory: ext/databricks-vscode/packages/databricks-vscode
 
       - name: Upload test logs
