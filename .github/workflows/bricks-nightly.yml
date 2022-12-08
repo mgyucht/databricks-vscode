@@ -26,7 +26,7 @@ jobs:
           - azure-prod
           - gcp-prod
           - aws-prod
-  
+
     environment: ${{ matrix.env }}
 
     steps:
@@ -59,3 +59,26 @@ jobs:
         run: deco env test all --name ${{ matrix.env }} --repo bricks
         env:
           GITHUB_SECRETS_JSON: '${{ toJson(secrets) }}'
+
+  slack-notify:
+    name: "Post Slack notification"
+    runs-on: ubuntu-latest
+
+    needs: [integration-tests-prod, build-deco]
+    if: always()
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Deco CLI
+        uses: ./.github/actions/setup-deco-cli
+
+      - name: Post Slack notification
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          deco slack post-action-status
+        env:
+          GITHUB_JOB_REGEXP: "^integration-tests-prod"
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: eng-dev-ecosystem-team
