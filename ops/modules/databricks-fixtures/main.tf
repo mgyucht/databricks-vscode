@@ -60,7 +60,8 @@ output "test_env" {
 }
 
 resource "databricks_token" "pat" {
-  comment = "Test token"
+  comment          = "Test token"
+  lifetime_seconds = 60 * 60 * 24 * 30
 }
 
 output "databricks_token" {

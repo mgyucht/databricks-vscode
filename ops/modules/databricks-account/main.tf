@@ -35,6 +35,14 @@ resource "databricks_user" "uc_admin" {
   force     = true
 }
 
+// add deco team users as account admins,
+// because role cannot be added on a group
+resource "databricks_user_role" "account_admin" {
+  for_each = databricks_user.uc_admin
+  user_id  = each.value.id
+  role     = "account_admin"
+}
+
 // and add them to uc admin group
 resource "databricks_group_member" "uc_admin" {
   for_each  = toset(module.defaults.admins)
