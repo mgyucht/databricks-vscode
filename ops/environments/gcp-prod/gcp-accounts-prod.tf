@@ -1,5 +1,21 @@
 data "google_client_config" "current" {}
 
+provider "databricks" {
+  alias = "account"
+  host  = "https://accounts.gcp.databricks.com"
+
+  auth_type              = "google-accounts"
+  account_id             = module.defaults.google_production_account
+  google_service_account = module.service_account.email
+}
+
+module "account" {
+  source = "../../modules/databricks-account"
+  providers = {
+    databricks = databricks.account
+  }
+}
+
 // Enable testing for GCP Accounts
 // See https://github.com/databricks/terraform-provider-databricks/pull/1479
 resource "google_compute_network" "vpc" {

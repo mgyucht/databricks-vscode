@@ -1,5 +1,5 @@
 resource "databricks_mws_workspaces" "workspace" {
-  provider = databricks.accounts
+  provider = databricks.account
 
   account_id     = module.defaults.google_production_account
   workspace_name = "deco-prod-gcp-us-central1"
@@ -29,7 +29,7 @@ module "databricks_fixtures" {
     databricks = databricks.workspace
   }
   source = "../../modules/databricks-fixtures"
-  cloud = "gcp"
+  cloud  = "gcp"
 }
 
 # DBSQL endpoints in GCP are only available in our production workspace.
