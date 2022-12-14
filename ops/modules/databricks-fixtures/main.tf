@@ -67,3 +67,9 @@ resource "databricks_token" "pat" {
 output "databricks_token" {
   value = databricks_token.pat.token_value
 }
+
+resource "databricks_workspace_conf" "this" {
+  custom_config = {
+    "maxTokenLifetimeDays" : "0"
+  }
+}
