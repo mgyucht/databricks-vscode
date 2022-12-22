@@ -1,3 +1,17 @@
+# Windows development VMs
+
+For usage instructions please refer to https://databricks.atlassian.net/wiki/spaces/UN/pages/2855406192/Windows+development+VMs.
+
+* [erzen.kaja@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-erzen.kaja/overview)
+* [fabian.jakobs@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-fabian.jakobs/overview)
+* [kartik.gupta@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-kartik.gupta/overview)
+* [lennart.kats@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-lennart.kats/overview)
+* [paul.cornell@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-paul.cornell/overview)
+* [paul.leventis@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-paul.leventis/overview)
+* [pieter.noordhuis@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-pieter.noordhuis/overview)
+* [serge.smertin@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-serge.smertin/overview)
+* [shreyas.goenka@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-shreyas.goenka/overview)
+
 # Developer Ecosystem Environments
 
 ## aws-prod

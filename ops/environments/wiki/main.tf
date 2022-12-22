@@ -30,6 +30,23 @@ data "terraform_remote_state" "meta" {
   }
 }
 
+data "terraform_remote_state" "azure-vms" {
+  backend = "azurerm"
+
+  config = {
+    # Test Customer Directory
+    tenant_id = "e3fe3f22-4b98-4c04-82cc-d8817d1b17da"
+
+    # Databricks Development Worker
+    subscription_id = "36f75872-9ace-4c20-911c-aea8eba2945c"
+
+    resource_group_name  = "eng-dev-ecosystem-rg"
+    storage_account_name = "decotfstate"
+    container_name       = "tfstate"
+    key                  = "ops/environments/azure-vms/terraform.tfstate"
+  }
+}
+
 module "defaults" {
   source = "../../modules/defaults"
 }
@@ -117,6 +134,11 @@ locals {
     " * Previews: ${yamlencode(v["features"])}"
     ])
   ]
+
+  vms = [
+    for username, vm in data.terraform_remote_state.azure-vms.outputs.details :
+    "* [${username}](${vm.url})"
+  ]
 }
 
 resource "local_file" "csv" {
@@ -131,6 +153,12 @@ resource "local_file" "csv" {
 resource "local_file" "index" {
   filename = "README.md"
   content  = <<-EOT
+  # Windows development VMs
+
+  For usage instructions please refer to https://databricks.atlassian.net/wiki/spaces/UN/pages/2855406192/Windows+development+VMs.
+
+  ${join("\n", local.vms)}
+
   # Developer Ecosystem Environments
 
   ${join("\n", local.table)}
