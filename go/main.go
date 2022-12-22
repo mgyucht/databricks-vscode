@@ -23,6 +23,7 @@ import (
 	_ "deco/cmd/slack/post"
 	_ "deco/cmd/tf"
 	_ "deco/cmd/tf/cov"
+	_ "deco/cmd/tf/schemagen"
 	_ "deco/cmd/version"
 
 	"github.com/databricks/databricks-sdk-go"
