@@ -25,10 +25,11 @@ resource "google_compute_network" "vpc" {
 }
 
 resource "google_compute_subnetwork" "this" {
-  name          = "deco-prod-gcp-subnet"
-  ip_cidr_range = "10.0.0.0/16"
-  region        = module.defaults.google_region
-  network       = google_compute_network.vpc.id
+  name                     = "deco-prod-gcp-subnet"
+  ip_cidr_range            = "10.0.0.0/16"
+  region                   = module.defaults.google_region
+  network                  = google_compute_network.vpc.id
+  private_ip_google_access = true
 
   secondary_ip_range {
     range_name    = "pods"
@@ -45,13 +46,28 @@ resource "google_service_account_key" "this" {
   service_account_id = module.service_account.name
 }
 
+resource "google_compute_router" "this" {
+  name       = "deco-prod-gcp-router"
+  region     = module.defaults.google_region
+  network    = google_compute_network.vpc.id
+  depends_on = [module.service_account]
+}
+
+resource "google_compute_router_nat" "this" {
+  name                               = "deco-prod-gcp-nat"
+  router                             = google_compute_router.this.name
+  region                             = google_compute_router.this.region
+  nat_ip_allocate_option             = "AUTO_ONLY"
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+}
+
 module "secrets_acct_prod" {
   source      = "../../modules/github-secrets"
   environment = "gcp-acct-prod"
   secrets = {
     "CLOUD_ENV" : "gcp-accounts",
-    "TEST_FILTER" : "TestGcpAcc",
-    "TEST_PREFIX" : "nightly",
+    "TEST_FILTER" : "TestMws",
+    "TEST_PREFIX" : "deco",
     "DATABRICKS_HOST" : "https://accounts.gcp.databricks.com/",
     "DATABRICKS_ACCOUNT_ID" : module.defaults.google_production_account,
     "DATABRICKS_GOOGLE_SERVICE_ACCOUNT" : module.service_account.email,

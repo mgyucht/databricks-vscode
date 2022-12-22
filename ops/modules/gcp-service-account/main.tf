@@ -33,11 +33,26 @@ resource "google_service_account_iam_policy" "impersonatable" {
 
 resource "google_project_iam_custom_role" "workspace_creator" {
   role_id = "workspace_creator_${var.environment}"
-  title   = "Terraformed Workspace Creator"
+  title   = "Terraformed Workspace Creator (${var.environment})"
 
   permissions = [
+    "compute.networks.create",
+    "compute.networks.get",
+    "compute.networks.updatePolicy",
+    "compute.networks.delete",
+    "compute.projects.get",
+    "compute.routers.create",
+    "compute.routers.get",
+    "compute.routers.update",
+    "compute.routers.delete",
+    "compute.subnetworks.get",
+    "compute.subnetworks.update",
+    "compute.subnetworks.setPrivateIpGoogleAccess",
+    "iam.serviceAccounts.get",
     "iam.serviceAccounts.getIamPolicy",
     "iam.serviceAccounts.setIamPolicy",
+    "iam.serviceAccountKeys.create",
+    "iam.serviceAccountKeys.get",
     "iam.roles.create",
     "iam.roles.delete",
     "iam.roles.get",
