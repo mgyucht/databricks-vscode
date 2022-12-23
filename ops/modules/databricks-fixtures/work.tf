@@ -52,6 +52,12 @@ locals {
   }
 }
 
+output "cluster_ids" {
+  value = toset([
+    for k, v in databricks_cluster.this : v.id
+  ])
+}
+
 resource "databricks_sql_endpoint" "this" {
   for_each             = local.test_warehouses
   name                 = "${each.key} Test Warehouse"
@@ -78,4 +84,10 @@ locals {
     { key : "TEST_${k}_WAREHOUSE_DATASOURCE_ID", value : v.data_source_id },
     { key : "TEST_${k}_WAREHOUSE_JDBC_URL", value : v.jdbc_url },
   ]]) : v.key => v.value }
+}
+
+output "warehouse_ids" {
+  value = toset([
+    for k, v in databricks_sql_endpoint.this : v.id
+  ])
 }
