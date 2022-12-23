@@ -27,16 +27,11 @@ data "azurerm_resources" "vaults" {
 // get metadata about every vault, index by vault name
 data "azurerm_key_vault" "all" {
   for_each = toset([
-  for v in data.azurerm_resources.vaults.resources : v.name])
+    for v in data.azurerm_resources.vaults.resources : v.name
+  ])
+
   name                = each.value
   resource_group_name = azurerm_resource_group.this.name
-}
-
-// create actions environment, index by vault name
-resource "github_repository_environment" "this" {
-  for_each    = data.azurerm_key_vault.all
-  repository  = "eng-dev-ecosystem"
-  environment = replace(replace(replace(each.value.name, "deco-github-", ""), "deco-gh-", ""), "-kv", "")
 }
 
 // get names of secrets per every vault, index by vault name
@@ -63,13 +58,60 @@ data "azurerm_key_vault_secret" "all" {
   key_vault_id = data.azurerm_key_vault.all[each.value.vault].id
 }
 
-// set all github actions secrets for redaction, index by $vault:$secret_name
+locals {
+  // Map GitHub repositories to the list of key vaults they need as environments.
+  repositories_to_vaults = {
+    "eng-dev-ecosystem" = [
+      for v in data.azurerm_key_vault.all : v.name
+    ]
+    "databricks-vscode" = [
+      "deco-gh-azure-prod-usr"
+    ]
+  }
+
+  github_environments = {
+    for kv in flatten([
+      for repository_name, vaults in local.repositories_to_vaults : [
+        for vault_name in vaults : {
+          repository_name  = repository_name
+          environment_name = replace(replace(replace(vault_name, "deco-github-", ""), "deco-gh-", ""), "-kv", "")
+          vault_name       = vault_name
+        }
+      ]
+    ]) : "${kv["repository_name"]}:${kv["vault_name"]}" => kv
+  }
+
+  github_environment_secrets = {
+    for kv in flatten([
+      for environment in values(local.github_environments) : [
+        for secret_name in data.azurerm_key_vault_secrets.all[environment.vault_name].names :
+        merge(
+          environment,
+          {
+            environment_key = "${environment.repository_name}:${environment.vault_name}"
+            secret_key      = "${environment.vault_name}:${secret_name}"
+            secret_name     = secret_name
+          }
+        )
+      ]
+    ]) : "${kv["repository_name"]}:${kv["vault_name"]}:${kv["secret_name"]}" => kv
+  }
+}
+
+// Create actions environment. Index by ${repository_name}:${vault_name}.
+resource "github_repository_environment" "this" {
+  for_each    = local.github_environments
+  repository  = each.value.repository_name
+  environment = each.value.environment_name
+}
+
+// Set actions secrets for redaction. Index by ${repository_name}:${vault_name}:${secret_name}.
 resource "github_actions_environment_secret" "tests" {
-  for_each        = local.secrets
-  repository      = "eng-dev-ecosystem"
+  for_each        = local.github_environment_secrets
+  repository      = each.value.repository_name
   secret_name     = replace(each.value.secret_name, "-", "_")
-  environment     = github_repository_environment.this[each.value.vault].environment
-  plaintext_value = data.azurerm_key_vault_secret.all[each.key].value
+  environment     = github_repository_environment.this[each.value.environment_key].environment
+  plaintext_value = data.azurerm_key_vault_secret.all[each.value.secret_key].value
 }
 
 // Global configuration of all environments also used for testing.
