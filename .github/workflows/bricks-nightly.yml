@@ -8,7 +8,6 @@ on:
   schedule:
     - cron: '0 6 * * *'
 
-
 jobs:
   build-deco:
     name: "Build Deco CLI"
@@ -18,7 +17,7 @@ jobs:
   integration-tests-prod:
     needs: [build-deco]
 
-    runs-on: ubuntu-latest
+    runs-on:  ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -26,6 +25,9 @@ jobs:
           - azure-prod
           - gcp-prod
           - aws-prod
+        os:
+          - ubuntu-latest
+          - windows-latest
 
     environment: ${{ matrix.env }}
 
@@ -57,6 +59,7 @@ jobs:
 
       - name: Run all bricks acceptance tests
         run: deco env test all --name ${{ matrix.env }} --repo bricks
+        shell: bash
         env:
           GITHUB_SECRETS_JSON: '${{ toJson(secrets) }}'
 
