@@ -32,6 +32,7 @@ jobs:
         with:
           repository: databricks/terraform-provider-databricksaccount
           path: ext/terraform-provider-databricksaccount
+          token: ${{ secrets.DECO_GITHUB_TOKEN }}
 
       - name: Setup Go
         uses: actions/setup-go@v3
