@@ -1,4 +1,4 @@
-name: terraform-nightly
+name: terraform-account-nightly
 
 on:
   workflow_dispatch:
