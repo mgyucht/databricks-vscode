@@ -1,0 +1,57 @@
+name: terraform-nightly
+
+on:
+  workflow_dispatch:
+    # manual workflow testing
+    # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
+  schedule:
+    - cron: '0 6 * * *'
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+          - aws-prod-acct
+          - gcp-acct-prod
+    environment: ${{ matrix.env }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Deco CLI
+        uses: ./.github/actions/setup-deco-cli
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout terraform-provider-databricksaccount
+        uses: actions/checkout@v3
+        with:
+          repository: databricks/terraform-provider-databricksaccount
+          path: ext/terraform-provider-databricksaccount
+
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.18.6
+          cache: true
+          cache-dependency-path: ext/terraform-provider-databricksaccount/go.sum
+
+      - name: Make vendor for Terraform Provider
+        run: go mod vendor
+        working-directory: ext/terraform-provider-databricksaccount
+
+      - name: Run tests
+        run: deco env test all --name ${{ matrix.env }} --repo terraform-provider-databricksaccount
+        env:
+          GITHUB_SECRETS_JSON: '${{ toJson(secrets) }}'
+
+      - name: Archive logs
+        if: always()
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{ matrix.env }}-test.log
+          path: test.log
