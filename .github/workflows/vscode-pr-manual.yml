@@ -13,10 +13,10 @@ on:
         type: environment
         required: true
 
-      yarn_workspace: 
+      yarn_workspace:
         description: 'Workspace in which to run integration tests'
         type: choice
-        options:  
+        options:
           - '@databricks/databricks-sdk'
           - '@databricks/databricks-vscode'
           - 'databricks-vscode'
@@ -36,7 +36,7 @@ jobs:
     name: "Integration test"
     needs: [build-deco]
 
-    strategy: 
+    strategy:
       matrix:
           environment: [azure-prod-pat]
           os: [windows-latest, macos-latest]
@@ -46,7 +46,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     environment: ${{ matrix.environment }}
-    env: 
+    env:
       VSCODE_TEST_VERSION: ${{ matrix.vscode-version }}
     steps:
       - uses: actions/checkout@v3
@@ -72,7 +72,7 @@ jobs:
 
       - run: yarn install --immutable
         working-directory: ext/databricks-vscode
-      
+
       - name: Building packages
         run: yarn run build
         working-directory: ext/databricks-vscode
