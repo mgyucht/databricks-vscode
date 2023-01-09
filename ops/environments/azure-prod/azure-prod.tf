@@ -29,19 +29,6 @@ provider "databricks" {
   azure_tenant_id     = module.defaults.azure_tenant_id
 }
 
-// Allow the non-admin SPN to create a PAT.
-resource "databricks_permissions" "tokens" {
-  depends_on = [module.spn]
-  provider   = databricks.workspace
-
-  authorization = "tokens"
-
-  access_control {
-    service_principal_name = databricks_service_principal.spn_nonadmin.application_id
-    permission_level       = "CAN_USE"
-  }
-}
-
 module "databricks_fixtures" {
   depends_on = [
     module.spn,

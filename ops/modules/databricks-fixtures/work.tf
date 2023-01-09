@@ -53,9 +53,7 @@ locals {
 }
 
 output "cluster_ids" {
-  value = toset([
-    for k, v in databricks_cluster.this : v.id
-  ])
+  value = local.out_clusters
 }
 
 resource "databricks_sql_endpoint" "this" {

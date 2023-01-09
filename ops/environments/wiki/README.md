@@ -80,7 +80,7 @@ For usage instructions please refer to https://databricks.atlassian.net/wiki/spa
 ## azure-prod-usr
  * Cloud: `azure`
  * Environment: `prod`
- * Databricks Host: https://adb-309687753508875.15.azuredatabricks.net
+ * Databricks Host: https://adb-8409199956055994.14.azuredatabricks.net
  * Account ID: `5a8ac58d-9557-497a-8832-90bd35e641bf`
  * Account Console: https://accounts.azuredatabricks.net/login?account_id=5a8ac58d-9557-497a-8832-90bd35e641bf
  * Available environment: `CLOUD_ENV`, `DATABRICKS_HOST`, `DATABRICKS_TOKEN`, `TEST_BRICKS_CLUSTER_ID`, `TEST_DEFAULT_CLUSTER_ID`, `TEST_GOSDK_CLUSTER_ID`, `TEST_VSCODE_CLUSTER_ID`

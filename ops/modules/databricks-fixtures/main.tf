@@ -26,9 +26,14 @@ locals {
         Product : "Any"
       },
     },
-    GOSDK : {
+    GO_SDK : {
       custom_tags : {
         Product : "GoSDK"
+      },
+    },
+    JS_SDK : {
+      custom_tags : {
+        Product : "JsSDK"
       },
     },
     VSCODE : {
