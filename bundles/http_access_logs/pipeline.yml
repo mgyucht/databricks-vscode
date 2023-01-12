@@ -1,0 +1,69 @@
+resources:
+  pipelines:
+    deco_access_logs:
+      name: "[${bundle.environment}] Developer Ecosystem access logs"
+
+      photon: true
+
+      libraries:
+        - notebook:
+            path: ./dlt/http_access_logs.py
+        - notebook:
+            path: ./dlt/workload_insights.py
+        - notebook:
+            path: ./dlt/terraform.py
+
+      configuration:
+        # Invalid user agents may include the same key multiple times in "otherInfo".
+        # We combine them into a map and therefore need to specify what to do for conflicts.
+        "spark.sql.mapKeyDedupPolicy": "LAST_WIN"
+
+environments:
+  development:
+    resources:
+      pipelines:
+        deco_access_logs:
+          target: "deco_development"
+
+          libraries:
+            - notebook:
+                path: ./dlt/http_access_logs_dev.py
+            - notebook:
+                path: ./dlt/workload_insights_dev.py
+
+          development: true
+
+          clusters:
+            - label: default
+              policy_id: D06290414F000422
+              instance_pool_id: 0803-173103-groan98-pool-ynq624dv
+
+              autoscale:
+                min_workers: 2
+                max_workers: 8
+                mode: ENHANCED
+
+
+  production:
+    resources:
+      pipelines:
+        deco_access_logs:
+          target: "deco_prod"
+
+          libraries:
+            - notebook:
+                path: ./dlt/http_access_logs_prod.py
+            - notebook:
+                path: ./dlt/workload_insights_prod.py
+
+          clusters:
+            - label: default
+              policy_id: D06290414F000422
+              instance_pool_id: 0803-173103-groan98-pool-ynq624dv
+
+              # The policy above limits us to 50 DBU equivalents per hour.
+              # Otherwise we could set max workers below to >= 100.
+              autoscale:
+                min_workers: 2
+                max_workers: 8
+                mode: ENHANCED

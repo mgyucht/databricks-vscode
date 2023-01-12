@@ -1,0 +1,30 @@
+[
+  {
+    "accountId": "4d9d3bc8-66c3-4e5a-8a0a-551f564257f0",
+    "canonicalCustomerName": "Databricks",
+    "workspaceId": "3390442228201038",
+    "workspaceName": "terra-tkdfgikhkcgaa",
+    "workspaceStatus": "CANCELLED"
+  },
+  {
+    "accountId": "4d9d3bc8-66c3-4e5a-8a0a-551f564257f0",
+    "canonicalCustomerName": "Databricks",
+    "workspaceId": "4243549383788636",
+    "workspaceName": "terra-tggfilhhclgbl",
+    "workspaceStatus": "CANCELLED"
+  },
+  {
+    "accountId": "4d9d3bc8-66c3-4e5a-8a0a-551f564257f0",
+    "canonicalCustomerName": "Databricks",
+    "workspaceId": "2365519204324913",
+    "workspaceName": "deco-prod-aws-us-west-2",
+    "workspaceStatus": "CANCELLED"
+  },
+  {
+    "accountId": "4d9d3bc8-66c3-4e5a-8a0a-551f564257f0",
+    "canonicalCustomerName": "Databricks",
+    "workspaceId": "2485669686882881",
+    "workspaceName": "deco-prod-aws-us-west-2",
+    "workspaceStatus": "CANCELLED"
+  }
+]
