@@ -1,15 +1,9 @@
-import json
-import os
 import pytest
 import warnings
 
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import SparkSession
 
-
-def load_fixture(spark: SparkSession, relativePath: str) -> DataFrame:
-    path = os.path.join(os.path.dirname(__file__), relativePath)
-    with open(path) as f:
-        return spark.createDataFrame(data=json.load(f))
+from fixtures import load_fixture
 
 
 @pytest.fixture
@@ -22,7 +16,7 @@ def spark(monkeypatch):
 
     def mock_table(name=""):
         if name == "prod.workspaces":
-            return load_fixture(spark, "./fixtures/workspaces.json")
+            return load_fixture(spark, "workspaces.json")
         raise RuntimeError(f"no fixture for {name}")
 
     monkeypatch.setattr(spark, "table", mock_table)

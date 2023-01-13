@@ -12,6 +12,8 @@ resources:
             path: ./dlt/workload_insights.py
         - notebook:
             path: ./dlt/terraform.py
+        - notebook:
+            path: ./dlt/vscode.py
 
       configuration:
         # Invalid user agents may include the same key multiple times in "otherInfo".
