@@ -21,6 +21,7 @@ jobs:
           - aws-prod-ucws
           - aws-prod-ucacct
           - gcp-acct-prod
+          - azure-prod-acct
     environment: ${{ matrix.env }}
 
     steps:
