@@ -26,7 +26,7 @@ Acquiring a new token:
 * You'll be guided through Okta to log in as the service user (credentials in LastPass).
 
 Add it to Azure KeyVault:
-* Navigate to [this page][deco-github-token] and add a new version for this secret.
+* Navigate to [this page][deco-gh-meta-kv] and add a new version for [this secret](deco-github-token).
 * Enter the token for the "Secret value".
 * Set the expiration date equal to the expiration date of the GitHub token.
 * Click "Create" at the bottom of the page.
@@ -38,5 +38,7 @@ Redeploy the secret to GitHub environments:
 * Inspect the set of changes that will be made
 * Agree to apply.
 * Done!
+
+[deco-gh-meta-kv]: https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/36f75872-9ace-4c20-911c-aea8eba2945c/resourceGroups/eng-dev-ecosystem-rg/providers/Microsoft.KeyVault/vaults/deco-gh-meta/secrets
 
 [deco-github-token]: https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/asset/Microsoft_Azure_KeyVault/Secret/https://deco-gh-meta.vault.azure.net/secrets/DECO-GITHUB-TOKEN

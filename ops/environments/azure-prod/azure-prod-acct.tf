@@ -28,7 +28,7 @@ module "account_datasci_spn" {
   }
 }
 
-// In this particular environment, erzen.kaja@databricks.com and had 
+// In this particular environment, erzen.kaja@databricks.com and had
 // to be manually imported, as `force` didn't work on the account level.
 module "account" {
   source = "../../modules/databricks-account"
@@ -46,7 +46,8 @@ module "secrets-azure-account" {
   source      = "../../modules/github-secrets"
   environment = "azure-prod-acct"
   secrets = {
-    "CLOUD_ENV" : "unity-catalog-account",
+    "CLOUD_ENV" : "azure-ucacct",
+    "TEST_FILTER" : "TestMwsAcc",
     "DATABRICKS_HOST" : module.defaults.azure_prod_account_console,
     "DATABRICKS_ACCOUNT_ID" : module.defaults.azure_prod_account_id,
     "ARM_TENANT_ID" : module.defaults.azure_tenant_id,
