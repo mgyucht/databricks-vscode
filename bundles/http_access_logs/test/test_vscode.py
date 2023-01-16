@@ -1,3 +1,4 @@
+import datetime
 import pytest
 
 from pyspark.sql import DataFrame, SparkSession
@@ -65,7 +66,7 @@ def test_vscode_weekly_active_workspaces(spark: SparkSession, daily_traffic_df):
 
     row = rows[0].asDict(recursive=True)
     assert row == {
-        "week": "2023-01-02",
+        "week": datetime.date(2023, 1, 2),
         "activeWorkspaces": 1,
     }
 
@@ -77,7 +78,7 @@ def test_vscode_weekly_active_customers(spark: SparkSession, daily_traffic_df):
 
     row = rows[0].asDict(recursive=True)
     assert row == {
-        "week": "2023-01-02",
+        "week": datetime.date(2023, 1, 2),
         "activeCustomers": 1,
     }
 

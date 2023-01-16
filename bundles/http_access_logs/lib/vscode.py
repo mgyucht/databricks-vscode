@@ -1,4 +1,5 @@
 import pyspark.sql.functions as F
+from pyspark.sql.types import DateType
 from pyspark.sql import Column, DataFrame
 
 from .upstream import (
@@ -61,8 +62,8 @@ def _weekly_active_common(df: DataFrame, agg: Column) -> DataFrame:
     df = df.withColumn("week", F.date_trunc("week", df["date"]))
     df = df.groupBy(df["week"]).agg(agg)
 
-    # Turn datetime into string representation of the first day of the week.
-    df = df.withColumn("week", F.date_format(df["week"], "yyyy-MM-dd"))
+    # Turn datetime into date for the first day of the week.
+    df = df.withColumn("week", df["week"].cast(DateType()))
     return df
 
 
