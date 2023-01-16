@@ -1,6 +1,6 @@
 Is a special terraform root, because it's set up semi-manually. It holds configuration for:
 
-* `decotfstate` Storage Account for a terraform states
+* `decotfstate` Storage Account for the terraform states
 * `deco-kv` Key Vault for various secrets. Only admins of this team can list/get/set secrets in this vault.
 
 # Rotating the GitHub token
