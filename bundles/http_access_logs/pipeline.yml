@@ -9,8 +9,6 @@ resources:
         - notebook:
             path: ./dlt/http_access_logs.py
         - notebook:
-            path: ./dlt/workload_insights.py
-        - notebook:
             path: ./dlt/terraform.py
         - notebook:
             path: ./dlt/vscode.py
@@ -30,8 +28,6 @@ environments:
           libraries:
             - notebook:
                 path: ./dlt/http_access_logs_dev.py
-            - notebook:
-                path: ./dlt/workload_insights_dev.py
 
           development: true
 
@@ -55,8 +51,6 @@ environments:
           libraries:
             - notebook:
                 path: ./dlt/http_access_logs_prod.py
-            - notebook:
-                path: ./dlt/workload_insights_prod.py
 
           clusters:
             - label: default
