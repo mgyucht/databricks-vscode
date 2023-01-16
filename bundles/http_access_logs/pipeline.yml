@@ -41,7 +41,6 @@ environments:
                 max_workers: 8
                 mode: ENHANCED
 
-
   production:
     resources:
       pipelines:
@@ -63,3 +62,11 @@ environments:
                 min_workers: 2
                 max_workers: 8
                 mode: ENHANCED
+
+            - label: maintenance
+              policy_id: D06290414F000422
+              instance_pool_id: 0803-173103-groan98-pool-ynq624dv
+
+              # The policy above limits us to 50 DBU equivalents per hour.
+              # Otherwise we could set max workers below to >= 100.
+              num_workers: 8

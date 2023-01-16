@@ -1,0 +1,19 @@
+resources:
+  jobs:
+    refresh_deco_access_logs:
+      name: "[${bundle.environment}] Refresh Developer Ecosystem access logs"
+
+      tasks:
+        - task_key: refresh_pipeline
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.deco_access_logs.id}
+
+environments:
+  production:
+    resources:
+      jobs:
+        refresh_deco_access_logs:
+          schedule:
+            # Run at 5am UTC so that we have fresh data at the beginning of the AMS workday.
+            quartz_cron_expression: "1 1 5 * * ?"
+            timezone_id: UTC
