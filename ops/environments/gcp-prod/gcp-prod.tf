@@ -50,7 +50,6 @@ module "secrets" {
     {
       "CLOUD_ENV" : "gcp",
       "DATABRICKS_HOST" : databricks_mws_workspaces.workspace.workspace_url,
-      "DATABRICKS_GOOGLE_SERVICE_ACCOUNT" : module.service_account.email,
       "GOOGLE_CREDENTIALS" : google_service_account_key.this.private_key,
     },
   )
