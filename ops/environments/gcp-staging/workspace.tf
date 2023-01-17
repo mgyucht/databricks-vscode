@@ -6,7 +6,7 @@ resource "databricks_mws_workspaces" "workspace" {
   location       = module.defaults.google_region
   pricing_tier   = "PREMIUM"
 
-  cloud_resource_bucket {
+  cloud_resource_container {
     gcp {
       project_id = module.defaults.google_project
     }
