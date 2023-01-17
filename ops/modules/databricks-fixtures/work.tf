@@ -11,7 +11,9 @@ module "defaults" {
 }
 
 data "databricks_node_type" "smallest" {
-  local_disk = true
+  local_disk    = true
+  min_cores     = 4
+  min_memory_gb = 8
 }
 
 data "databricks_spark_version" "latest" {
