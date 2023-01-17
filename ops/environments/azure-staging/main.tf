@@ -25,6 +25,7 @@ provider "databricks" {
   alias = "workspace"
   host  = module.workspace.workspace_url
 
+  auth_type           = "azure-client-secret"
   azure_client_id     = module.spn.client_id
   azure_client_secret = module.spn.client_secret
   azure_tenant_id     = module.defaults.azure_tenant_id

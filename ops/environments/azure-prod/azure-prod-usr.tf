@@ -27,6 +27,7 @@ provider "databricks" {
   alias = "workspace_usr"
   host  = module.workspace_usr.workspace_url
 
+  auth_type                   = "azure-client-secret"
   azure_client_id             = module.spn_usr.client_id
   azure_client_secret         = module.spn_usr.client_secret
   azure_tenant_id             = module.defaults.azure_tenant_id
@@ -81,6 +82,7 @@ resource "databricks_permissions" "tokens" {
 provider "databricks" {
   alias = "workspace_usr_nonadmin"
 
+  auth_type                   = "azure-client-secret"
   azure_client_id             = module.spn_usr_nonadmin.client_id
   azure_client_secret         = module.spn_usr_nonadmin.client_secret
   azure_tenant_id             = module.defaults.azure_tenant_id
