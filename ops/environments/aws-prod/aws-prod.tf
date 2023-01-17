@@ -32,7 +32,7 @@ module "databricks_fixtures" {
     databricks = databricks.workspace
   }
   source = "../../modules/databricks-fixtures"
-  cloud = "aws"
+  cloud  = "aws"
 }
 
 module "no_uc_workspace" {

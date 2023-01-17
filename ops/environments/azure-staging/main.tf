@@ -40,7 +40,7 @@ module "databricks_fixtures" {
     databricks = databricks.workspace
   }
   source = "../../modules/databricks-fixtures"
-  cloud = "azure"
+  cloud  = "azure"
 }
 
 // TODO: azurerm_key_vault_access_policy for SPN and team users
