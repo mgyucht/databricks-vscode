@@ -21,7 +21,7 @@ var shellCmd = &cobra.Command{
 		}
 		environ := os.Environ()
 		environ = append(environ, fmt.Sprintf(
-			`PS1=\033[1;34m(%s)\033[0m \033[0;32m${PWD/*\//}\033[0m $ `,
+			`PS1=\[\e[1;34m\](%s)\[\e[0m\] \[\e[0;32m\]${PWD/*\//}\[\e[0m\] $ `,
 			env))
 		for k, v := range vars {
 			environ = append(environ, fmt.Sprintf("%s=%s", k, v))
