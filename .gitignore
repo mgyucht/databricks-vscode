@@ -5,3 +5,8 @@ ext/*
 .DS_Store
 go/dist
 dist
+
+__pycache__
+.pytest_cache
+
+.databricks/
