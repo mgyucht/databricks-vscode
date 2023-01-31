@@ -47,6 +47,7 @@ def test_vscode_daily_traffic(spark: SparkSession):
         "requests": 5,
         "canonicalCustomerName": "Databricks",
         "isRealCustomer": True,
+        "productVersion": "0.0.8",
     }
 
 
@@ -97,3 +98,4 @@ def test_vscode_customers_usage_first_last(spark: SparkSession, daily_traffic_df
     assert row["runFileAsJobRequests"] == 0
     assert row["usageDays"] == 1
     assert row["idleDays"] >= 7
+    assert row["maxProductVersion"] == "0.0.8"

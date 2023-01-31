@@ -1,5 +1,5 @@
 import pyspark.sql.functions as F
-from pyspark.sql.types import DateType
+from pyspark.sql.types import DateType, IntegerType
 from pyspark.sql import Column, DataFrame
 
 from .upstream import (
@@ -38,6 +38,28 @@ def http_access_logs(df: DataFrame) -> DataFrame:
     )
 
 
+def version_to_integer(col: Column) -> Column:
+    """
+    Turn semver string into comparable integer version.
+    """
+    parts = F.split(col, r"\.")
+    return (
+        parts[0].cast(IntegerType()) * 1_000_000 +
+        parts[1].cast(IntegerType()) * 1_000 +
+        parts[2].cast(IntegerType()) * 1
+    )
+
+
+def integer_to_version(col: Column) -> Column:
+    """
+    Turn comparable integer version into semver string.
+    """
+    major = F.floor((col) / 1_000_000)
+    minor = F.floor((col - major) / 1_000)
+    patch = (col - major - minor)
+    return F.format_string("%d.%d.%d", major, minor, patch)
+
+
 def daily_traffic(df: DataFrame) -> DataFrame:
     """
     This transform aggregates access logs into a summary per workspace per day.
@@ -50,6 +72,7 @@ def daily_traffic(df: DataFrame) -> DataFrame:
         df["workspaceId"],
         df["method"],
         df["canonicalPath"],
+        df["unifiedUserAgent.productVersion"],
     ).agg(F.count(F.lit(1)).alias("requests"))
 
     # Include the customer name.
@@ -100,6 +123,9 @@ def customers_usage_first_last(df: DataFrame) -> DataFrame:
     isRunFileAsJob = isPost & (df["canonicalPath"] == "/api/2.1/jobs/runs/submit")
     df = df.withColumn("runFileAsJob", F.when(isRunFileAsJob, df["requests"]).otherwise(0))
 
+    # Convert product version into an integer so we can compute the maximum.
+    df = df.withColumn("productVersionInteger", version_to_integer(df["productVersion"]))
+
     # Aggregate by customer name (real only).
     df = df.transform(filter_real_customers_only)
     df = df.groupBy(df["canonicalCustomerName"]).agg(
@@ -109,7 +135,10 @@ def customers_usage_first_last(df: DataFrame) -> DataFrame:
         F.sum(df["runFile"]).alias("runFileRequests"),
         F.sum(df["runFileAsJob"]).alias("runFileAsJobRequests"),
         F.countDistinct(df["date"]).alias("usageDays"),
+        F.max(df["productVersionInteger"]).alias("maxProductVersion"),
     )
     # Include number of days between today and the last use for easy filtering.
     df = df.withColumn("idleDays", F.datediff(F.current_date(), df["lastUse"]))
+    # Turn version integer into semver string.
+    df = df.withColumn("maxProductVersion", integer_to_version(df["maxProductVersion"]))
     return df
