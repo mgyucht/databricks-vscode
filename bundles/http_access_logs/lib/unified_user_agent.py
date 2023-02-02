@@ -47,27 +47,18 @@ class UnifiedUserAgent:
 
     def is_valid(self) -> Column:
         alphanum = r"[a-z0-9-_]+"
-
-        # Regular expression copied from https://semver.org/.
-        semver = (
-            r"^"
-            r"(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
-            r"(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?"
-            r"(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?"
-            r"$"
-        )
-
+        semver = r"[0-9]+\.[0-9]+\.[0-9]+"
         language = f"(go|python|js|java|scala|{alphanum})"
         os = f"(darwin|linux|windows|{alphanum})"
 
         conditions = [
             F.size(self.chunks) >= 4,
             self.productIdent.rlike(f"^{alphanum}$"),
-            self.productVersion.rlike(semver),
+            self.productVersion.rlike(f"^{semver}$"),
             self.sdkIdent.rlike(f"^databricks-sdk-{language}$"),
             self.sdkVersion.rlike(semver),
             self.languageIdent.rlike(f"^{language}$"),
-            self.languageVersion.rlike(semver),
+            self.languageVersion.rlike(f"^{semver}$"),
             self.osIdent == F.lit("os"),
             self.osVersion.rlike(f"^{os}$"),
         ]
