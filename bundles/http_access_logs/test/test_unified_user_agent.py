@@ -75,3 +75,27 @@ def test_old_school_terraform(spark: SparkSession):
     }
 
     assert out[0]["ua"].asDict() == expected
+
+def test_semver(spark: SparkSession):
+    ua = "bricks/0.0.21-dev+65020f3 databricks-sdk-go/0.2.0 go/1.19.4 os/darwin cmd/sync auth/pat"
+    df = spark.createDataFrame(data=[{"userAgent": ua}])
+    out = df.withColumn("ua", UnifiedUserAgent(df["userAgent"]).to_column()).collect()
+
+    expected = {
+        "product": "bricks",
+        "productVersion": "0.0.21-dev+65020f3",
+        "sdk": "databricks-sdk-go",
+        "sdkVersion": "0.2.0",
+        "language": "go",
+        "languageVersion": "1.19.4",
+        "os": "os",
+        "osVersion": "darwin",
+        "otherInfo": {
+            "cmd": "sync",
+            "auth": "pat",
+        },
+        "valid": True,
+        "original": ua,
+    }
+
+    assert out[0]["ua"].asDict() == expected
