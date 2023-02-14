@@ -47,7 +47,16 @@ def test_vscode_daily_traffic(spark: SparkSession):
         "requests": 5,
         "canonicalCustomerName": "Databricks",
         "isRealCustomer": True,
-        "productVersion": "0.0.8",
+        "productVersion": {
+            "core": "0.0.8",
+            "major": 0,
+            "minor": 0,
+            "patch": 8,
+            "prerelease": None,
+            "buildmetadata": None,
+            "valid": True,
+            "original": None,
+        },
     }
 
 

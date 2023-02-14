@@ -1,5 +1,5 @@
 import pyspark.sql.functions as F
-from pyspark.sql.types import DateType, IntegerType
+from pyspark.sql.types import DateType
 from pyspark.sql import Column, DataFrame
 
 from .upstream import (
@@ -42,12 +42,7 @@ def version_to_integer(col: Column) -> Column:
     """
     Turn semver string into comparable integer version.
     """
-    parts = F.split(col, r"\.")
-    return (
-        parts[0].cast(IntegerType()) * 1_000_000 +
-        parts[1].cast(IntegerType()) * 1_000 +
-        parts[2].cast(IntegerType()) * 1
-    )
+    return (col.major * 1_000_000) + (col.minor * 1_000) + (col.patch * 1)
 
 
 def integer_to_version(col: Column) -> Column:
@@ -56,7 +51,7 @@ def integer_to_version(col: Column) -> Column:
     """
     major = F.floor((col) / 1_000_000)
     minor = F.floor((col - major) / 1_000)
-    patch = (col - major - minor)
+    patch = col - major - minor
     return F.format_string("%d.%d.%d", major, minor, patch)
 
 
@@ -121,10 +116,14 @@ def customers_usage_first_last(df: DataFrame) -> DataFrame:
 
     # "Run File as Workflow" is a POST to /jobs/runs/submit.
     isRunFileAsJob = isPost & (df["canonicalPath"] == "/api/2.1/jobs/runs/submit")
-    df = df.withColumn("runFileAsJob", F.when(isRunFileAsJob, df["requests"]).otherwise(0))
+    df = df.withColumn(
+        "runFileAsJob", F.when(isRunFileAsJob, df["requests"]).otherwise(0)
+    )
 
     # Convert product version into an integer so we can compute the maximum.
-    df = df.withColumn("productVersionInteger", version_to_integer(df["productVersion"]))
+    df = df.withColumn(
+        "productVersionInteger", version_to_integer(df["productVersion"])
+    )
 
     # Aggregate by customer name (real only).
     df = df.transform(filter_real_customers_only)
