@@ -1,4 +1,4 @@
-from pyspark.sql import SparkSession, Row
+from pyspark.sql import SparkSession
 
 from lib.unified_user_agent import UnifiedUserAgent
 

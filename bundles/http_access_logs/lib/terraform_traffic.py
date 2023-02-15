@@ -4,18 +4,18 @@ from pyspark.sql import DataFrame, Column
 
 class TerraformTraffic:
     def __init__(self, df: DataFrame) -> None:
-        # DataFrame has schema of `prod.http_access_logs`.
+        # DataFrame has schema of `deco.http_access_logs`.
         self.df = df
 
         # Setup common user agent related columns
-        self.ua = df["userAgent"]["redactedUserAgent"]
+        self.ua = df["unifiedUserAgent"]["original"]
         self.uaSplitSpaces = F.split(self.ua, r"\s+")
         self.uaProductInfo = F.split(self.uaSplitSpaces[0], "/")
         self.uaProduct = self.uaProductInfo[0]
         self.uaVersion = self.uaProductInfo[1]
 
         # Setup common path columns
-        self.path = df["path"]
+        self.path = df["canonicalPath"]
         self.pathSplit = F.split(self.path, "/")
 
     def is_gte_030(self) -> Column:
@@ -110,14 +110,15 @@ class TerraformTraffic:
             "date",
             "timestamp",
             "workspaceId",
-            "userAgent",
-            "path",
+            "accountId",
+            "unifiedUserAgent",
+            "canonicalPath",
             "status",
             "hostname",
         )
         df = df.withColumn(
             "accountId",
-            F.when(accountsConsole & resource.like("mws_%"), tt.pathSplit[4]),
+            F.when(accountsConsole & resource.like("mws_%"), df["accountId"]),
         )
         df = df.withColumn("resource", resource)
         df = df.withColumn("version", tt.provider_version())
@@ -132,6 +133,6 @@ class TerraformTraffic:
         )
         df = df.withColumn("httpStatus", httpStatus)
         df = df.withColumn("accountsConsole", accountsConsole)
-        df = df.drop("hostname", "status", "userAgent", "path")
+        df = df.drop("hostname", "status", "unifiedUserAgent", "canonicalPath")
 
         return df

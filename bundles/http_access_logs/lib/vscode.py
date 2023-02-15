@@ -20,22 +20,8 @@ def filter_vscode_product(df: DataFrame) -> DataFrame:
     return df.filter(df["unifiedUserAgent.product"].isin(validProducts))
 
 
-def drop_unused_access_logs_columns(df: DataFrame) -> DataFrame:
-    return df.drop(
-        # We use only `canonicalPath` so can drop the literal `path`.
-        "path",
-        "virtualCluster",
-        "upstreamServiceName",
-        "upstreamRequestAttemptCount",
-        "internalReq",
-        "userAgent",
-    )
-
-
 def http_access_logs(df: DataFrame) -> DataFrame:
-    return df.transform(filter_vscode_product).transform(
-        drop_unused_access_logs_columns
-    )
+    return df.transform(filter_vscode_product)
 
 
 def version_to_integer(col: Column) -> Column:

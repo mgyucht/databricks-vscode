@@ -11,10 +11,10 @@ def schema():
     return StructType(
         [
             StructField(
-                "userAgent",
-                StructType([StructField("redactedUserAgent", StringType())]),
+                "unifiedUserAgent",
+                StructType([StructField("original", StringType())]),
             ),
-            StructField("path", StringType()),
+            StructField("canonicalPath", StringType()),
             StructField("hostname", StringType()),
         ]
     )
@@ -25,10 +25,10 @@ def test_derive_resource(spark: SparkSession, schema):
     df = spark.createDataFrame(
         data=[
             {
-                "userAgent": {
-                    "redactedUserAgent": "foo",
+                "unifiedUserAgent": {
+                    "original": "foo",
                 },
-                "path": "/path",
+                "canonicalPath": "/path",
             },
             # (("foo",), "/path"),
         ],
@@ -51,8 +51,8 @@ def test_provider_version(spark: SparkSession, schema):
     df = spark.createDataFrame(
         data=[
             {
-                "userAgent": {
-                    "redactedUserAgent": ua[0],
+                "unifiedUserAgent": {
+                    "original": ua[0],
                 },
             }
             for ua in examples
