@@ -1,0 +1,70 @@
+[
+  {
+    "authzPolicyCredentialsName": "TOKEN",
+    "authzPolicyName": "REST_API",
+    "canonicalPath": "/api/2.0/jobs/runs/get",
+    "contentType": "text/json",
+    "date": "2023-01-02",
+    "hostname": "adb-309687753508875.15.azuredatabricks.net",
+    "internalReq": false,
+    "method": "GET",
+    "remoteAddrAnon": "",
+    "status": 200,
+    "timestamp": "2023-01-02T07:04:30.869+0000",
+    "tokenType": "aad-oauth",
+    "upstreamRequestAttemptCount": 1,
+    "upstreamServiceName": "jobsApi",
+    "userAgent": {
+      "agentClass": "Other",
+      "deviceClass": "Other",
+      "operatingSystemClass": "Other",
+      "redactedUserAgent": "databricks-cli-0.17.3-runs-get-b43b2376-8a6b-11ed-a062-0a7d5859c938"
+    },
+    "virtualCluster": "/api/2.0/jobs/runs/get",
+    "workspaceId": "309687753508875"
+  },
+  {
+    "canonicalPath": "/api/2.0/workspace/export",
+    "date": "2023-01-02",
+    "hostname": "adb-309687753508875.15.azuredatabricks.net",
+    "method": "GET",
+    "remoteAddrAnon": "",
+    "status": 200,
+    "timestamp": "2023-01-02T07:11:54.000+0000",
+    "userAgent": {
+      "agentClass": "Other",
+      "deviceClass": "Other",
+      "operatingSystemClass": "Other",
+      "redactedUserAgent": "databricks-cli-0.11.0-"
+    },
+    "workspaceId": "309687753508875"
+  },
+  {
+    "authzPolicyCredentialsName": "NON_INTERNAL_TOKEN",
+    "authzPolicyName": "NON_INTERNAL_API_TOKEN",
+    "canonicalPath": "/api/2.1/unity-catalog/external-locations/[EXTERNAL_LOCATION_NAME]",
+    "contentType": "text/json",
+    "date": "2023-01-02",
+    "hostname": "adb-309687753508875.15.azuredatabricks.net",
+    "internalReq": false,
+    "method": "DELETE",
+    "path": "/api/2.1/unity-catalog/external-locations/[EXTERNAL_LOCATION_NAME]",
+    "remoteAddrAnon": "",
+    "requestBodyLength": 15,
+    "requestProtocol": "HTTP/1.1",
+    "requestTTFB": 434,
+    "requestTime": 435,
+    "respBodyLength": 28,
+    "responseCodeDetails": "via_upstream",
+    "status": 200,
+    "timestamp": "2023-01-02T10:42:24.685+0000",
+    "tokenType": "db-api",
+    "userAgent": {
+      "agentClass": "Other",
+      "deviceClass": "Other",
+      "operatingSystemClass": "Other",
+      "redactedUserAgent": "databricks-cli-0.17.4-unity-catalog-external-locations-delete-28694761-8a8a-11ed-a57b-7c8ae1adbd38"
+    },
+    "workspaceId": "309687753508875"
+  }
+]
