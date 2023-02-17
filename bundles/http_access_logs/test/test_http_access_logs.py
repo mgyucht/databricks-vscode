@@ -4,7 +4,14 @@ import pyspark.sql.functions as F
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType
 
-from lib.http_access_logs import filter_on_user_agent, include_account_id
+from lib.http_access_logs import (
+    filter_on_user_agent,
+    include_account_id,
+    transform_http_access_logs,
+    join_with_canonical_customer_name,
+)
+
+from fixtures import load_fixture
 
 
 @pytest.fixture
@@ -89,3 +96,13 @@ def test_http_access_logs_include_account_id(spark: SparkSession, schema):
     assert out[0].asDict().get("accountId") == "da8666d0-7fd9-4bae-b651-3a9ec8f06b5e"
     assert out[1].asDict().get("accountId") == None
     assert out[2].asDict().get("accountId") == None
+
+
+def test_http_access_logs_join_with_canonical_customer_name(spark: SparkSession):
+    df = load_fixture(spark, "vscode_http_access_logs.json")
+    df = df.transform(transform_http_access_logs)
+    df = df.transform(join_with_canonical_customer_name)
+    rows = df.collect()
+    assert len(rows) == 5
+    for row in rows:
+        assert row.asDict().get("canonicalCustomerName") == "Databricks"

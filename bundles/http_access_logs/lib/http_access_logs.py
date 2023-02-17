@@ -2,6 +2,7 @@ import pyspark.sql.functions as F
 from pyspark.sql import DataFrame
 
 from .unified_user_agent import with_unified_user_agent
+from .upstream import account_id_to_customer_info, workspace_id_to_customer_info
 
 
 def filter_on_user_agent(df: DataFrame) -> DataFrame:
@@ -133,3 +134,37 @@ def transform_http_access_logs(df: DataFrame) -> DataFrame:
     df = df.transform(with_unified_user_agent(df["userAgent.redactedUserAgent"]))
     df = df.transform(filter_http_access_logs)
     return df
+
+
+def join_with_canonical_customer_name(df: DataFrame) -> DataFrame:
+    workspaces = workspace_id_to_customer_info(df.sparkSession).alias("workspaces")
+    accounts = account_id_to_customer_info(df.sparkSession).alias("accounts")
+    cols = ["input." + col for col in df.columns]
+
+    df = df.alias("input")
+    df = df.join(
+        other=workspaces.hint("broadcast"),
+        on=(F.col("input.workspaceId") == F.col("workspaces.workspaceId")),
+        how="left",
+    )
+    df = df.join(
+        other=accounts.hint("broadcast"),
+        on=(F.col("input.accountId") == F.col("accounts.accountId")),
+        how="left",
+    )
+
+    head = [
+        "input.timestamp",
+    ]
+
+    tail = list(filter(lambda x: x not in head, cols))
+
+    canonicalCustomerName = F.coalesce(
+        "workspaces.canonicalCustomerName", "accounts.canonicalCustomerName"
+    ).alias("canonicalCustomerName")
+
+    return df.select(
+        *head,
+        canonicalCustomerName,
+        *tail,
+    )

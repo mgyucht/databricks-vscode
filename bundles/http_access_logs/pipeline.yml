@@ -37,6 +37,8 @@ environments:
             - label: default
               policy_id: D06290414F000422
               instance_pool_id: 0803-173103-groan98-pool-ynq624dv
+              spark_conf:
+                "spark.sql.shuffle.partitions": "auto"
 
               autoscale:
                 min_workers: 2
@@ -57,6 +59,8 @@ environments:
             - label: default
               policy_id: D06290414F000422
               instance_pool_id: 0803-173103-groan98-pool-ynq624dv
+              spark_conf:
+                "spark.sql.shuffle.partitions": "auto"
 
               # The policy above limits us to 50 DBU equivalents per hour.
               # Otherwise we could set max workers below to >= 100.
@@ -68,6 +72,8 @@ environments:
             - label: maintenance
               policy_id: D06290414F000422
               instance_pool_id: 0803-173103-groan98-pool-ynq624dv
+              spark_conf:
+                "spark.sql.shuffle.partitions": "auto"
 
               # The policy above limits us to 50 DBU equivalents per hour.
               # Otherwise we could set max workers below to >= 100.

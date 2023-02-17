@@ -1,20 +1,25 @@
 from pyspark.sql import SparkSession
 
 from lib.upstream import (
-    list_accounts,
-    list_workspaces,
+    account_id_to_customer_info,
+    workspace_id_to_customer_info,
     join_canonical_customer_name_on_workspace_id,
 )
 
 
 def test_workspaces(spark: SparkSession):
-    df = list_workspaces(spark)
+    df = workspace_id_to_customer_info(spark)
     assert df.count() == 5
 
 
 def test_accounts(spark: SparkSession):
-    df = list_accounts(spark)
-    assert df.count() == 1
+    rows = account_id_to_customer_info(spark).collect()
+    assert len(rows) == 1
+
+    # We have multiple accounts in the fixture.
+    # This must always resolve to the customer name associated
+    # with the most recently launched workspace for the account.
+    assert rows[0]["canonicalCustomerName"] == "Databricks D"
 
 
 def test_join_canonical_customer_name_on_workspace_id(spark: SparkSession):

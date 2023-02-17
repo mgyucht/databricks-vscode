@@ -5,30 +5,34 @@
     "workspaceId": "3390442228201038",
     "workspaceName": "terra-tkdfgikhkcgaa",
     "workspaceStatus": "CANCELLED",
+    "creationTime": 1620712265000,
     "isRealCustomer": false
   },
   {
     "accountId": "4d9d3bc8-66c3-4e5a-8a0a-551f564257f0",
-    "canonicalCustomerName": "Databricks",
+    "canonicalCustomerName": "Databricks B",
     "workspaceId": "4243549383788636",
     "workspaceName": "terra-tggfilhhclgbl",
     "workspaceStatus": "CANCELLED",
+    "creationTime": 1620712265001,
     "isRealCustomer": false
   },
   {
     "accountId": "4d9d3bc8-66c3-4e5a-8a0a-551f564257f0",
-    "canonicalCustomerName": "Databricks",
+    "canonicalCustomerName": "Databricks C",
     "workspaceId": "2365519204324913",
     "workspaceName": "deco-prod-aws-us-west-2",
     "workspaceStatus": "CANCELLED",
+    "creationTime": 1620712265002,
     "isRealCustomer": false
   },
   {
     "accountId": "4d9d3bc8-66c3-4e5a-8a0a-551f564257f0",
-    "canonicalCustomerName": "Databricks",
+    "canonicalCustomerName": "Databricks D",
     "workspaceId": "2485669686882881",
     "workspaceName": "deco-prod-aws-us-west-2",
     "workspaceStatus": "CANCELLED",
+    "creationTime": 1620712265003,
     "isRealCustomer": false
   },
   {
@@ -36,6 +40,7 @@
     "workspaceId": "309687753508875",
     "workspaceName": "deco-prod-azure-eastus2",
     "workspaceStatus": "RUNNING",
+    "creationTime": 1620712265004,
     "isRealCustomer": true
   }
 ]
