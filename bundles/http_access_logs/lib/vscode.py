@@ -36,8 +36,8 @@ def integer_to_version(col: Column) -> Column:
     Turn comparable integer version into semver string.
     """
     major = F.floor((col) / 1_000_000)
-    minor = F.floor((col - major) / 1_000)
-    patch = col - major - minor
+    minor = F.floor((col - (major * 1_000_000)) / 1_000)
+    patch = col - (major * 1_000_000) - (minor * 1_000)
     return F.format_string("%d.%d.%d", major, minor, patch)
 
 
