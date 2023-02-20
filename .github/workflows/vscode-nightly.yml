@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        environment: [azure-prod-pat]
+        environment: [azure-prod-usr]
         os: [macos-latest, windows-latest]
         node-version: [16.x]
         vscode-version: [stable, insiders]
@@ -76,7 +76,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        environment: [azure-prod-pat]
+        environment: [azure-prod-usr]
         arch:
           [
             { bricks_arch: darwin_amd64, os: macos-latest },
