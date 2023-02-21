@@ -14,6 +14,6 @@ environments:
       jobs:
         refresh_deco_access_logs:
           schedule:
-            # Run at 5am UTC so that we have fresh data at the beginning of the AMS workday.
-            quartz_cron_expression: "1 1 5 * * ?"
+            # Run hourly. To be evaluated if this is necessary in >= March 2023.
+            quartz_cron_expression: "1 1 * * * ?"
             timezone_id: UTC
