@@ -1,6 +1,12 @@
 # Databricks notebook source
+# DBTITLE 1,Make bundle root available for Python imports.
+
+import sys
+sys.path.append(spark.conf.get("bundle.filePath"))
+
+# COMMAND ----------
+
 import dlt
-import importer
 
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame

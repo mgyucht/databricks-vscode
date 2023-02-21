@@ -19,6 +19,7 @@ resources:
         # Invalid user agents may include the same key multiple times in "otherInfo".
         # We combine them into a map and therefore need to specify what to do for conflicts.
         "spark.sql.mapKeyDedupPolicy": "LAST_WIN"
+        "bundle.filePath": "/Workspace/${workspace.file_path.workspace}"
 
 environments:
   development:

@@ -1,25 +1,8 @@
 bundle:
   name: http_access_logs
-  default_cluster: 1031-104249-x0tbghhi
 
 workspace:
   profile: logfood-master
-  artifact_path:
-    # WARNING!!
-    #
-    # We need to synchronize to a repository because we need files-in-repos or files-in-workspace
-    # for the code under ./lib and logfood doesn't use files-in-workspace yet...
-    #
-    workspace: /Repos/${workspace.current_user.userName}/http_access_logs_dev
-
-artifacts:
-  lib:
-    directory:
-      path: ./lib
-
-  test:
-    directory:
-      path: ./test
 
 environments:
   development:
@@ -27,6 +10,5 @@ environments:
 
   production:
     workspace:
-      artifact_path:
-        # WARNING!! Let Pieter deploy this until we have an SP in logfood-master.
-        workspace: /Repos/pieter.noordhuis@databricks.com/http_access_logs_prod
+      # WARNING!! Let Pieter deploy this until we have an SP in logfood-master.
+      root: /Repos/pieter.noordhuis@databricks.com/http_access_logs_prod
