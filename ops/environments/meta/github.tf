@@ -67,6 +67,9 @@ locals {
     "databricks-vscode" = [
       "deco-gh-azure-prod-usr"
     ]
+    "dbt-databricks" = [
+      "deco-gh-azure-prod-peco"
+    ]
   }
 
   github_environments = {

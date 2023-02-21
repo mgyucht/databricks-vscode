@@ -52,7 +52,10 @@ locals {
   test_warehouses = {
     DEFAULT : {
       custom_tags : merge({}, var.cloud != "gcp" ? module.defaults.tags : {}),
-    }
+    },
+    PECO : {
+      custom_tags : merge({}, var.cloud != "gcp" ? module.defaults.tags : {}),
+    },
   }
 }
 

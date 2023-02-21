@@ -126,6 +126,20 @@ resource "databricks_permissions" "cluster" {
   }
 }
 
+// Allow the non-admin SPN the CAN_USE permission on test warehouses.
+resource "databricks_permissions" "warehouse" {
+  depends_on = [module.spn_usr]
+  provider   = databricks.workspace_usr
+
+  for_each        = module.databricks_fixtures_usr.warehouse_ids
+  sql_endpoint_id = each.value
+
+  access_control {
+    service_principal_name = databricks_service_principal.spn_usr_nonadmin.application_id
+    permission_level       = "CAN_USE"
+  }
+}
+
 resource "databricks_directory" "tmp_folder" {
   depends_on = [module.spn_usr]
   provider   = databricks.workspace_usr

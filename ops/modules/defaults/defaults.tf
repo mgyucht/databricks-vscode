@@ -20,6 +20,8 @@ output "admins" {
 output "friends" {
   value = [
     "jesse.whitehouse@databricks.com",
+    // Not added to "Test Customer Directory" yet.
+    // "andre.furlan@databricks.com",
   ]
 }
 
