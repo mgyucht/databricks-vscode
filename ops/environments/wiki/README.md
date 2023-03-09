@@ -1,17 +1,3 @@
-# Windows development VMs
-
-For usage instructions please refer to https://databricks.atlassian.net/wiki/spaces/UN/pages/2855406192/Windows+development+VMs.
-
-* [erzen.kaja@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-erzen.kaja/overview)
-* [fabian.jakobs@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-fabian.jakobs/overview)
-* [kartik.gupta@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-kartik.gupta/overview)
-* [lennart.kats@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-lennart.kats/overview)
-* [paul.cornell@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-paul.cornell/overview)
-* [paul.leventis@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-paul.leventis/overview)
-* [pieter.noordhuis@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-pieter.noordhuis/overview)
-* [serge.smertin@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-serge.smertin/overview)
-* [shreyas.goenka@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-shreyas.goenka/overview)
-
 # Developer Ecosystem Environments
 
 ## aws-prod
@@ -20,7 +6,7 @@ For usage instructions please refer to https://databricks.atlassian.net/wiki/spa
  * Databricks Host: https://dbc-ee877747-aacb.cloud.databricks.com
  * Account ID: `4d9d3bc8-66c3-4e5a-8a0a-551f564257f0`
  * Account Console: https://accounts.cloud.databricks.com/login?account_id=4d9d3bc8-66c3-4e5a-8a0a-551f564257f0
- * Available environment: `CLOUD_ENV`, `DATABRICKS_HOST`, `DATABRICKS_TOKEN`, `TEST_BRICKS_CLUSTER_ID`, `TEST_DEFAULT_CLUSTER_ID`, `TEST_DEFAULT_WAREHOUSE_DATASOURCE_ID`, `TEST_DEFAULT_WAREHOUSE_ID`, `TEST_DEFAULT_WAREHOUSE_JDBC_URL`, `TEST_GO_SDK_CLUSTER_ID`, `TEST_INSTANCE_POOL_ID`, `TEST_JS_SDK_CLUSTER_ID`, `TEST_VSCODE_CLUSTER_ID`
+ * Available environment: `CLOUD_ENV`, `DATABRICKS_HOST`, `DATABRICKS_TOKEN`, `TEST_BRICKS_CLUSTER_ID`, `TEST_DEFAULT_CLUSTER_ID`, `TEST_DEFAULT_WAREHOUSE_DATASOURCE_ID`, `TEST_DEFAULT_WAREHOUSE_ID`, `TEST_DEFAULT_WAREHOUSE_JDBC_URL`, `TEST_GO_SDK_CLUSTER_ID`, `TEST_INSTANCE_POOL_ID`, `TEST_JS_SDK_CLUSTER_ID`, `TEST_PECO_WAREHOUSE_DATASOURCE_ID`, `TEST_PECO_WAREHOUSE_ID`, `TEST_PECO_WAREHOUSE_JDBC_URL`, `TEST_VSCODE_CLUSTER_ID`
  * Previews: "unity_catalog": "ENABLED"
 
 ## aws-prod-acct
@@ -119,7 +105,7 @@ For usage instructions please refer to https://databricks.atlassian.net/wiki/spa
  * Databricks Host: https://734653476174839.9.gcp.databricks.com
  * Account ID: `e11e38c5-a449-47b9-b37f-0fa36c821612`
  * Account Console: https://accounts.gcp.databricks.com/login?account_id=e11e38c5-a449-47b9-b37f-0fa36c821612
- * Available environment: `CLOUD_ENV`, `DATABRICKS_HOST`, `GOOGLE_CREDENTIALS`, `TEST_BIX_SQL_WAREHOUSE_HTTP_PATH`, `TEST_BIX_SQL_WAREHOUSE_ID`, `TEST_BIX_SQL_WAREHOUSE_JDBC_URL`, `TEST_BRICKS_CLUSTER_ID`, `TEST_DEFAULT_CLUSTER_ID`, `TEST_DEFAULT_WAREHOUSE_DATASOURCE_ID`, `TEST_DEFAULT_WAREHOUSE_ID`, `TEST_DEFAULT_WAREHOUSE_JDBC_URL`, `TEST_GO_SDK_CLUSTER_ID`, `TEST_INSTANCE_POOL_ID`, `TEST_JS_SDK_CLUSTER_ID`, `TEST_VSCODE_CLUSTER_ID`
+ * Available environment: `CLOUD_ENV`, `DATABRICKS_HOST`, `GOOGLE_CREDENTIALS`, `TEST_BIX_SQL_WAREHOUSE_HTTP_PATH`, `TEST_BIX_SQL_WAREHOUSE_ID`, `TEST_BIX_SQL_WAREHOUSE_JDBC_URL`, `TEST_BRICKS_CLUSTER_ID`, `TEST_DEFAULT_CLUSTER_ID`, `TEST_DEFAULT_WAREHOUSE_DATASOURCE_ID`, `TEST_DEFAULT_WAREHOUSE_ID`, `TEST_DEFAULT_WAREHOUSE_JDBC_URL`, `TEST_GO_SDK_CLUSTER_ID`, `TEST_INSTANCE_POOL_ID`, `TEST_JS_SDK_CLUSTER_ID`, `TEST_PECO_WAREHOUSE_DATASOURCE_ID`, `TEST_PECO_WAREHOUSE_ID`, `TEST_PECO_WAREHOUSE_JDBC_URL`, `TEST_VSCODE_CLUSTER_ID`
  * Previews: {}
 
 ## gcp-staging
@@ -131,3 +117,17 @@ For usage instructions please refer to https://databricks.atlassian.net/wiki/spa
  * Available environment: `CLOUD_ENV`, `DATABRICKS_HOST`, `DATABRICKS_TOKEN`, `TEST_BRICKS_CLUSTER_ID`, `TEST_DEFAULT_CLUSTER_ID`, `TEST_DEFAULT_WAREHOUSE_DATASOURCE_ID`, `TEST_DEFAULT_WAREHOUSE_ID`, `TEST_DEFAULT_WAREHOUSE_JDBC_URL`, `TEST_GO_SDK_CLUSTER_ID`, `TEST_INSTANCE_POOL_ID`, `TEST_JS_SDK_CLUSTER_ID`, `TEST_VSCODE_CLUSTER_ID`
  * Previews: {}
 
+
+# Windows development VMs
+
+For usage instructions please refer to https://databricks.atlassian.net/wiki/spaces/UN/pages/2855406192/Windows+development+VMs.
+
+* [erzen.kaja@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-erzen.kaja/overview)
+* [fabian.jakobs@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-fabian.jakobs/overview)
+* [kartik.gupta@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-kartik.gupta/overview)
+* [lennart.kats@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-lennart.kats/overview)
+* [paul.cornell@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-paul.cornell/overview)
+* [paul.leventis@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-paul.leventis/overview)
+* [pieter.noordhuis@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-pieter.noordhuis/overview)
+* [serge.smertin@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-serge.smertin/overview)
+* [shreyas.goenka@databricks.com](https://portal.azure.com/#@dbtestcustomer.onmicrosoft.com/resource/subscriptions/2a5a4578-9ca9-47e2-ba46-f6ee6cc731f2/resourceGroups/eng-dev-ecosystem-vms-rg/providers/Microsoft.Compute/virtualMachines/deco-vm-shreyas.goenka/overview)

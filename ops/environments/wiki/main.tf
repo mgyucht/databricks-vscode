@@ -153,14 +153,14 @@ resource "local_file" "csv" {
 resource "local_file" "index" {
   filename = "README.md"
   content  = <<-EOT
+  # Developer Ecosystem Environments
+
+  ${join("\n", local.table)}
+
   # Windows development VMs
 
   For usage instructions please refer to https://databricks.atlassian.net/wiki/spaces/UN/pages/2855406192/Windows+development+VMs.
 
   ${join("\n", local.vms)}
-
-  # Developer Ecosystem Environments
-
-  ${join("\n", local.table)}
   EOT
 }
