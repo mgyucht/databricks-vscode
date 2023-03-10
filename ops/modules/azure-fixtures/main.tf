@@ -21,6 +21,10 @@ output "storage_account_id" {
   value = azurerm_storage_account.v2.id
 }
 
+output "storage_account_name" {
+  value = azurerm_storage_account.v2.name
+}
+
 resource "azurerm_storage_container" "wasbs" {
   name                  = "${var.prefix}-wasbs"
   storage_account_name  = azurerm_storage_account.v2.name

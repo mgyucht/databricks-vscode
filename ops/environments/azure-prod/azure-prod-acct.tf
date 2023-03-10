@@ -9,6 +9,7 @@ module "account_admin_spn" {
   name   = "deco-prod-acct-admin-spn"
   roles_on_resources = {
     // TODO: grant required accesses...
+    "Contributor" : module.workspace_ucws.resource_group_id,
   }
 }
 

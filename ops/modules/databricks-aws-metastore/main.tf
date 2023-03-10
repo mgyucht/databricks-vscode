@@ -44,51 +44,12 @@ resource "databricks_metastore_data_access" "this" {
   is_default = true
 }
 
-resource "databricks_catalog" "sandbox" {
-  metastore_id = databricks_metastore.this.id
-  name         = "sandbox"
-  comment      = "this catalog is managed by terraform"
-  properties = {
-    purpose = "testing"
-  }
+module "fixtures" {
+  source = "../databricks-common-metastore"
+
+  metastore_id   = databricks_metastore.this.id
+  data_eng_group = var.data_eng_group
+  data_sci_group = var.data_sci_group
+
   depends_on = [databricks_metastore_assignment.this]
-}
-
-resource "databricks_grants" "sandbox" {
-  catalog = databricks_catalog.sandbox.name
-
-  grant {
-    principal = var.data_eng_group
-    privileges = [
-      "CREATE_SCHEMA",
-      "USE_CATALOG",
-    ]
-  }
-
-  grant {
-    principal = var.data_sci_group
-    privileges = [
-      "USE_CATALOG",
-    ]
-  }
-}
-
-resource "databricks_schema" "things" {
-  catalog_name = databricks_catalog.sandbox.id
-  name         = "things"
-  comment      = "this database is managed by terraform"
-  properties = {
-    kind = "various"
-  }
-}
-
-resource "databricks_grants" "things" {
-  schema = databricks_schema.things.id
-
-  grant {
-    principal = var.data_sci_group
-    privileges = [
-      "USE_SCHEMA",
-    ]
-  }
 }
