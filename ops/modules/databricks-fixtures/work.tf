@@ -48,10 +48,31 @@ resource "databricks_cluster" "this" {
 }
 
 locals {
-  out_clusters = {
-    for k, v in databricks_cluster.this :
-    "TEST_${k}_CLUSTER_ID" => v.id
+  dbconnect_snapshot = "custom:custom-local__14.x-snapshot-scala2.12__unknown__head__d9db9c9__196f8e6__ubuntu__dd2fb53__format-2.lz4"
+}
+
+resource "databricks_cluster" "dbconnect" {
+  count                   = var.cloud != "gcp" ? 1 : 0
+  cluster_name            = "DBConnect V2 Test Cluster"
+  spark_version           = local.dbconnect_snapshot
+  instance_pool_id        = databricks_instance_pool.this.id
+  autotermination_minutes = local.autotermination_minutes
+  is_pinned               = true
+  spark_conf = {
+    "spark.databricks.cluster.profile" : "singleNode"
+    "spark.master" : "local[*]"
   }
+  custom_tags = {
+    "ResourceClass" = "SingleNode"
+  }
+}
+
+locals {
+  out_clusters = merge({ for k, v in databricks_cluster.this :
+    "TEST_${k}_CLUSTER_ID" => v.id
+    }, (var.cloud != "gcp" ? {
+      "SPARK_CONNECT_CLUSTER_ID" : databricks_cluster.dbconnect[0].id
+  } : {}))
 }
 
 output "cluster_ids" {

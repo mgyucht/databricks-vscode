@@ -5,6 +5,7 @@ import (
 	_ "deco/cmd/env/api"
 	_ "deco/cmd/env/cleanup"
 	_ "deco/cmd/env/export"
+	_ "deco/cmd/env/flip"
 	_ "deco/cmd/env/list"
 	_ "deco/cmd/env/run"
 	_ "deco/cmd/env/save"
