@@ -6,12 +6,25 @@ variable "tags" {
   default = {} // todo: merge with defaults
 }
 
+variable "aws_account_id" {
+  type = number
+}
+
 resource "aws_s3_bucket" "this" {
   bucket        = var.name
   force_destroy = true
   tags = merge(var.tags, {
     Name = var.name
   })
+
+  lifecycle {
+    ignore_changes = [
+      # "IntelligentTieringManagedByCustodian" is added by other automation.
+      tags,
+      # Rule ID "company-s3-lifecycle-rules-auto-tiering" is added by other automation.
+      lifecycle_rule,
+    ]
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "this" {
@@ -23,19 +36,33 @@ resource "aws_s3_bucket_public_access_block" "this" {
   depends_on              = [aws_s3_bucket.this]
 }
 
-data "databricks_aws_bucket_policy" "this" {
-  bucket = aws_s3_bucket.this.bucket
-}
-
 resource "aws_s3_bucket_policy" "bucket_policy" {
-  bucket     = aws_s3_bucket.this.id
-  policy     = data.databricks_aws_bucket_policy.this.json
-  depends_on = [aws_s3_bucket_public_access_block.this]
+  bucket = aws_s3_bucket.this.id
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Principal" : {
+          "AWS" : "arn:aws:iam::${var.aws_account_id}:root"
+        },
+        "Action" : [
+          "s3:GetObject",
+          "s3:GetObjectVersion",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket",
+          "s3:GetBucketLocation"
+        ],
+        "Resource" : [
+          "arn:aws:s3:::${var.name}/*",
+          "arn:aws:s3:::${var.name}"
+        ]
+      }
+    ]
+  })
 
-  lifecycle {
-    // TODO: set id of databricks_aws_bucket_policy data resource to "_"
-    ignore_changes = [policy]
-  }
+  depends_on = [aws_s3_bucket_public_access_block.this]
 }
 
 output "bucket" {

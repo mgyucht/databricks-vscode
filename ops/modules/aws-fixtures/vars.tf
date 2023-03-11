@@ -6,6 +6,11 @@ variable "databricks_cross_account_role" {
   description = "AWS ARN for the Databricks cross account role"
 }
 
+variable "aws_account_id" {
+  type        = number
+  description = "AWS account ID of Databricks (different for production and staging)"
+}
+
 variable "tags" {
   default = {}
 }

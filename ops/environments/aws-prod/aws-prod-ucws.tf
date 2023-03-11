@@ -29,6 +29,8 @@ module "metastore_bucket" {
   // See ops/modules/aws-iam-unity-catalog/main.tf
   name = "deco-uc-prod-aws-us-west-2"
   tags = module.defaults.tags
+
+  aws_account_id = module.defaults.aws_prod_account_id
 }
 
 module "metastore" {

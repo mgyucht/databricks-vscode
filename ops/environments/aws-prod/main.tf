@@ -42,6 +42,7 @@ module "fixtures" {
   source                        = "../../modules/aws-fixtures"
   databricks_account_id         = module.defaults.aws_prod_databricks_account_id
   databricks_cross_account_role = local.prod_crossaccount_arn
+  aws_account_id                = module.defaults.aws_prod_account_id
   region                        = module.defaults.aws_region
   tags                          = module.defaults.tags
   cidr_block                    = "10.5.0.0/16"

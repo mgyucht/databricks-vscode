@@ -18,7 +18,7 @@ data "aws_iam_policy_document" "databricks_managed_services_cmk" {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::414351767826:root"] // TODO: check account
+      identifiers = ["arn:aws:iam::${var.aws_account_id}:root"]
     }
     actions = [
       "kms:Encrypt",
@@ -54,7 +54,7 @@ data "aws_iam_policy_document" "databricks_storage_cmk" {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::414351767826:root"]
+      identifiers = ["arn:aws:iam::${var.aws_account_id}:root"]
     }
     actions = [
       "kms:Encrypt",
@@ -70,7 +70,7 @@ data "aws_iam_policy_document" "databricks_storage_cmk" {
     effect = "Allow"
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::414351767826:root"]
+      identifiers = ["arn:aws:iam::${var.aws_account_id}:root"]
     }
     actions = [
       "kms:CreateGrant",
