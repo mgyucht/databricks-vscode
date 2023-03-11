@@ -103,6 +103,10 @@ output "aws_staging_account_id" {
   value       = 548125073166
 }
 
+output "aws_staging_account_console" {
+  value = "https://accounts.staging.cloud.databricks.com/"
+}
+
 output "aws_prod_databricks_account_id" {
   description = "https://accounts.cloud.databricks.com/"
   value       = "4d9d3bc8-66c3-4e5a-8a0a-551f564257f0"
