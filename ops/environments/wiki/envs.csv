@@ -3,6 +3,8 @@ aws,prod,https://dbc-ee877747-aacb.cloud.databricks.com,4d9d3bc8-66c3-4e5a-8a0a-
 aws,prod,https://accounts.cloud.databricks.com/,4d9d3bc8-66c3-4e5a-8a0a-551f564257f0,https://accounts.cloud.databricks.com/
 aws,prod,https://accounts.cloud.databricks.com/,4d9d3bc8-66c3-4e5a-8a0a-551f564257f0,https://accounts.cloud.databricks.com/
 aws,prod,https://dbc-70c57887-2d7f.cloud.databricks.com,4d9d3bc8-66c3-4e5a-8a0a-551f564257f0,https://accounts.cloud.databricks.com/
+aws,staging,https://dbc-8fad297b-9859.staging.cloud.databricks.com,ed0ca3c5-fae5-4619-bb38-eebe04a4af4b,https://accounts.cloud.databricks.com/
+aws,staging,https://accounts.staging.cloud.databricks.com/,ed0ca3c5-fae5-4619-bb38-eebe04a4af4b,https://accounts.cloud.databricks.com/
 azure,prod,https://adb-309687753508875.15.azuredatabricks.net,5a8ac58d-9557-497a-8832-90bd35e641bf,https://accounts.azuredatabricks.net/
 azure,prod,https://accounts.azuredatabricks.net/,5a8ac58d-9557-497a-8832-90bd35e641bf,https://accounts.azuredatabricks.net/
 azure,prod,https://adb-309687753508875.15.azuredatabricks.net,5a8ac58d-9557-497a-8832-90bd35e641bf,https://accounts.azuredatabricks.net/

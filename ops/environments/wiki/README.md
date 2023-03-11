@@ -36,6 +36,24 @@
  * Available environment: `CLOUD_ENV`, `DATABRICKS_HOST`, `DATABRICKS_PASSWORD`, `DATABRICKS_USERNAME`, `TEST_BUCKET`, `TEST_DATA_ENG_GROUP`, `TEST_DATA_SCI_GROUP`, `TEST_FILTER`, `TEST_GLOBAL_METASTORE_ID`, `TEST_METASTORE_ADMIN_GROUP_NAME`, `TEST_METASTORE_DATA_ACCESS_ARN`, `TEST_METASTORE_ID`, `TEST_WORKSPACE_ID`, `THIS_WORKSPACE_ID`
  * Previews: "unity_catalog": "ENABLED"
 
+## aws-stg
+ * Cloud: `aws`
+ * Environment: `staging`
+ * Databricks Host: https://dbc-8fad297b-9859.staging.cloud.databricks.com
+ * Account ID: `ed0ca3c5-fae5-4619-bb38-eebe04a4af4b`
+ * Account Console: https://accounts.cloud.databricks.com/login?account_id=ed0ca3c5-fae5-4619-bb38-eebe04a4af4b
+ * Available environment: `CLOUD_ENV`, `DATABRICKS_HOST`, `DATABRICKS_TOKEN`, `SPARK_CONNECT_CLUSTER_ID`, `TEST_BRICKS_CLUSTER_ID`, `TEST_DEFAULT_CLUSTER_ID`, `TEST_DEFAULT_WAREHOUSE_DATASOURCE_ID`, `TEST_DEFAULT_WAREHOUSE_ID`, `TEST_DEFAULT_WAREHOUSE_JDBC_URL`, `TEST_GO_SDK_CLUSTER_ID`, `TEST_INSTANCE_POOL_ID`, `TEST_JS_SDK_CLUSTER_ID`, `TEST_PECO_WAREHOUSE_DATASOURCE_ID`, `TEST_PECO_WAREHOUSE_ID`, `TEST_PECO_WAREHOUSE_JDBC_URL`, `TEST_VSCODE_CLUSTER_ID`
+ * Previews: {}
+
+## aws-stg-acct
+ * Cloud: `aws`
+ * Environment: `staging`
+ * Databricks Host: https://accounts.staging.cloud.databricks.com/
+ * Account ID: `ed0ca3c5-fae5-4619-bb38-eebe04a4af4b`
+ * Account Console: https://accounts.cloud.databricks.com/login?account_id=ed0ca3c5-fae5-4619-bb38-eebe04a4af4b
+ * Available environment: `AWS_ACCOUNT_ID`, `AWS_REGION`, `CLOUD_ENV`, `DATABRICKS_ACCOUNT_ID`, `DATABRICKS_HOST`, `DATABRICKS_PASSWORD`, `DATABRICKS_USERNAME`, `TEST_CROSSACCOUNT_ARN`, `TEST_FILTER`, `TEST_MANAGED_KMS_KEY_ALIAS`, `TEST_MANAGED_KMS_KEY_ARN`, `TEST_METASTORE_BUCKET`, `TEST_OTHER_BUCKET`, `TEST_RELAY_VPC_ENDPOINT`, `TEST_ROOT_BUCKET`, `TEST_SECURITY_GROUP`, `TEST_STORAGE_KMS_KEY_ALIAS`, `TEST_STORAGE_KMS_KEY_ARN`, `TEST_SUBNET_PRIVATE`, `TEST_SUBNET_PRIVATE2`, `TEST_VPC_ID`
+ * Previews: {}
+
 ## azure-prod
  * Cloud: `azure`
  * Environment: `prod`
