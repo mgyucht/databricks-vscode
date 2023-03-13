@@ -9,6 +9,8 @@ azure,prod,https://adb-309687753508875.15.azuredatabricks.net,5a8ac58d-9557-497a
 azure,prod,https://accounts.azuredatabricks.net/,5a8ac58d-9557-497a-8832-90bd35e641bf,https://accounts.azuredatabricks.net/
 azure,prod,https://adb-309687753508875.15.azuredatabricks.net,5a8ac58d-9557-497a-8832-90bd35e641bf,https://accounts.azuredatabricks.net/
 azure,prod,https://adb-8409199956055994.14.azuredatabricks.net,5a8ac58d-9557-497a-8832-90bd35e641bf,https://accounts.azuredatabricks.net/
+azure,prod,https://adb-6824761921365056.16.azuredatabricks.net,5a8ac58d-9557-497a-8832-90bd35e641bf,https://accounts.azuredatabricks.net/
+azure,prod,https://adb-6824761921365056.16.azuredatabricks.net,5a8ac58d-9557-497a-8832-90bd35e641bf,https://accounts.azuredatabricks.net/
 azure,prod,https://adb-8409199956055994.14.azuredatabricks.net,5a8ac58d-9557-497a-8832-90bd35e641bf,https://accounts.azuredatabricks.net/
 azure,staging,https://adb-6216162949030702.2.staging.azuredatabricks.net,02945107-4221-4317-9276-5e0e9ed7f194,https://accounts.staging.azuredatabricks.net/
 gcp,prod,https://accounts.gcp.databricks.com/,e11e38c5-a449-47b9-b37f-0fa36c821612,https://accounts.gcp.databricks.com/
