@@ -10,7 +10,7 @@ First:
 * This user is **NOT** a member of the `databricks/eng-dev-ecosystem` team; it is manually added to the repositories it needs access to.
 * The token is scoped to `repo` access.
 * We rotate the token every month, at the beginning of the month.
-* It is stored in the `deco-github-meta-kv` Azure KeyVault.
+* It is stored in the `deco-gh-meta` Azure KeyVault.
 * The token is synchronized to GitHub environments so that it can be used for access to private Databricks repositories.
 
 
