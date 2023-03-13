@@ -68,7 +68,8 @@ locals {
       "deco-gh-azure-prod-usr"
     ]
     "dbt-databricks" = [
-      "deco-gh-azure-prod-peco"
+      "deco-gh-azure-prod-peco",
+      "deco-gh-azure-prod-pecou",
     ]
   }
 
