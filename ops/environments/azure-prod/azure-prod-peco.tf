@@ -9,7 +9,7 @@ module "secrets_peco" {
     },
     {
       for k, v in module.databricks_fixtures_usr.test_env : k => v
-      if length(regexall("^TEST_PECO_WAREHOUSE", k)) > 0
+      if length(regexall("^TEST_PECO_WAREHOUSE_", k)) > 0 || length(regexall("^TEST_PECO_CLUSTER_", k)) > 0
     },
   )
 }

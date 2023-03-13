@@ -46,6 +46,11 @@ locals {
         Product : "BricksCLI"
       },
     },
+    PECO : {
+      custom_tags : {
+        Product : "Any"
+      },
+    },
   }
 
   // every test warehouse must have `custom_tags` setting
