@@ -16,11 +16,15 @@ provider "databricks" {
   azure_workspace_resource_id = module.workspace_ucws.resource_id
 }
 
-// Provision storage container in the prod storage account for metastore.
-resource "azurerm_storage_container" "unity_catalog" {
-  name                  = "ucws"
-  storage_account_name  = module.fixtures.storage_account_name
-  container_access_type = "private"
+module "fixtures_ucws" {
+  depends_on = [
+    module.account_admin_spn,
+  ]
+  providers = {
+    databricks = databricks.workspace_ucws
+  }
+  source = "../../modules/databricks-fixtures"
+  cloud  = "azure"
 }
 
 module "metastore" {
@@ -31,13 +35,15 @@ module "metastore" {
 
   name = "deco-prod-azure-eastus2"
 
-  storage_account_name   = module.fixtures.storage_account_name
-  storage_container_name = azurerm_storage_container.unity_catalog.name
-  workspace_ids          = [module.workspace_ucws.workspace_id]
+  storage_account_name           = module.fixtures.storage_account_name
+  storage_container_name         = module.fixtures.unity_storage_container_name
+  databricks_access_connector_id = module.fixtures.unity_access_connector_id
 
   owner_group    = module.account.admins.name
   data_eng_group = module.account.data_eng.name
   data_sci_group = module.account.data_sci.name
+
+  workspace_ids = [module.workspace_ucws.workspace_id]
 
   depends_on = [
     module.workspace_ucws,
