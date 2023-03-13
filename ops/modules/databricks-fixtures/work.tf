@@ -104,6 +104,7 @@ locals {
     { key : "TEST_${k}_WAREHOUSE_ID", value : v.id },
     { key : "TEST_${k}_WAREHOUSE_DATASOURCE_ID", value : v.data_source_id },
     { key : "TEST_${k}_WAREHOUSE_JDBC_URL", value : v.jdbc_url },
+    { key : "TEST_${k}_WAREHOUSE_HTTP_PATH", value : split("=", split(";", v.jdbc_url)[4])[1] },
   ]]) : v.key => v.value }
 }
 
