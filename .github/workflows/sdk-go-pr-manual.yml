@@ -42,7 +42,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
-          go-version: 1.18.6
+          go-version: 1.19.7
 
       - name: Download dependencies for databricks-sdk-go
         run: go mod download
