@@ -27,7 +27,8 @@ output "friends" {
 
 output "tags" {
   value = {
-    "Owner" : "eng-dev-ecosystem-team@databricks.com"
+    "Owner" : "eng-dev-ecosystem-team@databricks.com",
+    "Budget" : "opex.eng.deco"
   }
 }
 
