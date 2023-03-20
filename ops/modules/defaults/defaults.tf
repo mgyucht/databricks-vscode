@@ -13,6 +13,7 @@ output "admins" {
     "erzen.kaja@databricks.com",
     "paul.cornell@databricks.com",
     "miles@databricks.com",
+    "tanmay.rustagi@databricks.com",
   ]
 }
 
