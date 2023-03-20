@@ -72,9 +72,16 @@ output "test_env" {
   )
 }
 
+resource "time_rotating" "month" {
+  rotation_days = 30
+}
+
 resource "databricks_token" "pat" {
-  comment          = "Test token"
-  lifetime_seconds = 60 * 60 * 24 * 30
+  comment = "Token fixture (${time_rotating.month.rfc3339})"
+
+  # Token is valid for 60 days but is rotated after 30 days.
+  # This means it will be refreshed by @oncall before it expires.
+  lifetime_seconds = 60 * 24 * 60 * 60
 }
 
 output "databricks_token" {
