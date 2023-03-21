@@ -1,9 +1,5 @@
-This folder is supposed to have dynamic checkouts of these repos:
+Run `deco gh clone-repos` to initialize your development environment. This command:
 
-```sh
-git clone https://github.com/databricks/terraform-provider-databricks
-git clone https://github.com/databricks/docs
-git clone https://github.com/databricks/databricks-vscode
-```
-
-It's recommended to symlink repositories here for local dev purposes
+1. fetches all Deco repos from https://github.com/orgs/databricks/teams/eng-dev-ecosystem/repositories
+2. clones those repos to your chosen directory (by default, your home directory)
+3. creates symlinks in this folder to those repos.

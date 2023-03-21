@@ -17,6 +17,7 @@ import (
 	_ "deco/cmd/env/test/list"
 	_ "deco/cmd/gh"
 	_ "deco/cmd/gh/checkoutpr"
+	_ "deco/cmd/gh/clonerepos"
 	_ "deco/cmd/gh/releasenotes"
 	_ "deco/cmd/gh/testpr"
 	_ "deco/cmd/gh/updateprs"
