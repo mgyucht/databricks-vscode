@@ -17,3 +17,7 @@ environments:
             # Run hourly. To be evaluated if this is necessary in >= March 2023.
             quartz_cron_expression: "1 1 * * * ?"
             timezone_id: UTC
+
+          email_notifications:
+            on_failure:
+              - "eng-dev-ecosystem-team@databricks.com"
