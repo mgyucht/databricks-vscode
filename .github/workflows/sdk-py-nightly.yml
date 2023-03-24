@@ -1,0 +1,98 @@
+name: sdk-py-nightly
+
+on:
+  workflow_dispatch:
+    # manual workflow testing
+    # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
+  schedule:
+    - cron: '0 6 * * *'
+
+jobs:
+  integration-tests-prod:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+          - aws-prod
+          - aws-prod-acct
+          - azure-prod
+          - azure-prod-acct
+    environment: ${{ matrix.env }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Deco CLI
+        uses: ./.github/actions/setup-deco-cli
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Expand actions environment secrets to variables
+        run: deco env export --name ${{ matrix.env }} --quote-values=false >> $GITHUB_ENV
+        shell: bash
+        env:
+          GITHUB_SECRETS_JSON: "${{ toJson(secrets) }}"
+
+      - name: Checkout sdk-py
+        uses: actions/checkout@v3
+        with:
+          repository: databricks/databricks-sdk-py
+          path: ext/databricks-sdk-py
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      - name: Run tests
+        # TODO: add ecosystem runner for PyTest
+        run: make dev integration
+
+      - name: Archive logs
+        if: always()
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{ matrix.env }}-test.log
+          path: test.log
+
+  changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Deco CLI
+        uses: ./.github/actions/setup-deco-cli
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: deco gh release-notes -r databricks-sdk-py --head main >> $GITHUB_STEP_SUMMARY
+        env:
+          GITHUB_TOKEN: ${{ secrets.DECO_GITHUB_TOKEN }}
+
+  slack-notify:
+    name: "Post Slack notification"
+    runs-on: ubuntu-latest
+
+    needs: [integration-tests-prod]
+    if: always()
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Deco CLI
+        uses: ./.github/actions/setup-deco-cli
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post Slack notification
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          deco slack post-action-status
+        env:
+          GITHUB_JOB_REGEXP: "^integration-tests-prod"
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: eng-dev-ecosystem-team
