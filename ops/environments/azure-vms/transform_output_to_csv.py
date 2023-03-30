@@ -17,7 +17,9 @@ out = []
 for key, value in obj["details"]["value"].items():
     out.append({
         "email": key,
-        **value,
+        "username": value["username"],
+        "password": value["password"],
+        "url": value["url"],
     })
 
 sorted(out, key=lambda x: x['email'])

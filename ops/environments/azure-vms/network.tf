@@ -3,6 +3,7 @@ resource "azurerm_virtual_network" "this" {
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
+  tags                = azurerm_resource_group.this.tags
 }
 
 resource "azurerm_subnet" "this" {
@@ -16,6 +17,7 @@ resource "azurerm_network_security_group" "this" {
   name                = "${local.prefix}-sg"
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
+  tags                = azurerm_resource_group.this.tags
 }
 
 module "zscaler" {

@@ -5,6 +5,9 @@ locals {
 resource "azurerm_resource_group" "this" {
   name     = "${local.prefix}-rg"
   location = "West Europe"
+  tags = {
+    "Owner" = "eng-dev-ecosystem-team@databricks.com"
+  }
 }
 
 module "vm" {

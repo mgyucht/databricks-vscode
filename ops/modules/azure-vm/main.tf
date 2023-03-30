@@ -16,6 +16,7 @@ resource "azurerm_public_ip" "this" {
   name                = "${var.prefix}-public-ip"
   location            = data.azurerm_resource_group.this.location
   resource_group_name = data.azurerm_resource_group.this.name
+  tags                = data.azurerm_resource_group.this.tags
   allocation_method   = "Dynamic"
 }
 
@@ -23,6 +24,7 @@ resource "azurerm_network_interface" "this" {
   name                = "${var.prefix}-interface"
   location            = data.azurerm_resource_group.this.location
   resource_group_name = data.azurerm_resource_group.this.name
+  tags                = data.azurerm_resource_group.this.tags
 
   ip_configuration {
     name                          = "internal"
@@ -47,6 +49,7 @@ resource "azurerm_windows_virtual_machine" "this" {
   computer_name       = "deco-vm"
   resource_group_name = data.azurerm_resource_group.this.name
   location            = data.azurerm_resource_group.this.location
+  tags                = data.azurerm_resource_group.this.tags
 
   # Ddsv5-series virtual machines run on the 3rd Generation Intel® Xeon® Platinum 8370C (Ice Lake)
   # processor reaching an all core turbo clock speed of up to 3.5 GHz.
