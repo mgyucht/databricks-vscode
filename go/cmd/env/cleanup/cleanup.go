@@ -24,7 +24,7 @@ var cleanupCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		if cfg.IsAccountsClient() {
+		if cfg.IsAccountClient() {
 			return fmt.Errorf("currently only workspace client supported")
 		}
 		ws, err := databricks.NewWorkspaceClient((*databricks.Config)(cfg))

@@ -9,34 +9,12 @@ import (
 	"deco/prompt"
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/spf13/cobra"
 )
 
 var Runners = []ecosystem.TestRunner{
 	golang.GoTestRunner{},
-}
-
-// Returns the repository root of the working directory, iff
-// it is different from the eng-dev-ecosystem repository.
-func findWorkingDirectoryGitRoot() (string, error) {
-	engDevEcosystemRoot, err := folders.FindEngDevEcosystemRoot()
-	if err != nil {
-		return "", err
-	}
-	wd, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-	wdRoot, err := folders.FindDirWithLeaf(wd, ".git")
-	if err != nil {
-		return "", err
-	}
-	if wdRoot == engDevEcosystemRoot {
-		return "", fmt.Errorf("working directory inside 'eng-dev-ecosystem'")
-	}
-	return wdRoot, nil
 }
 
 func CheckoutFileset() (string, fileset.FileSet, error) {
@@ -50,7 +28,7 @@ func CheckoutFileset() (string, fileset.FileSet, error) {
 	// If the repo is NOT specified already, we first try to see
 	// if we can determine it by looking at the working directory.
 	if repo == "" {
-		gitRoot, err := findWorkingDirectoryGitRoot()
+		gitRoot, err := folders.FindWorkingDirectoryGitRoot()
 		if err != nil {
 			log.Printf("[DEBUG] Unable to infer repo from working directory: %s", err)
 		} else {

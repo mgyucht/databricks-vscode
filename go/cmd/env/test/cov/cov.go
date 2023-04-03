@@ -52,7 +52,7 @@ var covCmd = &cobra.Command{
 			return fmt.Errorf("home: %w", err)
 		}
 		specFile := filepath.Join(home, "universe/bazel-bin/openapi/all-internal.json")
-		openapi, err := code.NewFromFile(specFile, []string{})
+		openapi, err := code.NewFromFile(specFile)
 		if err != nil {
 			return fmt.Errorf("most likely you didn't run bazel build openapi/all-internal.json: %w", err)
 		}

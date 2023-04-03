@@ -62,3 +62,24 @@ func FindEngDevEcosystemRoot() (string, error) {
 	engDevEcosystemRoot, err := FindDirWithLeaf(filepath.Dir(decoBinaryInEngDevEcosystem), ".git")
 	return engDevEcosystemRoot, err
 }
+
+// Returns the repository root of the working directory, iff
+// it is different from the eng-dev-ecosystem repository.
+func FindWorkingDirectoryGitRoot() (string, error) {
+	engDevEcosystemRoot, err := FindEngDevEcosystemRoot()
+	if err != nil {
+		return "", err
+	}
+	wd, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	wdRoot, err := FindDirWithLeaf(wd, ".git")
+	if err != nil {
+		return "", err
+	}
+	if wdRoot == engDevEcosystemRoot {
+		return "", fmt.Errorf("working directory inside 'eng-dev-ecosystem'")
+	}
+	return wdRoot, nil
+}

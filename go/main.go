@@ -1,6 +1,8 @@
 package main
 
 import (
+	_ "deco/cmd/code"
+	_ "deco/cmd/code/authtests"
 	_ "deco/cmd/env"
 	_ "deco/cmd/env/api"
 	_ "deco/cmd/env/cleanup"
