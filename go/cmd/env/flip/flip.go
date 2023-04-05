@@ -19,7 +19,16 @@ func loadDebugEnv() (string, debugEnv, error) {
 	if err != nil {
 		return "", nil, fmt.Errorf("cannot find user home: %w", err)
 	}
+
 	configFile := filepath.Join(home, ".databricks/debug-env.json")
+
+	// Create file if it doesn't exist
+	if _, err := os.Stat(configFile); os.IsNotExist(err) {
+		file, _ := os.Create(configFile)
+		defer file.Close()
+		file.WriteString("{}")
+	}
+
 	raw, err := os.ReadFile(configFile)
 	if err != nil {
 		return configFile, nil, fmt.Errorf("cannot load ~/.databricks/debug-env.json: %w", err)
