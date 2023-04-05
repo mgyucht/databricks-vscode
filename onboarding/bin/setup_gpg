@@ -1,0 +1,66 @@
+set -euo pipefail
+
+source ./utils
+
+echo "Installing GPG Keys"
+brew install gnupg
+
+print_yellow "Select:"
+print_yellow "  1. RSA and RSA"
+print_yellow "  2. 4096 bits long"
+print_yellow "  3. 1y expiry"
+echo ""
+print_yellow "Note: If you keep on seeing enter passphrase again and again (more than 2 times): "
+print_yellow "  1. Close the current shell and open a new shell"
+print_yellow "  2. Run \$ killall gpg-agent"
+print_yellow "  3. Run the onboarding/bin/run_all script again after commenting (in run_all script) those out that have been completed"
+
+gpg --full-generate-key
+
+stty sane # Resolves issue with terminal line setting if there is any
+
+echo "Key Generated"
+gpg --list-secret-keys --keyid-format LONG
+print_yellow "Please enter the key you want to use. The key is written in sec field for example: sec  rsa4096/<key-to-enter> 2023-03-27"
+read key
+
+gpg --armor --export "$key"
+print_yellow "Please copy the below key, it is required to be uploaded on Github:"
+print_yellow "  1. Github -> Setting -> GPG Keys"
+print_yellow "  2. Click on new GPG key"
+print_yellow "  3. Paste the key copied above and add GPG key"
+echo "Press enter to continue after uploading key printed above on Github"
+read
+git config --global user.signingkey "$key"
+
+if [[ "$SHELL" == "/bin/bash" ]]; then
+    if grep -q "export GPG_TTY=$(tty)" ~/.bashrc; then
+        echo "GPT_TTY present in ~/.bashrc"
+        echo "Please add it manually if it doesn't work"
+    else
+        echo "export GPG_TTY=$(tty)" >> ~/.bashrc
+    fi
+    source ~/.bashrc
+fi
+
+if [[ "$SHELL" == "/bin/zsh" ]]; then
+    if grep -q "export GPG_TTY=$(tty)" ~/.zshrc; then
+        echo "GPT_TTY present in ~/.zshrc"
+        echo "Please add it manually if it doesn't work"
+    else
+        echo "export GPG_TTY=$(tty)" >> ~/.zshrc
+    fi
+fi
+
+
+git config --global commit.gpgsign true
+brew install pinentry-mac
+
+if grep -q "pinentry-program $(which pinentry-mac)" ~/.gnupg/gpg-agent.conf; then
+    echo "pinentry-program already present in ~/.gnupg/gpg-agent.conf"
+    echo "Please add it manually if it doesn't work"
+else
+    echo "pinentry-program $(which pinentry-mac)" >> ~/.gnupg/gpg-agent.conf
+fi
+
+gpgconf --kill gpg-agent

@@ -1,0 +1,57 @@
+set -euo pipefail
+
+pushd .
+cd "$(git rev-parse --show-toplevel)"
+cd ./onboarding/bin/
+
+source ./utils
+
+install_step() {
+  print_yellow "Installing $1"
+  $2
+  print_green "[Completed] Installing $1"
+  echo
+}
+
+print_info() {
+cat << EOF
+--------------------------------------------------------------------------------
+                            Running onboarding scripts                         |
+                                                                               |
+Note: If the scripts fail at any step:                                         |
+  1. Note the failure step - take a look at: onboarding/bin/run_all            |
+  2. Resolve it                                                                |
+  3. Repeat next steps after commenting the previous ones that were completed  |
+  4. Create a PR to update the onboarding scripts                              |
+--------------------------------------------------------------------------------
+EOF
+}
+
+if [[ "$SHELL" != "/bin/bash" ]] && [[ "$SHELL" != "/bin/zsh" ]]; then
+print_yellow "Not running on bash or zsh shell, please install either bash or zsh shell"
+fi
+
+print_info
+echo ""
+print_yellow "Please look at bold yellow text printed in terminal for helpful information while running scripts"
+
+sleep 5
+
+install_step "Tools" ./install_tools
+
+install_step "Visual Studio Code" ./install_vscode
+
+install_step "Setting up deco CLI" ./setup_deco
+
+install_step "Cloning Repositories in $HOME" ./clone_repositories
+
+install_step "Setting up GPG Keys" ./setup_gpg
+
+# For current shell to recognise the deco CLI
+source ~/.bashrc
+echo "If you are using zsh shell, please run source ~/.zshrc or open a new shell for further work"
+
+print_green "Common setup completed. Please check the relevant repositories for specific setup"
+echo ""
+
+popd

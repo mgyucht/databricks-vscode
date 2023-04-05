@@ -1,0 +1,39 @@
+set -euo pipefail
+
+pushd .
+
+cd "$(git rev-parse --show-toplevel)/go"
+
+# Build the binary
+go build
+
+if [[ "$SHELL" == "/bin/bash" ]]; then
+    # Create ~/.bashrc if it doesn't exist
+    if [[ ! -f ~/.bashrc ]]; then
+        touch ~/.bashrc
+    fi
+    if grep -q "export PATH=\$PATH:$(pwd)" ~/.bashrc; then
+        echo "Directory already present in PATH in ~/.bashrc"
+        echo "Please update the PATH manually if it doesn't work"
+    else
+        echo "export PATH=\$PATH:$(pwd)" >> ~/.bashrc
+    fi
+fi
+
+if [[ "$SHELL" == "/bin/zsh" ]]; then
+    # Create ~/.zshrc if it doesn't exist
+    if [[ ! -f ~/.zshrc ]]; then
+        touch ~/.zshrc
+    fi
+    if grep -q "export PATH=\$PATH:$(pwd)" ~/.zshrc; then
+        echo "Directory already present in PATH in ~/.zshrc"
+        echo "Please update the PATH manually if it doesn't work"
+    else
+        echo "export PATH=\$PATH:$(pwd)" >> ~/.zshrc
+    fi
+fi
+
+echo ""
+
+
+popd

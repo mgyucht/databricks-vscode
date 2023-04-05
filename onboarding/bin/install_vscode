@@ -1,0 +1,8 @@
+set -euo pipefail
+
+if code --version >/dev/null 2>&1; then
+    echo "VS Code is already installed, skipping installation"
+    echo "Installed version: $(code --version | head -n 1)"
+else
+    brew install --cask visual-studio-code
+fi

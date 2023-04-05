@@ -1,0 +1,8 @@
+set -euo pipefail
+
+brew install go
+brew install python
+brew install typescript
+brew install yarn
+brew install goreleaser
+brew install terraform
