@@ -1,0 +1,57 @@
+resources:
+  pipelines:
+    telemetry:
+      name: "[${bundle.environment}] Telemetry"
+      catalog: main
+      target: "telemetry_${bundle.environment}"
+      libraries:
+        - notebook:
+            path: ./telemetry.py
+      channel: PREVIEW # UC integration is only supported on the preview channel today
+      photon: true
+      edition: ADVANCED
+
+  jobs:
+    trigger:
+      name: "[${bundle.environment}] Run Telemetry Pipeline"
+      schedule:
+        quartz_cron_expression: "0 0 1 * * ?"
+        timezone_id: "UTC"
+      email_notifications:
+        on_failure:
+          - "eng-dev-ecosystem-team@databricks.com"
+      max_concurrent_runs: 1
+      job_clusters:
+        - job_cluster_key: common
+          new_cluster:
+            node_type_id: Standard_D4ads_v5
+            runtime_engine: PHOTON
+            spark_version: 13.0.x-scala2.12
+            data_security_mode: USER_ISOLATION
+            autoscale:
+              min_workers: 1
+              max_workers: 2
+      tasks:
+        # Uncomment this task when we get an answer to
+        # https://databricks.slack.com/archives/CE2JKAKQC/p1681303751176369
+        # - task_key: redact_old_data
+        #   description: "Remove data more than 3 years old from bronze table"
+        #   job_cluster_key: common
+        #   notebook_task:
+        #     notebook_path: ./cleanup.py
+        #     base_parameters:
+        #       catalog: main
+        #       schema: "telemetry_${bundle.environment}"
+        #   depends_on:
+        #     - task_key: refresh_pipeline
+        - task_key: refresh_pipeline
+          description: "Rerun the DLT pipeline"
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.telemetry.id}
+
+environments:
+  development:
+    resources:
+      pipelines:
+        telemetry:
+          development: true

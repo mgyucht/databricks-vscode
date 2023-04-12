@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=./schema.json
+bundle:
+  name: telemetry
+
+environments:
+  development:
+    default: true
+
+    workspace:
+      # azure-prod-ucws
+      host: https://adb-6824761921365056.16.azuredatabricks.net
+  production:
+    workspace:
+      # logfood-master
+      host: https://adb-2548836972759138.18.azuredatabricks.net
