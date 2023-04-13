@@ -16,7 +16,7 @@ graph LR
 
         provider.databricks#account --> databricks_mws_workspaces#dummy
         ../../modules/aws-databricks-workspace --> databricks_mws_workspaces#dummy
-        
+
         ../../modules/aws-fixtures --> ../../modules/github-secrets#account_level_testing
     end
 
@@ -32,7 +32,7 @@ graph LR
         provider.databricks#account --> databricks_mws_workspaces#this
         ../../modules/aws-databricks-workspace --> databricks_mws_workspaces#this
         databricks_mws_workspaces#this --> provider.databricks#workspace
-        
+
         ../../modules/aws-bucket#metastore_bucket --> ../../modules/databricks-aws-metastore
         databricks_mws_workspaces#this --> ../../modules/databricks-aws-metastore
         provider.databricks#workspace --> ../../modules/databricks-aws-metastore
@@ -42,7 +42,7 @@ graph LR
 
         databricks_mws_workspaces#this --> ../../modules/github-secrets#workspace_with_assigned_metastore
         ../../modules/databricks-account --> ../../modules/github-secrets#workspace_with_assigned_metastore
-        
+
     end
 
 
@@ -53,3 +53,5 @@ graph LR
     end
 
 ```
+
+- **aws-prod-oauth-m2m**: an environment for testing machine-to-machine authentication using Databricks service principals.
